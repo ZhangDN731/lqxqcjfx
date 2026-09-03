@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人+班级成绩分析模块首页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2c3e50 0%, #4158d0 50%, #c850c0 100%);
+            overflow: hidden;
+            padding: 20px;
+            font-family: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
+        }
+
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #lightGlow {
+            position: fixed;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            transition: 0.12s ease;
+        }
+
+        .glass-box {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 24px;
+            padding: 52px 46px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            font-size: 28px;
+            margin-bottom: 44px;
+            letter-spacing: 3px;
+            font-weight: 600;
+        }
+
+        .entry-card {
+            display: block;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin-bottom: 20px;
+            transition: all 0.35s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .entry-card:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .entry-title {
+            color: #fff;
+            font-size: 19px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .entry-desc {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 14.5px;
+            line-height: 1.6;
+            min-height: 36px;
+        }
+
+        /* 倒计时进度条 */
+        .countdown-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #43e97b, #38f9d7);
+            border-radius: 0 0 14px 14px;
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .countdown-hint {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+        }
+
+        .footer-tip {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.8;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap');
+    </style>
+</head>
+<body>
+    <canvas id="particles"></canvas>
+    <div id="lightGlow"></div>
+
+    <div class="glass-box">
+        <h1>尚学龙泉校区班级成绩分析工具</h1>
+
+        <a href="index-二合一.html" class="entry-card" id="autoEntry">
+            <div class="entry-title">个人+班级成绩分析系统</div>
+            <div class="entry-desc">前面两个网页的结合体，一个网页同时查看</div>
+            <span class="countdown-hint" id="countdownHint">鼠标不操作，5秒后自动进入</span>
+            <div class="countdown-bar" id="countdownBar"></div>
+        </a>
+
+        <a href="index-个人分析.html" class="entry-card">
+            <div class="entry-title">学生个人各科成绩变化</div>
+            <div class="entry-desc">用于查看学生个人各科考试成绩变化趋势，追踪分数波动情况</div>
+        </a>
+
+        <a href="index-班级分析.html" class="entry-card">
+            <div class="entry-title">班级横向成绩对比</div>
+            <div class="entry-desc">多班级横向单科目成绩对比，直观展示各班分数差距与排名情况</div>
+        </a>
+
+        <div class="footer-tip">
+            <div id="currentTime"></div>
+            <div>制作者：ZhangD!n@nmnmnmn</div>
+        </div>
+    </div>
+
+    <script>
+        // 实时更新时间
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').innerText = timeStr;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // 鼠标跟随光效
+        const glow = document.getElementById('lightGlow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        // 粒子特效
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let w, h;
+        let particles = [];
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.radius = Math.random() * 2.2 + 0.4;
+                this.speedX = (Math.random() - 0.5) * 0.7;
+                this.speedY = (Math.random() - 0.5) * 0.7;
+                this.opacity = Math.random() * 0.4 + 0.15;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > w) this.speedX *= -1;
+                if (this.y < 0 || this.y > h) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        for(let i = 0; i < 90; i++){
+            particles.push(new Particle());
+        }
+
+        function animate(){
+            ctx.clearRect(0,0,w,h);
+            particles.forEach(p=>{
+                p.update();
+                p.draw();
+            })
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // ===== 5秒倒计时自动跳转 =====
+        const TOTAL_TIME = 5000; // 5秒
+        const bar = document.getElementById('countdownBar');
+        const hint = document.getElementById('countdownHint');
+        let startTime = Date.now();
+        let cancelled = false;
+
+        // 进度条动画
+        const timer = setInterval(() => {
+            if (cancelled) return;
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, TOTAL_TIME - elapsed);
+            const percent = (remaining / TOTAL_TIME) * 100;
+
+            bar.style.width = percent + '%';
+            hint.textContent = Math.ceil(remaining / 1000) + '秒后自动进入';
+
+            if (remaining <= 0) {
+                clearInterval(timer);
+                // 自动跳转
+                window.location.href = 'index-二合一.html';
+            }
+        }, 50);
+
+        // 用户点击任意位置则取消自动跳转
+        document.addEventListener('click', () => {
+            if (!cancelled) {
+                cancelled = true;
+                clearInterval(timer);
+                bar.style.width = '0%';
+                hint.textContent = '已取消自动进入';
+                setTimeout(() => {
+                    hint.style.display = 'none';
+                    bar.style.display = 'none';
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>

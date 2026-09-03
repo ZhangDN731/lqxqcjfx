@@ -1,0 +1,2642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班级成绩分析系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+        // ===== 光子粒子背景动画 =====
+        (function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let animationId;
+            let mouse = { x: null, y: null, radius: 120 };
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticlesArray();
+            }
+
+            function initParticlesArray() {
+                particles = [];
+                const count = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
+                for (let i = 0; i < count; i++) {
+                    particles.push(createParticle());
+                }
+            }
+
+            function createParticle() {
+                const size = Math.random() * 3 + 0.5;
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const speedX = (Math.random() - 0.5) * 0.5;
+                const speedY = (Math.random() - 0.5) * 0.5;
+                const opacity = Math.random() * 0.5 + 0.1;
+                // 蓝色系粒子
+                const hue = Math.random() * 40 + 200; // 200-240 蓝色范围
+                const saturation = Math.random() * 50 + 50;
+                const lightness = Math.random() * 30 + 50;
+                return { x, y, size, speedX, speedY, opacity, hue, saturation, lightness, pulse: Math.random() * Math.PI * 2 };
+            }
+
+            function drawParticle(p) {
+                p.pulse += 0.02;
+                const currentOpacity = p.opacity * (0.7 + Math.sin(p.pulse) * 0.3);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity + ')';
+                ctx.fill();
+                // 光晕效果
+                if (p.size > 1.5) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity * 0.15 + ')';
+                    ctx.fill();
+                }
+            }
+
+            function connectParticles() {
+                const maxDist = 150;
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < maxDist) {
+                            const opacity = (1 - dist / maxDist) * 0.15;
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'rgba(59, 130, 246, ' + opacity + ')';
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    // 边界环绕
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+                    drawParticle(p);
+                });
+                connectParticles();
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // 鼠标交互
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.x;
+                mouse.y = e.y;
+            });
+
+            window.addEventListener('resize', resize);
+
+            // 初始化和启动
+            resize();
+            animate();
+        })();
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js">
+        // ===== 光子粒子背景动画 =====
+        (function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let animationId;
+            let mouse = { x: null, y: null, radius: 120 };
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticlesArray();
+            }
+
+            function initParticlesArray() {
+                particles = [];
+                const count = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
+                for (let i = 0; i < count; i++) {
+                    particles.push(createParticle());
+                }
+            }
+
+            function createParticle() {
+                const size = Math.random() * 3 + 0.5;
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const speedX = (Math.random() - 0.5) * 0.5;
+                const speedY = (Math.random() - 0.5) * 0.5;
+                const opacity = Math.random() * 0.5 + 0.1;
+                // 蓝色系粒子
+                const hue = Math.random() * 40 + 200; // 200-240 蓝色范围
+                const saturation = Math.random() * 50 + 50;
+                const lightness = Math.random() * 30 + 50;
+                return { x, y, size, speedX, speedY, opacity, hue, saturation, lightness, pulse: Math.random() * Math.PI * 2 };
+            }
+
+            function drawParticle(p) {
+                p.pulse += 0.02;
+                const currentOpacity = p.opacity * (0.7 + Math.sin(p.pulse) * 0.3);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity + ')';
+                ctx.fill();
+                // 光晕效果
+                if (p.size > 1.5) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity * 0.15 + ')';
+                    ctx.fill();
+                }
+            }
+
+            function connectParticles() {
+                const maxDist = 150;
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < maxDist) {
+                            const opacity = (1 - dist / maxDist) * 0.15;
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'rgba(59, 130, 246, ' + opacity + ')';
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    // 边界环绕
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+                    drawParticle(p);
+                });
+                connectParticles();
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // 鼠标交互
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.x;
+                mouse.y = e.y;
+            });
+
+            window.addEventListener('resize', resize);
+
+            // 初始化和启动
+            resize();
+            animate();
+        })();
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
+        // ===== 光子粒子背景动画 =====
+        (function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let animationId;
+            let mouse = { x: null, y: null, radius: 120 };
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticlesArray();
+            }
+
+            function initParticlesArray() {
+                particles = [];
+                const count = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
+                for (let i = 0; i < count; i++) {
+                    particles.push(createParticle());
+                }
+            }
+
+            function createParticle() {
+                const size = Math.random() * 3 + 0.5;
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const speedX = (Math.random() - 0.5) * 0.5;
+                const speedY = (Math.random() - 0.5) * 0.5;
+                const opacity = Math.random() * 0.5 + 0.1;
+                // 蓝色系粒子
+                const hue = Math.random() * 40 + 200; // 200-240 蓝色范围
+                const saturation = Math.random() * 50 + 50;
+                const lightness = Math.random() * 30 + 50;
+                return { x, y, size, speedX, speedY, opacity, hue, saturation, lightness, pulse: Math.random() * Math.PI * 2 };
+            }
+
+            function drawParticle(p) {
+                p.pulse += 0.02;
+                const currentOpacity = p.opacity * (0.7 + Math.sin(p.pulse) * 0.3);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity + ')';
+                ctx.fill();
+                // 光晕效果
+                if (p.size > 1.5) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity * 0.15 + ')';
+                    ctx.fill();
+                }
+            }
+
+            function connectParticles() {
+                const maxDist = 150;
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < maxDist) {
+                            const opacity = (1 - dist / maxDist) * 0.15;
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'rgba(59, 130, 246, ' + opacity + ')';
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    // 边界环绕
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+                    drawParticle(p);
+                });
+                connectParticles();
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // 鼠标交互
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.x;
+                mouse.y = e.y;
+            });
+
+            window.addEventListener('resize', resize);
+
+            // 初始化和启动
+            resize();
+            animate();
+        })();
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js">
+        // ===== 光子粒子背景动画 =====
+        (function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let animationId;
+            let mouse = { x: null, y: null, radius: 120 };
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticlesArray();
+            }
+
+            function initParticlesArray() {
+                particles = [];
+                const count = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
+                for (let i = 0; i < count; i++) {
+                    particles.push(createParticle());
+                }
+            }
+
+            function createParticle() {
+                const size = Math.random() * 3 + 0.5;
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const speedX = (Math.random() - 0.5) * 0.5;
+                const speedY = (Math.random() - 0.5) * 0.5;
+                const opacity = Math.random() * 0.5 + 0.1;
+                // 蓝色系粒子
+                const hue = Math.random() * 40 + 200; // 200-240 蓝色范围
+                const saturation = Math.random() * 50 + 50;
+                const lightness = Math.random() * 30 + 50;
+                return { x, y, size, speedX, speedY, opacity, hue, saturation, lightness, pulse: Math.random() * Math.PI * 2 };
+            }
+
+            function drawParticle(p) {
+                p.pulse += 0.02;
+                const currentOpacity = p.opacity * (0.7 + Math.sin(p.pulse) * 0.3);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity + ')';
+                ctx.fill();
+                // 光晕效果
+                if (p.size > 1.5) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity * 0.15 + ')';
+                    ctx.fill();
+                }
+            }
+
+            function connectParticles() {
+                const maxDist = 150;
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < maxDist) {
+                            const opacity = (1 - dist / maxDist) * 0.15;
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'rgba(59, 130, 246, ' + opacity + ')';
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    // 边界环绕
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+                    drawParticle(p);
+                });
+                connectParticles();
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // 鼠标交互
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.x;
+                mouse.y = e.y;
+            });
+
+            window.addEventListener('resize', resize);
+
+            // 初始化和启动
+            resize();
+            animate();
+        })();
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js">
+        // ===== 光子粒子背景动画 =====
+        (function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let animationId;
+            let mouse = { x: null, y: null, radius: 120 };
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticlesArray();
+            }
+
+            function initParticlesArray() {
+                particles = [];
+                const count = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
+                for (let i = 0; i < count; i++) {
+                    particles.push(createParticle());
+                }
+            }
+
+            function createParticle() {
+                const size = Math.random() * 3 + 0.5;
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const speedX = (Math.random() - 0.5) * 0.5;
+                const speedY = (Math.random() - 0.5) * 0.5;
+                const opacity = Math.random() * 0.5 + 0.1;
+                // 蓝色系粒子
+                const hue = Math.random() * 40 + 200; // 200-240 蓝色范围
+                const saturation = Math.random() * 50 + 50;
+                const lightness = Math.random() * 30 + 50;
+                return { x, y, size, speedX, speedY, opacity, hue, saturation, lightness, pulse: Math.random() * Math.PI * 2 };
+            }
+
+            function drawParticle(p) {
+                p.pulse += 0.02;
+                const currentOpacity = p.opacity * (0.7 + Math.sin(p.pulse) * 0.3);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity + ')';
+                ctx.fill();
+                // 光晕效果
+                if (p.size > 1.5) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity * 0.15 + ')';
+                    ctx.fill();
+                }
+            }
+
+            function connectParticles() {
+                const maxDist = 150;
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < maxDist) {
+                            const opacity = (1 - dist / maxDist) * 0.15;
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'rgba(59, 130, 246, ' + opacity + ')';
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    // 边界环绕
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+                    drawParticle(p);
+                });
+                connectParticles();
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // 鼠标交互
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.x;
+                mouse.y = e.y;
+            });
+
+            window.addEventListener('resize', resize);
+
+            // 初始化和启动
+            resize();
+            animate();
+        })();
+</script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-darker: #1e40af;
+            --primary-light: rgba(37, 99, 235, 0.12);
+            --primary-bg: rgba(37, 99, 235, 0.06);
+            --primary-glow: rgba(59, 130, 246, 0.35);
+            --bg: #1e3254;
+            --bg-gradient: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 25%, #e0ecf8 50%, #f5f8fc 75%, #e8f0fe 100%);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-bg-solid: #ffffff;
+            --card-border: rgba(59, 130, 246, 0.25);
+            --card-border-hover: rgba(59, 130, 246, 0.6);
+            --text-main: #1a1a2e;
+            --text-sub: #334155;
+            --text-muted: #475569;
+            --up-color: #22c55e;
+            --up-bg: rgba(34, 197, 94, 0.12);
+            --down-color: #ef4444;
+            --down-bg: rgba(239, 68, 68, 0.12);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+            --glass-blur: 16px;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg-gradient);
+            color: #1a1a2e;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        /* ===== 顶部栏 ===== */
+        .topbar {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(20px) saturate(200%);
+            -webkit-backdrop-filter: blur(20px) saturate(200%);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 24px rgba(59, 130, 246, 0.12), 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .topbar-left { display: flex; align-items: center; gap: 16px; }
+        .topbar h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1d4ed8;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        }
+        .topbar-nav { display: flex; gap: 4px; }
+        .topbar-nav button {
+            padding: 7px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .topbar-nav button.active {
+            background: var(--primary);
+            color: white;
+        }
+        .topbar-nav button:not(.active):hover {
+            background: var(--primary-bg);
+            color: #2563eb;
+        }
+        .topbar-right { display: flex; align-items: center; gap: 8px; }
+        .topbar-center { display: flex; align-items: center; gap: 10px; }
+        .btn {
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            background: rgba(255, 255, 255, 0.8);
+            color: #1e3a5f;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .btn:hover { border-color: #3b82f6; color: #2563eb; background: rgba(59, 130, 246, 0.1); box-shadow: 0 0 18px rgba(59, 130, 246, 0.25); transform: translateY(-1px); }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border-color: #3b82f6; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35); }
+        .btn-primary:hover { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5); transform: translateY(-1px); }
+        .btn-success { background: #16a34a; color: white; border-color: #16a34a; }
+        .btn-success:hover { background: #15803d; }
+        .btn:disabled { opacity: 0.5; pointer-events: none; }
+        .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+        /* ===== 主容器 ===== */
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px 28px;
+            position: relative;
+            z-index: 1;
+        }
+        /* ===== 上传区域 ===== */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.75);
+            border: 2px dashed rgba(59, 130, 246, 0.35);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .upload-section.dragover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.08);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+        .upload-section.has-data {
+            border-style: solid;
+            border-color: #86efac;
+            background: rgba(220, 252, 235, 0.6);
+        }
+        .upload-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .upload-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 6px; }
+        .upload-desc { font-size: 0.85rem; color: #334155; margin-bottom: 16px; }
+        .upload-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        #fileInput { display: none; }
+        /* ===== 数据状态栏 ===== */
+        .status-bar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(18px) saturate(190%);
+            -webkit-backdrop-filter: blur(18px) saturate(190%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius);
+            padding: 10px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1), 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .status-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .status-label { font-weight: 600; font-size: 0.88rem; color: #334155; }
+        .class-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+        .class-tag {
+            padding: 4px 12px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.08) 100%);
+            color: #1d4ed8;
+            border-radius: 99px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            box-shadow: 0 1px 4px rgba(59, 130, 246, 0.08);
+            transition: all 0.2s ease;
+        }
+        .class-tag:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.15) 100%);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
+        }
+        .status-select {
+            padding: 7px 12px;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-size: 0.85rem;
+            color: #1e3a5f;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .status-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            outline: none;
+        }
+        /* ===== 卡片 ===== */
+        .card {
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(18px) saturate(170%);
+            -webkit-backdrop-filter: blur(18px) saturate(170%);
+            border: 1px solid rgba(59, 130, 246, 0.18);
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.08), 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+        }
+        .card h3, .card h4 { margin-bottom: 12px; color: #1a1a2e; }
+        .card h3 { font-size: 1.05rem; }
+        .card h4 { font-size: 0.95rem; }
+        /* ===== 筛选栏 ===== */
+        .filter-row {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+        }
+        .filter-group { display: flex; align-items: center; gap: 6px; }
+        .filter-group label { font-weight: 600; font-size: 0.85rem; white-space: nowrap; color: #334155; }
+        .filter-group select, .filter-group input {
+            padding: 7px 11px;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-size: 0.85rem;
+            color: #1e3a5f;
+            transition: all 0.2s ease;
+        }
+        .filter-group select:focus, .filter-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            outline: none;
+        }
+        .line-setting-wrap { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .line-setting {
+            display: flex; align-items: center; gap: 5px;
+            padding: 5px 10px; border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            font-size: 0.82rem;
+            color: #1a1a2e;
+        }
+        .line-setting input { width: 68px; padding: 4px 7px; color: #1a1a2e; font-weight: 600; }
+        /* ===== 标签页 ===== */
+        .sub-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 5px;
+            border-radius: 12px;
+            width: fit-content;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.06);
+        }
+        .sub-tab-btn {
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .sub-tab-btn.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+        }
+        /* ===== 图表 ===== */
+        .chart-grid-row4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .chart-small-container { position: relative; height: 260px; width: 100%; }
+        .subject-chart-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin: 12px 0; }
+        .subject-chart-card {
+            padding: 14px; border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+        }
+        .subject-chart-card h4 { text-align: center; margin-bottom: 8px; font-size: 0.95rem; color: #1e3a5f; }
+        .chart-sub-container { position: relative; height: 240px; width: 100%; }
+        .big-chart-container { position: relative; height: 460px; width: 100%; margin-top: 10px; }
+        /* ===== 多选框 ===== */
+        .checkbox-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .checkbox-item { display: flex; align-items: center; gap: 4px; font-size: 0.84rem; }
+        .checkbox-item input { accent-color: #2563eb; }
+        /* ===== 表格 ===== */
+        .data-table-wrap { overflow-x: auto; margin-top: 8px; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px; }
+        .data-table th, .data-table td { border: 1px solid var(--card-border); padding: 7px 10px; text-align: center; }
+        .data-table thead th {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
+        .data-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.08);
+            box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.08);
+        }
+        .cell-subject { font-weight: 600; background: rgba(59, 130, 246, 0.08); white-space: nowrap; }
+        .cell-class { font-weight: 600; background: rgba(0, 0, 0, 0.04); white-space: nowrap; }
+        .score-main { font-size: 0.92rem; font-weight: 600; }
+        .score-diff { font-size: 0.72rem; display: block; margin-top: 2px; }
+        .diff-up { color: var(--up-color); font-weight: 600; }
+        .diff-down { color: var(--down-color); font-weight: 600; }
+        .diff-flat { color: #475569; }
+        .cell-streak-up { background: var(--up-bg) !important; }
+        .cell-streak-down { background: var(--down-bg) !important; }
+        /* ===== 分析文字 ===== */
+        .info-text { font-size: 0.82rem; color: #475569; margin-top: 4px; }
+        .empty-hint { text-align: center; padding: 40px 10px; color: #475569; font-size: 0.92rem; }
+        .tag { font-size: 0.7rem; padding: 2px 7px; border-radius: 99px; font-weight: bold; }
+        .tag-up { background: #dcfce7; color: #166534; }
+        .tag-down { background: #fee2e2; color: #991b1b; }
+        .font-up { color: var(--up-color); font-weight: 600; }
+        .font-down { color: var(--down-color); font-weight: 600; }
+        .font-flat { color: #475569; }
+        .cell-bg-streak-up { background-color: #dcfce7 !important; }
+        .cell-bg-streak-down { background-color: #fee2e2 !important; }
+        .hidden { display: none !important; }
+        .export-btn-loading { opacity: 0.6; pointer-events: none; }
+        .analysis-block {
+            margin-top: 14px; padding: 14px;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--card-border);
+        }
+        .analysis-block h4 { margin-bottom: 10px; color: #1d4ed8; }
+        .analysis-item { margin: 5px 0; font-size: 0.88rem; }
+        .subject-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; margin-top: 10px; }
+        .subject-block {
+            padding: 14px; border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .subject-block h4 { margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px dashed rgba(59, 130, 246, 0.2); font-size: 0.95rem; color: #1e3a5f; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .two-col p { margin-bottom: 4px; font-size: 0.84rem; }
+        .student-card {
+            padding: 6px 10px; border: 1px solid var(--card-border);
+            border-radius: 6px; display: flex; justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            font-size: 0.84rem;
+        }
+        /* ===== 学生行卡片 ===== */
+        .stu-row-card {
+            padding: 14px; border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 16px;
+        }
+        .stu-row-header { font-weight: bold; margin-bottom: 10px; font-size: 1.05rem; color: #1d4ed8; }
+        .stu-sub-chart-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+        .stu-sub-chart-item {
+            padding: 8px; border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .stu-sub-chart-item h5 { text-align: center; font-size: 0.8rem; margin-bottom: 4px; }
+        .stu-sub-canvas-wrap { height: 170px; width: 100%; position: relative; }
+        .sub-analysis {
+            margin-top: 10px; padding: 10px; border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-size: 0.8rem; line-height: 1.7; border: 1px solid var(--card-border);
+        }
+        .sub-analysis-title { font-weight: bold; margin-bottom: 4px; color: #1d4ed8; }
+        .text-green { color: var(--up-color); font-weight: 600; }
+        .text-red { color: var(--down-color); font-weight: 600; }
+        .legend-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; font-size: 0.8rem; color: #334155; }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-box { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
+        .page-title { font-size: 1.1rem; font-weight: 700; color: #1d4ed8; margin-bottom: 14px; }
+        /* ===== 加载遮罩 ===== */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(240, 244, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .loading-overlay.show { display: flex; }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 4px solid rgba(0,0,0,0.1);
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { font-size: 0.95rem; color: #334155; }
+        /* ===== 提示框 ===== */
+        .tooltip-wrapper { position: relative; display: inline-block; }
+        .template-tooltip, .upload-tooltip {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(20px) saturate(200%);
+            -webkit-backdrop-filter: blur(20px) saturate(200%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(0,0,0,0.08);
+            padding: 18px;
+            z-index: 999;
+            text-align: left;
+        }
+        .template-tooltip { right: 0; width: 540px; }
+        .upload-tooltip { left: 0; min-width: 260px; text-align: center; }
+        .tooltip-wrapper:hover .template-tooltip,
+        .upload-tooltip-wrap:hover .upload-tooltip { display: block; }
+        .upload-tooltip .big-icon { font-size: 2rem; margin-bottom: 6px; }
+        .template-tooltip h4 { color: #166534; margin-bottom: 8px; font-size: 0.92rem; }
+        .template-tooltip p { font-size: 0.8rem; color: #475569; margin-bottom: 6px; }
+        .template-tooltip table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 0.74rem; }
+        .template-tooltip th, .template-tooltip td { border: 1px solid rgba(0,0,0,0.12); padding: 4px 6px; text-align: center; }
+        .template-tooltip th { background: rgba(37, 99, 235, 0.15); color: #1d4ed8; }
+        .upload-tooltip-wrap { position: relative; display: inline-block; }
+        .upload-tooltip::before {
+            content: ''; position: absolute; top: -8px; left: 24px;
+            width: 14px; height: 14px; background: rgba(255, 255, 255, 0.95);
+            border-left: 1px solid var(--card-border);
+            border-top: 1px solid var(--card-border);
+            transform: rotate(45deg);
+        }
+        .template-tooltip::before {
+            content: ''; position: absolute; top: -8px; right: 30px;
+            width: 14px; height: 14px; background: rgba(255, 255, 255, 0.95);
+            border-left: 1px solid var(--card-border);
+            border-top: 1px solid var(--card-border);
+            transform: rotate(45deg);
+        }
+        
+        /* ===== 粒子背景 ===== */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.45;
+        }
+        /* 确保主内容在粒子之上 */
+        .container, .topbar, .loading-overlay {
+            position: relative;
+            z-index: 1;
+        }
+        /* ===== 滚动条美化 ===== */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); }
+        ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.45); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.65); }
+        /* ===== 输入框聚焦效果 ===== */
+        .filter-group select:focus, .filter-group input:focus, .status-select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+        select option {
+            color: #1a1a2e;
+            background: #ffffff;
+        }
+        /* ===== 表格边框整体美化 ===== */
+        .data-table th, .data-table td {
+            border-color: var(--card-border);
+        }
+        /* ===== 响应式 ===== */
+        @media (max-width: 1400px) {
+            .container { max-width: 1200px; }
+        }
+        @media (max-width: 1100px) {
+            .container { max-width: 100%; }
+            .subject-chart-wrap { grid-template-columns: repeat(2, 1fr); }
+            .subject-wrap { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid-row4 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+        }
+        @media (max-width: 720px) {
+            .container { padding: 12px 14px; }
+            .topbar { padding: 10px 14px; flex-direction: column; align-items: stretch; }
+            .topbar-left { justify-content: center; }
+            .topbar-right { justify-content: center; flex-wrap: wrap; }
+            .topbar h1 { font-size: 1.1rem; }
+            .subject-chart-wrap { grid-template-columns: 1fr; }
+            .subject-wrap { grid-template-columns: 1fr; }
+            .two-col { grid-template-columns: 1fr; }
+            .chart-grid-row4 { grid-template-columns: 1fr; }
+            .stu-sub-chart-wrap { grid-template-columns: repeat(2, 1fr); }
+            .big-chart-container { height: 320px; }
+            .data-table { font-size: 0.8rem; }
+            .data-table th, .data-table td { padding: 5px 6px; }
+            .status-bar { flex-direction: column; align-items: flex-start; }
+            .filter-row { flex-direction: column; align-items: flex-start; }
+            .filter-group { width: 100%; }
+            .filter-group select, .filter-group input { width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .topbar { padding: 8px 12px; }
+            .topbar-nav button { padding: 5px 10px; font-size: 0.8rem; }
+            .btn { padding: 5px 10px; font-size: 0.8rem; }
+            .card { padding: 14px; }
+            .stu-sub-chart-wrap { grid-template-columns: 1fr; }
+            .stu-sub-canvas-wrap { height: 140px; }
+            .page-title { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body><canvas id="particleCanvas"></canvas>
+<!-- 加载遮罩 -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">正在处理文件...</div>
+</div>
+<div class="container">
+    <!-- ===== 顶部栏 ===== -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <h1>班级成绩分析系统</h1>
+            <div class="topbar-nav">
+                <button id="navPersonal" class="active" onclick="switchMainTab('personal')">个人对比</button>
+                <button id="navClass" onclick="switchMainTab('class')">班级对比</button>
+            </div>
+        </div>
+        <div class="topbar-center">
+            <div class="line-setting"><span>公办线(红虚线)</span><input type="number" id="linePublic" value="200" onchange="onLineChange()"></div>
+            <div class="line-setting"><span>民办线(橙虚线)</span><input type="number" id="linePrivate" value="200" onchange="onLineChange()"></div>
+        </div>
+        <div class="topbar-right">
+            <div class="tooltip-wrapper">
+                <button class="btn" onclick="downloadTemplate()">下载模板</button>
+                <div class="template-tooltip">
+                    <h4>模板格式说明【横向多工作表】</h4>
+                    <p><b>规则：一个Excel，多个工作表；工作表名称=班级名称。</b></p>
+                    <p>每个工作表为横向双行表头：A列学生；B-E【第一次考试】语文、数学、英语、总分；F-I【第二次考试】语文、数学、英语、总分。一个学生占一行。</p>
+                    <table>
+                        <tr><th rowspan="2">学生</th><th colspan="4">第一次考试</th><th colspan="4">第二次考试</th></tr>
+                        <tr><th>语文</th><th>数学</th><th>英语</th><th>总分</th><th>语文</th><th>数学</th><th>英语</th><th>总分</th></tr>
+                        <tr><td>张三</td><td>88</td><td>92</td><td>85</td><td>265</td><td>90</td><td>88</td><td>87</td><td>265</td></tr>
+                        <tr><td>李四</td><td>85</td><td>80</td><td>88</td><td>253</td><td>87</td><td>85</td><td>90</td><td>262</td></tr>
+                    </table>
+                    <p style="margin-top:8px;">同时兼容旧纵向格式工作表（学生｜考试｜各科）。</p>
+                </div>
+            </div>
+            <div class="upload-tooltip-wrap">
+                <button class="btn btn-primary" id="uploadBtn" onclick="document.getElementById('fileInput').click()">上传 Excel</button>
+                <div class="upload-tooltip">
+                    <div class="big-icon">📁</div>
+                    <p>点击选择Excel文件上传</p>
+                    <p class="info-text">支持 class="info-text">支持 .xlsx / .xls 文件</p>
+                </div>
+            </div>
+            <input type="file" id="fileInput" accept=".xlsx,.xls" multiple style="display:none" onchange="handleFileUpload(event)">
+            <button class="btn btn-success" id="exportBtn" onclick="exportReport()" disabled>导出报告</button>
+        </div>
+    </div>
+    <!-- ===== 上传区域 ===== -->
+
+    <!-- ===== 数据状态栏 ===== -->
+    <div class="status-bar" id="statusBar" style="display:none;">
+        <div class="status-left">
+            <span class="status-label">已加载班级：</span>
+            <div id="classTagWrap" class="class-tags"></div>
+        </div>
+        <div class="status-left">
+            <label class="status-label" for="classSelect">当前班级：</label>
+            <select id="classSelect" class="status-select" onchange="onClassChange()">
+                <option value="">请先上传文件</option>
+            </select>
+        </div>
+
+    </div>
+    <!-- ==================== 个人对比 ==================== -->
+    <div id="mainPersonal">
+        <div class="sub-tabs">
+            <button class="sub-tab-btn active" data-sub="p1" onclick="switchSubTab('personal','p1')">个人趋势</button>
+            <button class="sub-tab-btn" data-sub="p2" onclick="switchSubTab('personal','p2')">班级整体</button>
+            <button class="sub-tab-btn" data-sub="p3" onclick="switchSubTab('personal','p3')">全班成绩</button>
+            <button class="sub-tab-btn" data-sub="p4" onclick="switchSubTab('personal','p4')">全班图表</button>
+        </div>
+        <div id="page_p1">
+            <div class="card">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>学生：</label>
+                        <select id="studentSelect" onchange="updatePersonalPage1()"></select>
+                    </div>
+                    <div class="filter-group">
+                        <label>科目：</label>
+                        <select id="subjectSelect" onchange="updatePersonalPage1()">
+                            <option value="all">所有科目（总分优先）</option>
+                        </select>
+                    </div>
+                    
+                </div>
+                <p class="info-text">选择"所有科目"时一行显示4个图表；仅总分图表会绘制公办/民办参考线。</p>
+            </div>
+            <div id="chartsContainer" class="chart-grid-row4"></div>
+            <div id="personAnalysisWrap" class="card"></div>
+        </div>
+        <div id="page_p2" class="hidden">
+            <div class="card">
+                <h3>各科目班级统计趋势（平均分 / 最高分 / 最低分）</h3>
+                <div id="subjectChartWrap" class="subject-chart-wrap"></div>
+                <hr style="border:0;border-top:1px solid #e2e8f0;margin:20px 0;">
+                <h3>分科目进步 / 退步学生（末次与倒数第二次考试分数差值）</h3>
+                <div id="subjectAnalyzeWrap" class="subject-wrap"></div>
+            </div>
+            <div id="classGlobalAnalysisWrap" class="card"></div>
+        </div>
+        <div id="page_p3" class="hidden">
+            <div class="card">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>科目：</label>
+                        <select id="classSubjectSelect" onchange="updatePersonalPage3()"></select>
+                    </div>
+                </div>
+                <div id="classTableContainer"></div>
+                <div id="singleSubjectAnalysisWrap" class="analysis-block"></div>
+            </div>
+        </div>
+        <div id="page_p4" class="hidden">
+            <div class="card">
+                <h3>全班学生全部科目成绩变化图</h3>
+                <p class="info-text">一行一个学生，行内每一科为独立变化图表</p>
+            </div>
+            <div id="page4Container"></div>
+        </div>
+    </div>
+    <!-- ==================== 班级对比 ==================== -->
+    <div id="mainClass" class="hidden">
+        
+        <div class="sub-tabs">
+            <button class="sub-tab-btn active" data-sub="c1" onclick="switchSubTab('class','c1')">三分对比图</button>
+            <button class="sub-tab-btn" data-sub="c2" onclick="switchSubTab('class','c2')">科目总览</button>
+            <button class="sub-tab-btn" data-sub="c3" onclick="switchSubTab('class','c3')">数据明细表</button>
+        </div>
+        <div id="page_c1" class="card">
+            <div class="page-title">三分对比图</div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>统计类型</label>
+                    <select id="tripleModeSelect">
+                        <option value="avg">平均分</option>
+                        <option value="max">最高分</option>
+                        <option value="min">最低分</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>班级</label>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <div id="tripleClassCheckWrap" class="checkbox-group"></div>
+                        <button class="btn btn-sm" onclick="clearCheckGroup('tripleClassCheckWrap')">清除</button>
+                    </div>
+                </div>
+                <div style="margin-top:auto;">
+                    <button class="btn" onclick="renderTripleCharts()">刷新</button>
+                </div>
+            </div>
+            <div id="tripleSubjectWrap" class="subject-chart-wrap"></div>
+        </div>
+        <div id="page_c2" class="card hidden">
+            <div class="page-title">科目总览（多班级多科目混合对比）</div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>维度</label>
+                    <select id="subjectChartModeSelect">
+                        <option value="avg">平均分</option>
+                        <option value="max">最高分</option>
+                        <option value="min">最低分</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>科目</label>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <div id="subjectChartSubWrap" class="checkbox-group"></div>
+                        <button class="btn btn-sm" onclick="clearCheckGroup('subjectChartSubWrap')">清除</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>班级</label>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <div id="subjectChartClassWrap" class="checkbox-group"></div>
+                        <button class="btn btn-sm" onclick="clearCheckGroup('subjectChartClassWrap')">清除</button>
+                    </div>
+                </div>
+                <div style="margin-top:auto;">
+                    <button class="btn" onclick="renderSubjectChartPage()">刷新</button>
+                </div>
+            </div>
+            <div class="big-chart-container"><canvas id="subjectChartCanvas"></canvas></div>
+        </div>
+        <div id="page_c3" class="card hidden">
+            <div class="page-title">各科目成绩明细对比表</div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>维度</label>
+                    <select id="tableModeSelect">
+                        <option value="avg">平均分</option>
+                        <option value="max">最高分</option>
+                        <option value="min">最低分</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>科目</label>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <div id="tableSubjectCheckWrap" class="checkbox-group"></div>
+                        <button class="btn btn-sm" onclick="clearCheckGroup('tableSubjectCheckWrap')">清除</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>班级</label>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <div id="tableClassCheckWrap" class="checkbox-group"></div>
+                        <button class="btn btn-sm" onclick="clearCheckGroup('tableClassCheckWrap')">清除</button>
+                    </div>
+                </div>
+                <div style="margin-top:auto;">
+                    <button class="btn" onclick="renderDataTable()">刷新</button>
+                </div>
+            </div>
+            <div class="data-table-wrap" id="dataTableWrap"></div>
+            <div class="legend-row">
+                <div class="legend-item"><span class="legend-box" style="background:var(--up-bg)"></span>连续3次上升</div>
+                <div class="legend-item"><span class="legend-box" style="background:var(--down-bg)"></span>连续3次下降</div>
+                <div class="legend-item"><span style="color:var(--up-color);font-weight:600;">↑ +x</span> 较上次上升</div>
+                <div class="legend-item"><span style="color:var(--down-color);font-weight:600;">↓ -x</span> 较上次下降</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+// ===== 统一数据模型 =====
+let allClassData = {};       // { className: { exams, subjects, students, subjectData } }  -- 个人对比用
+let classList = [];          // 班级列表
+let currentClassName = "";   // 当前选择的班级（个人对比）
+// 班级对比用数据
+let appData = {
+    classList: [],
+    examList: [],
+    subjectList: [],
+    classData: {}   // { className: { examName: [{student, sub1, sub2...}] } }
+};
+let chartInstances = {
+    page1: {},
+    page2: [],
+    page4: [],
+    multi: []
+};
+let currentPage = 'c1';     // 班级对比当前页
+let currentMainTab = 'personal';  // 主标签页
+let isUploading = false;
+let debounceTimer = null;
+let appDataForPersonal = { exams: [], subjects: [], students: {}, subjectData: {} };
+
+// ===== 图表销毁 =====
+function destroyAllCharts() {
+    Object.values(chartInstances.page1).forEach(c => { try{c.destroy();}catch(e){} });
+    chartInstances.page1 = {};
+    chartInstances.page2.forEach(c => { try { c.destroy(); } catch(e) {} });
+    chartInstances.page2 = [];
+    chartInstances.page4.forEach(c => { try { c.destroy(); } catch(e) {} });
+    chartInstances.page4 = [];
+    chartInstances.multi.forEach(c => { try { c.destroy(); } catch(e) {} });
+    chartInstances.multi = [];
+}
+// ===== 解析sheet（统一入口，兼容横向/纵向） =====
+function parseSheet(rows, className) {
+    if (!rows || rows.length < 3) return;
+    const row0 = rows[0] || [];
+    const row1 = rows[1] || [];
+    const h0_0 = String(row0[0] ?? '').trim();
+    const h0_1 = String(row0[1] ?? '').trim();
+    if (h0_0 === '学生' && h0_1 === '考试') {
+        parseVerticalFormat(rows, className);
+    } else {
+        parseHorizontalFormat(rows, className);
+    }
+}
+// 纵向格式
+function parseVerticalFormat(rows, className) {
+    const headers = rows[0].map(h => String(h ?? '').trim());
+    const subjects = headers.slice(2);
+    subjects.forEach(s => { if (s && !appData.subjectList.includes(s)) appData.subjectList.push(s); });
+    if (!appData.classList.includes(className)) appData.classList.push(className);
+    if (!appData.classData[className]) appData.classData[className] = {};
+    if (!allClassData[className]) {
+        allClassData[className] = { exams: [], subjects: [], students: {}, subjectData: {} };
+        classList.push(className);
+    }
+    const cd = allClassData[className];
+    if (!cd.subjects) cd.subjects = [];
+    subjects.forEach(s => { if (s && !cd.subjects.includes(s)) cd.subjects.push(s); });
+    if (!cd.subjectData) cd.subjectData = {};
+    subjects.forEach(s => { if (s && !cd.subjectData[s]) cd.subjectData[s] = {}; });
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row || row.length < 3) continue;
+        const studentName = String(row[0] ?? '').trim();
+        const examName = String(row[1] ?? '').trim();
+        if (!studentName || !examName) continue;
+        if (!appData.examList.includes(examName)) appData.examList.push(examName);
+        if (!cd.exams.includes(examName)) cd.exams.push(examName);
+        if (!cd.students[studentName]) cd.students[studentName] = {};
+        if (!cd.students[studentName][examName]) cd.students[studentName][examName] = {};
+        for (let j = 0; j < subjects.length; j++) {
+            const v = row[2 + j];
+            const sc = (v !== undefined && v !== null && v !== '') ? parseFloat(v) : null;
+            cd.students[studentName][examName][subjects[j]] = sc;
+            if (sc !== null && !isNaN(sc)) {
+                if (!cd.subjectData[subjects[j]][studentName]) cd.subjectData[subjects[j]][studentName] = [];
+                cd.subjectData[subjects[j]][studentName].push({ exam: examName, score: sc });
+            }
+        }
+        // 同时写入classData
+        if (!appData.classData[className][examName]) appData.classData[className][examName] = [];
+        let scoreObj = { student: studentName };
+        for (let j = 0; j < subjects.length; j++) {
+            const v = row[2 + j];
+            scoreObj[subjects[j]] = (v !== undefined && v !== null && v !== '') ? parseFloat(v) : null;
+        }
+        appData.classData[className][examName].push(scoreObj);
+    }
+}
+// 横向格式【修复原代码bug】
+function parseHorizontalFormat(rows, className) {
+    const row0 = rows[0]; const row1 = rows[1];
+    if (!row0 || !row1) return;
+    const examGroups = [];
+    let curExamName = null; let curSubjects = []; let curStartCol = null;
+    for (let c = 1; c < row1.length; c++) {
+        const examName = String(row0[c] ?? '').trim();
+        const subName = String(row1[c] ?? '').trim();
+        if (examName) {
+            if (curExamName && curSubjects.length > 0) {
+                examGroups.push({ exam: curExamName, subjects: [...curSubjects], _colIndex: curStartCol });
+            }
+            curExamName = examName; curSubjects = []; curStartCol = c;
+        }
+        if (subName) curSubjects.push(subName);
+    }
+    if (curExamName && curSubjects.length > 0) {
+        examGroups.push({ exam: curExamName, subjects: curSubjects, _colIndex: curStartCol });
+    }
+    if (examGroups.length === 0) return;
+    examGroups.forEach(g => {
+        g.subjects.forEach(s => {
+            if (!appData.subjectList.includes(s)) appData.subjectList.push(s);
+        });
+    });
+    if (!appData.classList.includes(className)) appData.classList.push(className);
+    if (!appData.classData[className]) appData.classData[className] = {};
+    if (!allClassData[className]) {
+        allClassData[className] = { exams: [], subjects: [], students: {}, subjectData: {} };
+        classList.push(className);
+    }
+    const cd = allClassData[className];
+    if (!cd.subjects) cd.subjects = [];
+    if (!cd.subjectData) cd.subjectData = {};
+
+    for (let r = 2; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row) continue;
+        const stuName = String(row[0] ?? '').trim();
+        if (!stuName) continue;
+        examGroups.forEach(group => {
+            const examName = group.exam;
+            if (!appData.examList.includes(examName)) appData.examList.push(examName);
+            if (!cd.exams.includes(examName)) cd.exams.push(examName);
+            if (!cd.students[stuName]) cd.students[stuName] = {};
+            if (!cd.students[stuName][examName]) cd.students[stuName][examName] = {};
+
+            group.subjects.forEach(s => {
+                if (!cd.subjects.includes(s)) cd.subjects.push(s);
+                if (!cd.subjectData[s]) cd.subjectData[s] = {};
+            });
+
+            const scoreObj = { student: stuName };
+            const colStart = group._colIndex;
+            for (let ci = 0; ci < group.subjects.length; ci++) {
+                const sub = group.subjects[ci];
+                const cellVal = row[colStart + ci];
+                const sc = (cellVal !== null && cellVal !== undefined && cellVal !== '') ? parseFloat(cellVal) : null;
+                cd.students[stuName][examName][sub] = sc;
+                if (sc !== null && !isNaN(sc)) {
+                    if (!cd.subjectData[sub][stuName]) cd.subjectData[sub][stuName] = [];
+                    cd.subjectData[sub][stuName].push({ exam: examName, score: sc });
+                }
+                scoreObj[sub] = sc;
+            }
+            if (!appData.classData[className][examName]) appData.classData[className][examName] = [];
+            appData.classData[className][examName].push(scoreObj);
+        });
+    }
+}
+// 排序科目（总分放最前）
+function sortSubjects() {
+    const totalIdx = appData.subjectList.findIndex(s => s === '总分' || s === '总 分' || s === '总成绩');
+    if (totalIdx > 0) {
+        const total = appData.subjectList.splice(totalIdx, 1)[0];
+        appData.subjectList.unshift(total);
+    }
+    classList.forEach(cn => {
+        const cd = allClassData[cn];
+        if (cd && cd.subjects) {
+            const tIdx = cd.subjects.indexOf('总分');
+            if (tIdx > 0) {
+                const t = cd.subjects.splice(tIdx, 1)[0];
+                cd.subjects.unshift(t);
+            }
+            cd.subjects = appData.subjectList.filter(s => cd.subjects.includes(s));
+        }
+    });
+}
+// ===== 文件上传 =====
+async function handleFileUpload(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof XLSX === 'undefined') {
+        alert("Excel解析库尚未加载完成，请刷新页面后重试。");
+        hideLoading();
+        return;
+    }
+    const files = event.target.files;
+    if (!files || files.length === 0) {
+        hideLoading();
+        return;
+    }
+    if (isUploading) return;
+    isUploading = true;
+    showLoading("正在读取文件，请稍候...");
+    await new Promise(r => requestAnimationFrame(r));
+    await new Promise(r => setTimeout(r, 50));
+    const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.disabled = true;
+    try {
+        resetAll();
+        let successCount = 0;
+        for (let f of files) {
+            const ext = f.name.split('.').pop().toLowerCase();
+            if (ext !== 'xlsx' && ext !== 'xls') {
+                alert("不支持的文件格式: " + f.name + "（仅支持 .xlsx 和 .xls）");
+                continue;
+            }
+            await readOneFile(f);
+            successCount++;
+        }
+        if (successCount === 0) {
+            alert("未成功读取任何文件，请检查文件格式是否正确。");
+            hideLoading();
+            return;
+        }
+        sortSubjects();
+        initRender();
+        document.getElementById('exportBtn').disabled = false;
+        document.getElementById('uploadSection').style.display = 'none';
+    } catch (err) {
+        console.error(err);
+        alert("文件读取异常：" + err.message);
+    } finally {
+        document.getElementById('fileInput').value = '';
+        uploadBtn.disabled = false;
+        isUploading = false;
+        hideLoading();
+    }
+}
+// 拖拽上传支持
+function initDragDrop() {
+    const uploadSection = document.getElementById('uploadSection');
+    if (!uploadSection) return; // 上传区域已移除，不需要拖拽上传
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadSection.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadSection.addEventListener(eventName, () => {
+            uploadSection.classList.add('dragover');
+        });
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadSection.addEventListener(eventName, () => {
+            uploadSection.classList.remove('dragover');
+        });
+    });
+    uploadSection.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+            const dataTransfer = new DataTransfer();
+            for (let f of files) {
+                dataTransfer.items.add(f);
+            }
+            document.getElementById('fileInput').files = dataTransfer.files;
+            handleFileUpload(e);
+        }
+    });
+}
+function readOneFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const wb = XLSX.read(data, { type: 'array' });
+                for (const sheetName of wb.SheetNames) {
+                    const ws = wb.Sheets[sheetName];
+                    const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                    const className = sheetName.trim();
+                    if (!className) continue;
+                    parseSheet(json, className);
+                }
+                resolve();
+            } catch (err) {
+                reject(new Error('【' + file.name + '】解析失败: ' + err.message));
+            }
+        };
+        reader.onerror = () => reject(new Error("文件读取失败"));
+        reader.readAsArrayBuffer(file);
+    });
+}
+// ===== 重置 =====
+function resetAll() {
+    destroyAllCharts();
+    allClassData = {};
+    classList = [];
+    currentClassName = "";
+    appData = { classList: [], examList: [], subjectList: [], classData: {} };
+    document.getElementById('chartsContainer').innerHTML = "";
+    document.getElementById('personAnalysisWrap').innerHTML = "";
+    document.getElementById('classGlobalAnalysisWrap').innerHTML = "";
+    document.getElementById('singleSubjectAnalysisWrap').innerHTML = "";
+    document.getElementById('page4Container').innerHTML = "";
+    document.getElementById('tripleSubjectWrap').innerHTML = "";
+    document.getElementById('dataTableWrap').innerHTML = "";
+    document.getElementById('classSelect').innerHTML = '<option value="">请先上传Excel文件</option>';
+    const uploadSection = document.getElementById('uploadSection');
+    if (uploadSection) uploadSection.style.display = 'none';
+    const statusBar = document.getElementById('statusBar');
+    if (statusBar) statusBar.style.display = 'none';
+}
+// ===== 初始化渲染 =====
+function initRender() {
+    renderClassTags();
+    renderAllCheckboxes();
+    bindSelectEvents();
+    // 填充班级下拉
+    const classSel = document.getElementById('classSelect');
+    classSel.innerHTML = "";
+    classList.forEach(c=>{
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        classSel.appendChild(opt);
+    });
+    if(classList.length>0){
+        classSel.value = classList[0];
+        onClassChange();
+    }
+    switchSubTab('class', currentPage);
+    const statusBar = document.getElementById('statusBar');
+    if (statusBar) statusBar.style.display = 'flex';
+    // 隐藏上传区域，上传按钮在顶部栏
+    const uploadSection = document.getElementById('uploadSection');
+    if (uploadSection) uploadSection.style.display = 'none';
+}
+// ===== 班级标签 =====
+function renderClassTags() {
+    const wrap = document.getElementById('classTagWrap');
+    if (classList.length === 0) {
+        wrap.innerHTML = '<span class="info-text">暂无数据，请上传Excel文件</span>';
+        return;
+    }
+    const html = classList.map(c => '<span class="class-tag">' + c + '</span>').join('');
+    wrap.innerHTML = html;
+    const statusBar = document.getElementById('statusBar');
+    if (statusBar) statusBar.style.display = 'flex';
+    // 隐藏上传区域，上传按钮在顶部栏
+    const uploadSection = document.getElementById('uploadSection');
+    if (uploadSection) uploadSection.style.display = 'none';
+}
+// ===== 多选框 =====
+function renderAllCheckboxes() {
+    const ids = ['tripleClassCheckWrap', 'subjectChartClassWrap', 'tableClassCheckWrap'];
+    ids.forEach((wrapId, idx) => {
+        const wrap = document.getElementById(wrapId);
+        wrap.innerHTML = appData.classList.map((c, i) =>
+            '<label class="checkbox-item"><input type="checkbox" value="' + c + '"' + (i === 0 && idx === 0 ? ' checked' : '') + '>' + c + '</label>'
+        ).join('');
+    });
+    const tableSubWrap = document.getElementById('tableSubjectCheckWrap');
+    const subjectChartSubWrap = document.getElementById('subjectChartSubWrap');
+    const html = appData.subjectList.map((s, idx) =>
+        '<label class="checkbox-item"><input type="checkbox" value="' + s + '"' + (idx === 0 ? ' checked' : '') + '>' + s + '</label>'
+    ).join('');
+    tableSubWrap.innerHTML = html;
+    subjectChartSubWrap.innerHTML = html;
+    bindCheckboxEvents();
+}
+function clearCheckGroup(wrapId) {
+    const wrap = document.getElementById(wrapId);
+    wrap.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    debounceAutoRefresh(() => {
+        if (currentMainTab === 'personal') onClassChange();
+        else switchSubTab('class', currentPage);
+    });
+}
+function bindCheckboxEvents() {
+    document.querySelectorAll('.checkbox-group input[type="checkbox"]').forEach(inp => {
+        inp.onchange = () => debounceAutoRefresh(() => {
+            if (currentMainTab === 'personal') onClassChange();
+            else switchSubTab('class', currentPage);
+        });
+    });
+}
+function bindSelectEvents() {
+    document.getElementById('tripleModeSelect').onchange = () => debounceAutoRefresh(renderTripleCharts);
+    document.getElementById('subjectChartModeSelect').onchange = () => debounceAutoRefresh(renderSubjectChartPage);
+    document.getElementById('tableModeSelect').onchange = () => debounceAutoRefresh(renderDataTable);
+}
+// ===== 班级切换（个人对比） =====
+function onClassChange() {
+    const sel = document.getElementById('classSelect');
+    const cn = sel.value;
+    if (!cn || !allClassData[cn]) return;
+    currentClassName = cn;
+    appDataForPersonal = JSON.parse(JSON.stringify(allClassData[cn]));
+    initializePersonal();
+}
+function initializePersonal() {
+    if (!appDataForPersonal.subjects.length) return;
+    const studentSelect = document.getElementById('studentSelect');
+    studentSelect.innerHTML = '';
+    Object.keys(appDataForPersonal.students).sort().forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name; opt.textContent = name;
+        studentSelect.appendChild(opt);
+    });
+    const subjectSelect = document.getElementById('subjectSelect');
+    subjectSelect.innerHTML = '<option value="all">所有科目（总分优先第一个展示）</option>';
+    const classSubjectSelect = document.getElementById('classSubjectSelect');
+    classSubjectSelect.innerHTML = '';
+    appDataForPersonal.subjects.forEach(sub => {
+        const o1 = document.createElement('option'); o1.value = sub; o1.textContent = sub; subjectSelect.appendChild(o1);
+        const o2 = document.createElement('option'); o2.value = sub; o2.textContent = sub; classSubjectSelect.appendChild(o2);
+    });
+    updatePersonalPage1();
+    updatePersonalPage2();
+    updatePersonalPage3();
+    updatePersonalPage4();
+}
+// ===== Tab切换 =====
+function switchMainTab(tab) {
+    currentMainTab = tab;
+    document.getElementById('mainPersonal').classList.toggle('hidden', tab !== 'personal');
+    document.getElementById('mainClass').classList.toggle('hidden', tab !== 'class');
+    document.getElementById('navPersonal').classList.toggle('active', tab === 'personal');
+    document.getElementById('navClass').classList.toggle('active', tab === 'class');
+    if (tab === 'class') {
+        renderAllCheckboxes();
+        switchSubTab('class', currentPage);
+    }
+}
+function switchSubTab(mainTab, sub) {
+    if (mainTab === 'personal') {
+        document.querySelectorAll('#mainPersonal .sub-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.sub === sub));
+        ['p1', 'p2', 'p3', 'p4'].forEach(p => document.getElementById('page_' + p).classList.toggle('hidden', p !== sub));
+        if (sub === 'p1') updatePersonalPage1();
+        if (sub === 'p2') updatePersonalPage2();
+        if (sub === 'p3') updatePersonalPage3();
+        if (sub === 'p4') updatePersonalPage4();
+    } else {
+        currentPage = sub;
+        document.querySelectorAll('#mainClass .sub-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.sub === sub));
+        ['c1', 'c2', 'c3'].forEach(p => document.getElementById('page_' + p).classList.toggle('hidden', p !== sub));
+        if (sub === 'c1') renderTripleCharts();
+        if (sub === 'c2') renderSubjectChartPage();
+        if (sub === 'c3') renderDataTable();
+    }
+}
+// ===== 防抖 =====
+function debounceAutoRefresh(fn, delay = 350) {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => { try { fn(); } catch (e) { console.warn("自动刷新异常", e); } }, delay);
+}
+// ===== 加载遮罩 =====
+function showLoading(text) {
+    const overlay = document.getElementById('loadingOverlay');
+    const textEl = document.getElementById('loadingText');
+    if (textEl) textEl.textContent = text || '正在处理...';
+    if (overlay) overlay.classList.add('show');
+}
+function hideLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.classList.remove('show');
+}
+// ===== 获取选中复选框 =====
+function getCheckedItems(wrapDomId) {
+    const wrap = document.getElementById(wrapDomId);
+    const inputs = wrap.querySelectorAll('input[type="checkbox"]:checked');
+    return Array.from(inputs).map(el => el.value);
+}
+// ===== 计算统计值 =====
+function calcStat(cls, exam, subName, mode) {
+    const stuList = appData.classData[cls]?.[exam] || [];
+    const valid = stuList.map(s => s[subName]).filter(x => x !== null && !isNaN(x));
+    if (valid.length === 0) return null;
+    if (mode === 'avg') return Math.round(valid.reduce((a, b) => a + b, 0) / valid.length * 10) / 10;
+    if (mode === 'max') return Math.max(...valid);
+    if (mode === 'min') return Math.min(...valid);
+    return null;
+}
+function hasAnyValidScore(cls, subName, mode) {
+    return appData.examList.some(ex => calcStat(cls, ex, subName, mode) !== null);
+}
+function subjectHasDataInClassList(classList, subName, mode) {
+    return classList.some(cls => hasAnyValidScore(cls, subName, mode));
+}
+function isTotal(subName) { return subName === '总分' || subName === '总 分' || subName === '总成绩'; }
+// ===== 通用插件：公办/民办分数线 =====
+function createScoreLinePlugin(isDrawTotalOnly) {
+    return {
+        id: 'scoreLineDraw',
+        beforeDraw: (chart) => {
+            if (!isDrawTotalOnly) return;
+            const pubVal = parseFloat(document.getElementById('linePublic').value);
+            const privVal = parseFloat(document.getElementById('linePrivate').value);
+            const { ctx, chartArea, scales } = chart;
+            const yScale = scales.y;
+            ctx.save();
+            if (!Number.isNaN(pubVal)) {
+                const py = yScale.getPixelForValue(pubVal);
+                if (py >= chartArea.top && py <= chartArea.bottom) {
+                    ctx.setLineDash([8, 4]);
+                    ctx.strokeStyle = '#dc2626';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(chartArea.left, py);
+                    ctx.lineTo(chartArea.right, py);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.fillStyle = 'rgba(220, 38, 38, 0.85)';
+                    ctx.font = 'bold 11px sans-serif';
+                    ctx.textAlign = 'start';
+                    ctx.fillText('公办线 ' + pubVal, chartArea.right + 6, py + 4);
+                }
+            }
+            if (!Number.isNaN(privVal)) {
+                const py = yScale.getPixelForValue(privVal);
+                if (py >= chartArea.top && py <= chartArea.bottom) {
+                    ctx.setLineDash([8, 4]);
+                    ctx.strokeStyle = '#f97316';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(chartArea.left, py);
+                    ctx.lineTo(chartArea.right, py);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.fillStyle = 'rgba(249, 115, 22, 0.85)';
+                    ctx.font = 'bold 11px sans-serif';
+                    ctx.textAlign = 'start';
+                    ctx.fillText('民办线 ' + privVal, chartArea.right + 6, py + 18);
+                }
+            }
+            ctx.restore();
+        }
+    };
+}
+const colorPool = [
+    { border: '#4f46e5', bg: 'rgba(79, 70, 229, 0.12)' },
+    { border: '#16a34a', bg: 'rgba(22, 163, 74, 0.12)' },
+    { border: '#dc2626', bg: 'rgba(220, 38, 38, 0.12)' },
+    { border: '#ca8a04', bg: 'rgba(202, 138, 4, 0.12)' },
+    { border: '#9333ea', bg: 'rgba(147, 51, 234, 0.12)' },
+    { border: '#0891b2', bg: 'rgba(8, 145, 178, 0.12)' },
+    { border: '#ea580c', bg: 'rgba(234, 88, 12, 0.12)' }
+];
+
+// ===== 个人对比 - 页面1：个人趋势（接续） =====
+function renderPersonAnalysis(studentName) {
+    const wrapDom = document.getElementById('personAnalysisWrap');
+    const stuData = appDataForPersonal.students[studentName];
+    const exams = appDataForPersonal.exams;
+    const subjects = appDataForPersonal.subjects;
+    const examLen = exams.length;
+    const hasTwo = examLen >= 2;
+    const lastIdx = examLen - 1;
+    const prevLastIdx = examLen - 2;
+    let html = '<h4>【' + studentName + '】个人科目成绩分析</h4>';
+    subjects.forEach(sub => {
+        const scores = exams.map(ex => stuData[ex]?.[sub]).filter(s => s !== null);
+        if (scores.length === 0) return;
+        const maxS = Math.max(...scores);
+        const minS = Math.min(...scores);
+        const avgS = (scores.reduce((s, v) => s + v, 0) / scores.length).toFixed(1);
+        let trendText = "";
+        if (scores.length >= 2) {
+            const first = scores[0];
+            const last = scores[scores.length - 1];
+            const diff = last - first;
+            if (diff > 2) trendText = '<span class="font-up">整体呈上升趋势，提升' + diff + '分</span>';
+            else if (diff < -2) trendText = '<span class="font-down">整体呈下滑趋势，下降' + Math.abs(diff) + '分</span>';
+            else trendText = '<span class="font-flat">成绩基本保持稳定</span>';
+        }
+        let lastDiffText = "";
+        if (hasTwo) {
+            const sLast = stuData[exams[lastIdx]]?.[sub];
+            const sPrev = stuData[exams[prevLastIdx]]?.[sub];
+            if (sLast !== null && sPrev !== null && !isNaN(sLast) && !isNaN(sPrev)) {
+                const delta = sLast - sPrev;
+                if (delta > 0) lastDiffText = '｜<span class="font-up">较上一次:+ ' + delta + '分</span>';
+                else if (delta < 0) lastDiffText = '｜<span class="font-down">较上一次:' + delta + '分</span>';
+                else lastDiffText = '｜<span class="font-flat">较上一次:不变</span>';
+            }
+        }
+        html += '<div class="analysis-item"><b>' + sub + '</b>｜最高分：' + maxS + '，最低分：' + minS + '，平均：' + avgS + '。' + trendText + ' ' + lastDiffText + '</div>';
+    });
+    wrapDom.innerHTML = html;
+}
+
+function updatePersonalPage1() {
+    if (!appDataForPersonal.subjects.length) {
+        document.getElementById('chartsContainer').innerHTML = '<div class="empty-hint">暂无成绩数据，请上传Excel文件</div>';
+        document.getElementById('personAnalysisWrap').innerHTML = "";
+        return;
+    }
+    const student = document.getElementById('studentSelect').value;
+    const selectedSubject = document.getElementById('subjectSelect').value;
+    const publicLine = parseFloat(document.getElementById('linePublic').value) || 0;
+    const privateLine = parseFloat(document.getElementById('linePrivate').value) || 0;
+    if (!student || !appDataForPersonal.students[student]) return;
+    renderPersonAnalysis(student);
+
+    Object.values(chartInstances.page1).forEach(c => c.destroy());
+    chartInstances.page1 = {};
+    const container = document.getElementById('chartsContainer');
+    container.innerHTML = '';
+    const exams = appDataForPersonal.exams;
+    const studentData = appDataForPersonal.students[student];
+    let subjectsToRender = [];
+    if (selectedSubject === 'all') {
+        const temp = [...appDataForPersonal.subjects];
+        const idxTotal = temp.indexOf("总分");
+        if (idxTotal > -1) { temp.splice(idxTotal, 1); subjectsToRender.push("总分"); }
+        subjectsToRender = subjectsToRender.concat(temp);
+    } else {
+        subjectsToRender = [selectedSubject];
+    }
+    subjectsToRender.forEach(sub => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const cid = "chart_" + sub.replace(/\s/g, '_');
+        card.innerHTML = '<h4 style="margin-bottom:8px;text-align:center;font-size:0.95rem;">' + sub + ' 成绩趋势</h4><div class="chart-small-container"><canvas id="' + cid + '"></canvas></div>';
+        container.appendChild(card);
+        const ctx = card.querySelector('canvas').getContext('2d');
+        const scores = exams.map(exam => studentData[exam]?.[sub] ?? null);
+        const annotations = {};
+        if (sub === "总分") {
+            if (publicLine > 0) annotations.publicLine = { type: 'line', yMin: publicLine, yMax: publicLine, borderColor: '#16a34a', borderWidth: 2, borderDash: [5, 5], label: { content: '公办线', enabled: true, position: 'start' } };
+            if (privateLine > 0) annotations.privateLine = { type: 'line', yMin: privateLine, yMax: privateLine, borderColor: '#ca8a04', borderWidth: 2, borderDash: [5, 5], label: { content: '民办线', enabled: true, position: 'start' } };
+        }
+        chartInstances.page1[sub] = new Chart(ctx, {
+            type: 'line',
+            data: { labels: exams, datasets: [{ label: sub, data: scores, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.15)', tension: 0.45, fill: true, pointRadius: 3, pointHoverRadius: 5, spanGaps: true }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, annotation: { annotations } }, scales: { y: { beginAtZero: false, min: 0 } } }
+        });
+    });
+}
+
+// ===== 个人对比 - 页面2：班级整体 =====
+function updatePersonalPage2() {
+    if (!appDataForPersonal.subjects.length) {
+        document.getElementById('subjectChartWrap').innerHTML = '<div class="empty-hint">暂无成绩数据</div>';
+        document.getElementById('subjectAnalyzeWrap').innerHTML = "";
+        document.getElementById('classGlobalAnalysisWrap').innerHTML = "";
+        return;
+    }
+    if (!appDataForPersonal.exams.length) return;
+    chartInstances.page2.forEach(c => { try { c.destroy(); } catch (e) {} });
+    chartInstances.page2 = [];
+    const chartWrapDom = document.getElementById('subjectChartWrap');
+    chartWrapDom.innerHTML = '';
+    appDataForPersonal.subjects.forEach(subjectName => {
+        const chartCard = document.createElement('div');
+        chartCard.className = 'subject-chart-card';
+        const canvasId = "sub_chart_" + subjectName.replace(/\s/g, '_');
+        chartCard.innerHTML = '<h4>' + subjectName + '</h4><div class="chart-sub-container"><canvas id="' + canvasId + '"></canvas></div>';
+        chartWrapDom.appendChild(chartCard);
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        const avgArr = [], maxArr = [], minArr = [];
+        appDataForPersonal.exams.forEach(exam => {
+            let scoreList = [];
+            Object.values(appDataForPersonal.students).forEach(stu => {
+                const s = stu[exam]?.[subjectName];
+                if (s !== null && !isNaN(s)) scoreList.push(s);
+            });
+            if (scoreList.length > 0) {
+                const avg = scoreList.reduce((a, b) => a + b, 0) / scoreList.length;
+                avgArr.push(Math.round(avg));
+                maxArr.push(Math.max(...scoreList));
+                minArr.push(Math.min(...scoreList));
+            } else {
+                avgArr.push(null); maxArr.push(null); minArr.push(null);
+            }
+        });
+        const chartIns = new Chart(ctx, {
+            type: 'line',
+            data: { labels: appDataForPersonal.exams, datasets: [
+                { label: '平均分', data: avgArr, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.15)', tension: 0.45, fill: true, pointRadius: 2 },
+                { label: '最高分', data: maxArr, borderColor: '#22c55e', borderDash: [4, 4], tension: 0.45, fill: false, pointRadius: 2 },
+                { label: '最低分', data: minArr, borderColor: '#ef4444', borderDash: [4, 4], tension: 0.45, fill: false, pointRadius: 2 }
+            ]},
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }, tooltip: { mode: 'index', intersect: false } }, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: false } } }
+        });
+        chartInstances.page2.push(chartIns);
+    });
+    // 进步/退步分析
+    const wrapDom = document.getElementById('subjectAnalyzeWrap');
+    wrapDom.innerHTML = '';
+    if (appDataForPersonal.exams.length < 2) {
+        wrapDom.innerHTML = '<div class="empty-hint">需要至少2次考试数据</div>';
+    } else {
+        const lastExam = appDataForPersonal.exams[appDataForPersonal.exams.length - 1];
+        const prevLastExam = appDataForPersonal.exams[appDataForPersonal.exams.length - 2];
+        appDataForPersonal.subjects.forEach(subjectName => {
+            const subjectDiv = document.createElement('div');
+            subjectDiv.className = 'subject-block';
+            subjectDiv.innerHTML = '<h4>' + subjectName + '</h4>';
+            let changeList = [];
+            Object.keys(appDataForPersonal.students).forEach(stuName => {
+                const sPrev = appDataForPersonal.students[stuName][prevLastExam]?.[subjectName];
+                const sLast = appDataForPersonal.students[stuName][lastExam]?.[subjectName];
+                if (sPrev === null || sLast === null || isNaN(sPrev) || isNaN(sLast)) return;
+                changeList.push({ name: stuName, diff: sLast - sPrev });
+            });
+            changeList.sort((a, b) => b.diff - a.diff);
+            const up5 = changeList.filter(i => i.diff > 0).slice(0, 5);
+            const down5 = changeList.filter(i => i.diff < 0).slice(-5).reverse();
+            let htmlPart = '<div class="two-col"><div><p style="color:#166534;font-weight:bold;">进步前5</p>';
+            up5.forEach(item => htmlPart += '<div class="student-card"><span>' + item.name + '</span><span class="tag tag-up">+' + item.diff + '</span></div>');
+            if (up5.length === 0) htmlPart += '<p class="info-text">无</p>';
+            htmlPart += '</div><div><p style="color:#991b1b;font-weight:bold;">退步前5</p>';
+            down5.forEach(item => htmlPart += '<div class="student-card"><span>' + item.name + '</span><span class="tag tag-down">' + item.diff + '</span></div>');
+            if (down5.length === 0) htmlPart += '<p class="info-text">无</p>';
+            htmlPart += '</div></div>';
+            subjectDiv.innerHTML += htmlPart;
+            wrapDom.appendChild(subjectDiv);
+        });
+    }
+    renderClassGlobalAnalysis();
+}
+
+function renderClassGlobalAnalysis() {
+    const wrapDom = document.getElementById('classGlobalAnalysisWrap');
+    const exams = appDataForPersonal.exams;
+    if (exams.length < 2) { wrapDom.innerHTML = ""; return; }
+    const lastExam = exams[exams.length - 1];
+    const prevExam = exams[exams.length - 2];
+    let html = '<h4>班级整体分析（' + currentClassName + '）</h4>';
+    appDataForPersonal.subjects.forEach(sub => {
+        let upCnt = 0, downCnt = 0, flatCnt = 0;
+        Object.values(appDataForPersonal.students).forEach(stu => {
+            const sPrev = stu[prevExam]?.[sub];
+            const sLast = stu[lastExam]?.[sub];
+            if (sPrev !== null && sLast !== null && !isNaN(sPrev) && !isNaN(sLast)) {
+                if (sLast > sPrev) upCnt++;
+                else if (sLast < sPrev) downCnt++;
+                else flatCnt++;
+            }
+        });
+        const total = upCnt + downCnt + flatCnt;
+        if (total > 0) {
+            html += '<div class="analysis-item">' + sub + '：进步' + upCnt + '人，退步' + downCnt + '人，持平' + flatCnt + '人</div>';
+        }
+    });
+    wrapDom.innerHTML = html;
+}
+
+// ===== 个人对比 - 页面3：全班成绩 =====
+function updatePersonalPage3() {
+    if (!appDataForPersonal.subjects.length) {
+        document.getElementById('classTableContainer').innerHTML = '<div class="empty-hint">暂无成绩数据</div>';
+        document.getElementById('singleSubjectAnalysisWrap').innerHTML = "";
+        return;
+    }
+    const sub = document.getElementById('classSubjectSelect').value;
+    const container = document.getElementById('classTableContainer');
+    if (!sub) return;
+    renderSingleSubjectAnalysis(sub);
+    const exams = appDataForPersonal.exams;
+    let html = '<table class="data-table"><thead><tr><th>排名</th><th>姓名</th>';
+    exams.forEach(ex => html += '<th>' + ex + '</th>');
+    html += '</tr></thead><tbody>';
+    const studentList = Object.keys(appDataForPersonal.students).map(name => {
+        const scores = exams.map(ex => appDataForPersonal.students[name][ex]?.[sub] ?? null);
+        const validArr = scores.filter(s => s !== null);
+        const lastValid = validArr.length > 0 ? validArr[validArr.length - 1] : 0;
+        return { name, scores, last: lastValid || 0 };
+    }).sort((a, b) => b.last - a.last);
+    studentList.forEach((stu, idx) => {
+        html += '<tr><td>' + (idx + 1) + '</td><td style="font-weight:600;">' + stu.name + '</td>';
+        const scores = stu.scores;
+        const stepStatus = [];
+        for (let i = 0; i < scores.length; i++) {
+            if (i === 0 || scores[i] === null || scores[i - 1] === null) { stepStatus.push(0); }
+            else {
+                if (scores[i] > scores[i - 1]) stepStatus.push(1);
+                else if (scores[i] < scores[i - 1]) stepStatus.push(-1);
+                else stepStatus.push(0);
+            }
+        }
+        const streak3Up = []; const streak3Down = [];
+        let currentUp = 0; let currentDown = 0;
+        for (let i = 0; i < scores.length; i++) {
+            if (stepStatus[i] === 1) { currentUp++; currentDown = 0; }
+            else if (stepStatus[i] === -1) { currentDown++; currentUp = 0; }
+            else { currentUp = 0; currentDown = 0; }
+            streak3Up.push(currentUp >= 3);
+            streak3Down.push(currentDown >= 3);
+        }
+        for (let i = 0; i < scores.length; i++) {
+            const s = scores[i];
+            let fontClass = ""; let bgClass = "";
+            if (s !== null) {
+                if (stepStatus[i] === 1) fontClass = "font-up";
+                else if (stepStatus[i] === -1) fontClass = "font-down";
+                else fontClass = "font-flat";
+                if (streak3Up[i]) bgClass = "cell-bg-streak-up";
+                if (streak3Down[i]) bgClass = "cell-bg-streak-down";
+            }
+            let diffHtml = '';
+                if (i > 0 && s !== null && scores[i-1] !== null) {
+                    const diff = Math.round((s - scores[i-1]) * 10) / 10;
+                    if (diff > 0) diffHtml = '<span class="score-diff diff-up">↑+' + diff + '</span>';
+                    else if (diff < 0) diffHtml = '<span class="score-diff diff-down">↓' + diff + '</span>';
+                    else diffHtml = '<span class="score-diff diff-flat">—0</span>';
+                }
+                html += '<td class="' + fontClass + ' ' + bgClass + '"><span class="score-main">' + (s !== null ? s : '-') + '</span>' + diffHtml + '</td>';
+        }
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
+    html += '<div style="margin-top:12px;display:flex;gap:18px;flex-wrap:wrap;font-size:0.82rem;color:#475569;">' +
+        '<span><span class="font-up">绿色字体</span> 对比上一次进步</span>' +
+        '<span><span class="font-down">红色字体</span> 对比上一次退步</span>' +
+        '<span><span style="display:inline-block;width:14px;height:14px;background:#dcfce7;border:1px solid #bbf7d0;vertical-align:middle;border-radius:2px;"></span> 连续3次进步</span>' +
+        '<span><span style="display:inline-block;width:14px;height:14px;background:#fee2e2;border:1px solid #fecaca;vertical-align:middle;border-radius:2px;"></span> 连续3次退步</span>' +
+        '</div>';
+    container.innerHTML = html;
+}
+
+function renderSingleSubjectAnalysis(subName) {
+    const wrapDom = document.getElementById('singleSubjectAnalysisWrap');
+    const exams = appDataForPersonal.exams;
+    const lastExam = exams[exams.length - 1];
+    const firstExam = exams[0];
+    let lastScores = [];
+    let upCnt = 0, downCnt = 0, flatCnt = 0;
+    Object.values(appDataForPersonal.students).forEach(stu => {
+        const sLast = stu[lastExam]?.[subName];
+        const sFirst = stu[firstExam]?.[subName];
+        if (sLast !== null && !isNaN(sLast)) lastScores.push(sLast);
+        if (sFirst !== null && sLast !== null && !isNaN(sFirst) && !isNaN(sLast)) {
+            if (sLast > sFirst) upCnt++;
+            else if (sLast < sFirst) downCnt++;
+            else flatCnt++;
+        }
+    });
+    if (lastScores.length === 0) {
+        wrapDom.innerHTML = '<h4>【' + currentClassName + '｜' + subName + '】单科全班分析</h4><div class="analysis-item">暂无有效分数。</div>';
+        return;
+    }
+    const maxS = Math.max(...lastScores);
+    const minS = Math.min(...lastScores);
+    const avgS = (lastScores.reduce((a, b) => a + b, 0) / lastScores.length).toFixed(1);
+    let html = '<h4>【' + currentClassName + '｜' + subName + '】单科全班分析（末次考试）</h4>' +
+        '<div class="analysis-item">班级最高分：' + maxS + '；班级最低分：' + minS + '；班级平均分：' + avgS + '</div>' +
+        '<div class="analysis-item">对比首次考试：进步人数' + upCnt + '人，退步人数' + downCnt + '人，成绩持平' + flatCnt + '人</div>';
+    if (exams.length >= 2) {
+        const rateUp = ((upCnt / (upCnt + downCnt + flatCnt)) * 100).toFixed(1);
+        html += '<div class="analysis-item">进步占比：' + rateUp + '%。' + (upCnt > downCnt ? "整体多数学生该科取得进步" : "该科目需要加强巩固训练") + '</div>';
+    }
+    wrapDom.innerHTML = html;
+}
+
+// ===== 个人对比 - 页面4：全班学生图表 =====
+function updatePersonalPage4() {
+    chartInstances.page4.forEach(c => { try { c.destroy(); } catch (e) {} });
+    chartInstances.page4 = [];
+    const container = document.getElementById('page4Container');
+    container.innerHTML = '';
+    if (!appDataForPersonal.subjects.length) {
+        container.innerHTML = '<div class="empty-hint">暂无成绩数据</div>';
+        return;
+    }
+    const exams = appDataForPersonal.exams;
+    const studentNames = Object.keys(appDataForPersonal.students).sort();
+    let subList = [...appDataForPersonal.subjects];
+    const tidx = subList.indexOf("总分");
+    if (tidx > -1) { subList.splice(tidx, 1); subList.unshift("总分"); }
+    const colors = [
+        { border: '#4f46e5', bg: 'rgba(79, 70, 229, 0.12)' },
+        { border: '#16a34a', bg: 'rgba(22, 163, 74, 0.12)' },
+        { border: '#dc2626', bg: 'rgba(220, 38, 38, 0.12)' },
+        { border: '#ca8a04', bg: 'rgba(202, 138, 4, 0.12)' },
+        { border: '#0891ac', bg: 'rgba(8, 145, 172, 0.12)' }
+    ];
+    studentNames.forEach(stuName => {
+        const stu = appDataForPersonal.students[stuName];
+        const rowCard = document.createElement('div');
+        rowCard.className = 'stu-row-card';
+        rowCard.innerHTML = '<div class="stu-row-header">' + stuName + '</div><div class="stu-sub-chart-wrap" id="row_' + stuName.replace(/\s/g, '_') + '"></div>';
+        container.appendChild(rowCard);
+        const wrapEl = rowCard.querySelector('.stu-sub-chart-wrap');
+        subList.forEach((sub, idx) => {
+            const c = colors[idx % colors.length];
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'stu-sub-chart-item';
+            const cid = "p4_" + stuName.replace(/\s/g, '_') + "_" + sub.replace(/\s/g, '_');
+            itemDiv.innerHTML = '<h5>' + sub + '</h5><div class="stu-sub-canvas-wrap"><canvas id="' + cid + '"></canvas></div>';
+            wrapEl.appendChild(itemDiv);
+            const ctx = document.getElementById(cid).getContext('2d');
+            const scores = exams.map(ex => stu[ex]?.[sub] ?? null);
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: exams, datasets: [{ label: sub, data: scores, borderColor: c.border, backgroundColor: c.bg, tension: 0.4, fill: false, pointRadius: 2, spanGaps: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: false } }, animation: { duration: 600 } }
+            });
+            chartInstances.page4.push(chart);
+        });
+    });
+}
+
+// ===== 班级对比 - 科目分析文字 =====
+function getSubjectAnalysisHtml(subjectName, mode, filterClassList) {
+    const modeText = { avg: "平均分", max: "最高分", min: "最低分" }[mode];
+    const lastExam = appData.examList.length >= 1 ? appData.examList[appData.examList.length - 1] : null;
+    const prevExam = appData.examList.length >= 2 ? appData.examList[appData.examList.length - 2] : null;
+    if (!lastExam) return '';
+    const pub = parseFloat(document.getElementById('linePublic').value);
+    const priv = parseFloat(document.getElementById('linePrivate').value);
+    const classScoreList = [];
+    filterClassList.forEach(cls => {
+        const s = calcStat(cls, lastExam, subjectName, mode);
+        const sPrev = prevExam ? calcStat(cls, prevExam, subjectName, mode) : null;
+        let delta = null;
+        if (s !== null && sPrev !== null) delta = Math.round((s - sPrev) * 10) / 10;
+        classScoreList.push({ className: cls, score: s, prevScore: sPrev, delta: delta });
+    });
+    const validNow = classScoreList.filter(x => x.score !== null);
+    let bestText = "—"; let worstText = "—";
+    if (validNow.length > 0) {
+        validNow.sort((a, b) => b.score - a.score);
+        bestText = validNow[0].className + '(' + validNow[0].score + ')';
+        worstText = validNow[validNow.length - 1].className + '(' + validNow[validNow.length - 1].score + ')';
+    }
+    const hasDelta = classScoreList.filter(x => x.delta !== null);
+    let bestUpHtml = "—"; let worstDownHtml = "—";
+    if (hasDelta.length > 0) {
+        hasDelta.sort((a, b) => b.delta - a.delta);
+        bestUpHtml = '<span class="text-green">' + hasDelta[0].className + ' ↑+' + hasDelta[0].delta + '</span>';
+        hasDelta.sort((a, b) => a.delta - b.delta);
+        worstDownHtml = '<span class="text-red">' + hasDelta[0].className + ' ↓' + hasDelta[0].delta + '</span>';
+    }
+    let streakUpList = []; let streakDownList = [];
+    if (appData.examList.length >= 3) {
+        const e0 = appData.examList[appData.examList.length - 3];
+        const e1 = appData.examList[appData.examList.length - 2];
+        const e2 = appData.examList[appData.examList.length - 1];
+        filterClassList.forEach(cls => {
+            const s0 = calcStat(cls, e0, subjectName, mode);
+            const s1 = calcStat(cls, e1, subjectName, mode);
+            const s2 = calcStat(cls, e2, subjectName, mode);
+            if (s0 !== null && s1 !== null && s2 !== null) {
+                if (s1 > s0 && s2 > s1) streakUpList.push(cls);
+                if (s1 < s0 && s2 < s1) streakDownList.push(cls);
+            }
+        });
+    }
+    const streakUpStr = streakUpList.length > 0 ? streakUpList.join("、") : "—";
+    const streakDownStr = streakDownList.length > 0 ? streakDownList.join("、") : "—";
+    let overPubStr = "仅总分科目"; let overPrivStr = "仅总分科目";
+    if (isTotal(subjectName)) {
+        overPubStr = Number.isNaN(pub) ? "未设置" : classScoreList.filter(x => x.score !== null && x.score >= pub).length + "个";
+        overPrivStr = Number.isNaN(priv) ? "未设置" : classScoreList.filter(x => x.score !== null && x.score >= priv).length + "个";
+    }
+    return '<div class="sub-analysis">' +
+        '<div class="sub-analysis-title">' + subjectName + '｜' + modeText + '分析【最新：' + lastExam + '】</div>' +
+        '最优：' + bestText + ' &nbsp;&nbsp; 最差：' + worstText + '<br>' +
+        '进步最大：' + bestUpHtml + ' &nbsp;&nbsp; 退步最大：' + worstDownHtml + '<br>' +
+        '连续2次上升：' + streakUpStr + '<br>' +
+        '连续2次下降：' + streakDownStr + '<br>' +
+        '公办线达标：' + overPubStr + ' &nbsp;&nbsp; 民办线达标：' + overPrivStr +
+        '</div>';
+}
+
+// ===== 班级对比 - 三分对比图 =====
+function renderTripleCharts() {
+    chartInstances.multi.forEach(c => { try { c.destroy(); } catch (e) {} });
+    chartInstances.multi = [];
+    const wrapDom = document.getElementById("tripleSubjectWrap");
+    wrapDom.innerHTML = '';
+    const mode = document.getElementById('tripleModeSelect').value;
+    const showClasses = getCheckedItems('tripleClassCheckWrap');
+    if (appData.subjectList.length === 0 || showClasses.length === 0) {
+        wrapDom.innerHTML = '<div class="empty-hint">暂无有效数据，请选择班级</div>';
+        return;
+    }
+    const validSubjects = appData.subjectList.filter(sub => subjectHasDataInClassList(showClasses, sub, mode));
+    if (validSubjects.length === 0) {
+        wrapDom.innerHTML = '<div class="empty-hint">选中班级下不存在有成绩的科目</div>';
+        return;
+    }
+    const modeLabel = { avg: '平均分', max: '最高分', min: '最低分' }[mode];
+    validSubjects.forEach(subName => {
+        const total = isTotal(subName);
+        const card = document.createElement("div");
+        card.className = "subject-chart-card" + (total ? " total-card" : "");
+        const cid = "triple_" + subName.replace(/\s/g, "_") + "_" + mode;
+        card.innerHTML = '<h4>' + subName + ' 多班级' + modeLabel + '对比' + (total ? '<span class="badge" style="display:inline-block;font-size:0.7rem;padding:1px 6px;border-radius:4px;background:rgba(91,83,232,0.75);color:white;margin-left:6px;">总分</span>' : '') + '</h4>' +
+            '<div class="chart-sub-container"><canvas id="' + cid + '"></canvas></div>' +
+            getSubjectAnalysisHtml(subName, mode, showClasses);
+        wrapDom.appendChild(card);
+        const ctx = document.getElementById(cid).getContext('2d');
+        let datasets = [];
+        showClasses.forEach((cls, idx) => {
+            const colorItem = colorPool[idx % colorPool.length];
+            let points = appData.examList.map(exam => calcStat(cls, exam, subName, mode));
+            datasets.push({ label: cls, data: points, borderColor: colorItem.border, backgroundColor: colorItem.bg, tension: 0.45, fill: false, pointRadius: 3, borderWidth: 2 });
+        });
+        const pluginsArr = [];
+        if (total) pluginsArr.push(createScoreLinePlugin(true));
+        const chartIns = new Chart(ctx, {
+            type: "line",
+            data: { labels: appData.examList, datasets: datasets },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 10 } } },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                interaction: { mode: 'index', intersect: false },
+                scales: { y: { beginAtZero: false } }
+            },
+            plugins: pluginsArr
+        });
+        chartInstances.multi.push(chartIns);
+    });
+}
+
+// ===== 班级对比 - 科目总览 =====
+function renderSubjectChartPage() {
+    chartInstances.multi.forEach(c => { try { c.destroy(); } catch (e) {} });
+    chartInstances.multi = [];
+    const canvas = document.getElementById('subjectChartCanvas');
+    const ctx = canvas.getContext('2d');
+    const mode = document.getElementById('subjectChartModeSelect').value;
+    const showSubjects = getCheckedItems('subjectChartSubWrap');
+    const showClasses = getCheckedItems('subjectChartClassWrap');
+    if (showSubjects.length === 0 || showClasses.length === 0 || appData.examList.length === 0) return;
+    const modeTitle = { avg: '平均分', max: '最高分', min: '最低分' }[mode];
+    let datasets = [];
+    let colorIdx = 0;
+    let hasTotal = false;
+    showClasses.forEach(cls => {
+        showSubjects.forEach(subName => {
+            if (!hasAnyValidScore(cls, subName, mode)) return;
+            if (isTotal(subName)) hasTotal = true;
+            const colorItem = colorPool[colorIdx % colorPool.length];
+            colorIdx++;
+            const points = appData.examList.map(exam => calcStat(cls, exam, subName, mode));
+            datasets.push({
+                label: cls + '｜' + subName,
+                data: points,
+                borderColor: colorItem.border,
+                backgroundColor: colorItem.bg,
+                tension: 0.45,
+                fill: false,
+                pointRadius: 4,
+                borderWidth: 2
+            });
+        });
+    });
+    if (datasets.length === 0) return;
+    const pluginsArr = [];
+    if (hasTotal) pluginsArr.push(createScoreLinePlugin(true));
+    const ins = new Chart(ctx, {
+        type: "line",
+        data: { labels: appData.examList, datasets: datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: "top", labels: { boxWidth: 12, font: { size: 11 } } },
+                tooltip: { mode: 'index', intersect: false },
+                title: { display: true, text: '多班级多科目｜' + modeTitle + '对比', font: { size: 14 } }
+            },
+            interaction: { mode: 'index', intersect: false },
+            scales: { y: { beginAtZero: false }, x: { ticks: { maxRotation: 45 } } }
+        },
+        plugins: pluginsArr
+    });
+    chartInstances.multi.push(ins);
+}
+
+// ===== 班级对比 - 数据明细表 =====
+function renderDataTable() {
+    const wrap = document.getElementById('dataTableWrap');
+    const mode = document.getElementById('tableModeSelect').value;
+    const showClasses = getCheckedItems('tableClassCheckWrap');
+    const showSubjects = getCheckedItems('tableSubjectCheckWrap');
+    if (showClasses.length === 0 || showSubjects.length === 0 || appData.examList.length === 0) {
+        wrap.innerHTML = '<div class="empty-hint">请勾选至少一个班级、至少一个科目</div>';
+        return;
+    }
+    let html = '<table class="data-table"><thead><tr><th>科目</th><th>班级</th>';
+    appData.examList.forEach(ex => { html += '<th>' + ex + '</th>'; });
+    html += '</tr></thead><tbody>';
+    showSubjects.forEach(sub => {
+        showClasses.forEach(cls => {
+            const scores = appData.examList.map(exam => calcStat(cls, exam, sub, mode));
+            const hasAnyScore = scores.some(s => s !== null);
+            if (!hasAnyScore) return;
+            const streakUp = new Array(scores.length).fill(false);
+            const streakDown = new Array(scores.length).fill(false);
+            const dirs = [];
+            for (let i = 1; i < scores.length; i++) {
+                if (scores[i] === null || scores[i - 1] === null) dirs.push(0);
+                else if (scores[i] > scores[i - 1]) dirs.push(1);
+                else if (scores[i] < scores[i - 1]) dirs.push(-1);
+                else dirs.push(0);
+            }
+            for (let i = 0; i <= dirs.length - 3; i++) {
+                if (dirs[i] === 1 && dirs[i + 1] === 1 && dirs[i + 2] === 1) { streakUp[i + 1] = true; streakUp[i + 2] = true; streakUp[i + 3] = true; }
+                if (dirs[i] === -1 && dirs[i + 1] === -1 && dirs[i + 2] === -1) { streakDown[i + 1] = true; streakDown[i + 2] = true; streakDown[i + 3] = true; }
+            }
+            html += '<tr><td class="cell-subject">' + sub + '</td><td class="cell-class">' + cls + '</td>';
+            scores.forEach((val, idx) => {
+                let cellClass = '';
+                if (streakUp[idx]) cellClass = 'cell-streak-up';
+                else if (streakDown[idx]) cellClass = 'cell-streak-down';
+                let diffHtml = '';
+                if (idx > 0 && val !== null && scores[idx - 1] !== null) {
+                    const diff = Math.round((val - scores[idx - 1]) * 10) / 10;
+                    if (diff > 0) diffHtml = '<span class="score-diff diff-up">↑ +' + diff + '</span>';
+                    else if (diff < 0) diffHtml = '<span class="score-diff diff-down">↓ ' + diff + '</span>';
+                    else diffHtml = '<span class="score-diff diff-flat">— 0</span>';
+                }
+                const valStr = val !== null ? val : '—';
+                html += '<td class="' + cellClass + '"><span class="score-main">' + valStr + '</span>' + diffHtml + '</td>';
+            });
+            html += '</tr>';
+        });
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+}
+
+// ===== 分数线变化 =====
+function onLineChange() {
+    if (currentPage === 'c1') renderTripleCharts();
+    else if (currentPage === 'c2') renderSubjectChartPage();
+    if (currentMainTab === 'personal') updatePersonalPage1();
+}
+
+// ===== 下载模板 =====
+function downloadTemplate() {
+    const wb = XLSX.utils.book_new();
+    const h1 = ["学生", "第一次考试", "第一次考试", "第一次考试", "第一次考试", "第二次考试", "第二次考试", "第二次考试", "第二次考试"];
+    const h2 = ["学生", "语文", "数学", "英语", "总分", "语文", "数学", "英语", "总分"];
+    const s1 = [h1, h2, ["张三", 88, 92, 85, 265, 90, 88, 87, 265], ["李四", 85, 80, 88, 253, 87, 85, 90, 262]];
+    const ws1 = XLSX.utils.aoa_to_sheet(s1);
+    ws1['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 1, c: 0 } }, { s: { r: 0, c: 1 }, e: { r: 0, c: 4 } }, { s: { r: 0, c: 5 }, e: { r: 0, c: 8 } }];
+    XLSX.utils.book_append_sheet(wb, ws1, "1班");
+    const s2 = [h1, h2, ["小明", 78, 82, 80, 240, 80, 84, 83, 247], ["小红", 82, 76, 84, 242, 84, 79, 86, 249]];
+    const ws2 = XLSX.utils.aoa_to_sheet(s2);
+    ws2['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 1, c: 0 } }, { s: { r: 0, c: 1 }, e: { r: 0, c: 4 } }, { s: { r: 0, c: 5 }, e: { r: 0, c: 8 } }];
+    XLSX.utils.book_append_sheet(wb, ws2, "2班");
+    XLSX.writeFile(wb, "多班级成绩横向模板.xlsx");
+}
+
+// ===== 导出报告（优化文件名） =====
+async function exportReport() {
+    if (classList.length === 0) {
+        alert("暂无数据，无法导出，请先上传成绩文件");
+        return;
+    }
+    const { jsPDF } = window.jspdf;
+    const btn = document.getElementById("exportBtn");
+    btn.classList.add("export-btn-loading");
+    try {
+        // 导出时临时将页面背景变为白色，保证PDF清晰可读
+        const origBg = document.body.style.background;
+        const origColor = document.body.style.color;
+        document.body.style.background = '#ffffff';
+        document.body.style.color = '#1a1a2e';
+        // 临时隐藏粒子canvas
+        const particleCanvas = document.getElementById('particleCanvas');
+        if (particleCanvas) particleCanvas.style.display = 'none';
+        
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const contentDom = document.querySelector(".container");
+        const canvas = await html2canvas(contentDom, { scale: 1.2, backgroundColor: '#ffffff' });
+        
+        // 恢复页面背景
+        document.body.style.background = origBg;
+        document.body.style.color = origColor;
+        if (particleCanvas) particleCanvas.style.display = '';
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const imgWidth = 210;
+        const pageHeight = 297;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
+        // 优化文件名：根据当前模式生成有意义的文件名
+        const now = new Date();
+        const dateStr = now.getFullYear() + '' + String(now.getMonth()+1).padStart(2,'0') + '' + String(now.getDate()).padStart(2,'0');
+        let fileName = "班级成绩分析";
+        if (currentMainTab === 'personal' && currentClassName) {
+            fileName = currentClassName + "个人成绩分析";
+            const stu = document.getElementById('studentSelect').value;
+            if (stu) fileName += "-" + stu;
+        } else if (currentMainTab === 'class') {
+            const selected = getCheckedItems('tripleClassCheckWrap');
+            if (selected.length > 0) {
+                fileName = selected.join("-") + "班级对比";
+            }
+        }
+        fileName += "-" + dateStr + ".pdf";
+        pdf.save(fileName);
+    } catch (e) {
+        console.error(e);
+        alert("PDF导出失败，可使用浏览器打印另存PDF");
+    } finally {
+        btn.classList.remove("export-btn-loading");
+    }
+}
+
+// ===== 初始化 =====
+document.addEventListener('DOMContentLoaded', () => {
+    // 初始化拖拽上传
+    initDragDrop();
+    // 自动从GitHub获取成绩文件
+    fetch('27届龙泉周测成绩（大类后）.xlsx')
+        .then(response => {
+            if (!response.ok) throw new Error('File not found');
+            return response.arrayBuffer();
+        })
+        .then(data => {
+            showLoading('正在自动加载成绩数据...');
+            const wb = XLSX.read(data, { type: 'array' });
+            for (const sheetName of wb.SheetNames) {
+                const ws = wb.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                const className = sheetName.trim();
+                if (!className) continue;
+                parseSheet(json, className);
+            }
+            sortSubjects();
+            initRender();
+            document.getElementById('exportBtn').disabled = false;
+            hideLoading();
+        })
+        .catch(err => {
+            console.log('Auto-fetch skipped (expected when running locally):', err.message);
+            hideLoading();
+        });
+});
+
+        // ===== 光子粒子背景动画 =====
+        (function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let animationId;
+            let mouse = { x: null, y: null, radius: 120 };
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticlesArray();
+            }
+
+            function initParticlesArray() {
+                particles = [];
+                const count = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
+                for (let i = 0; i < count; i++) {
+                    particles.push(createParticle());
+                }
+            }
+
+            function createParticle() {
+                const size = Math.random() * 3 + 0.5;
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const speedX = (Math.random() - 0.5) * 0.5;
+                const speedY = (Math.random() - 0.5) * 0.5;
+                const opacity = Math.random() * 0.5 + 0.1;
+                // 蓝色系粒子
+                const hue = Math.random() * 40 + 200; // 200-240 蓝色范围
+                const saturation = Math.random() * 50 + 50;
+                const lightness = Math.random() * 30 + 50;
+                return { x, y, size, speedX, speedY, opacity, hue, saturation, lightness, pulse: Math.random() * Math.PI * 2 };
+            }
+
+            function drawParticle(p) {
+                p.pulse += 0.02;
+                const currentOpacity = p.opacity * (0.7 + Math.sin(p.pulse) * 0.3);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity + ')';
+                ctx.fill();
+                // 光晕效果
+                if (p.size > 1.5) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'hsla(' + p.hue + ', ' + p.saturation + '%, ' + p.lightness + '%, ' + currentOpacity * 0.15 + ')';
+                    ctx.fill();
+                }
+            }
+
+            function connectParticles() {
+                const maxDist = 150;
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < maxDist) {
+                            const opacity = (1 - dist / maxDist) * 0.15;
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'rgba(59, 130, 246, ' + opacity + ')';
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    // 边界环绕
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+                    drawParticle(p);
+                });
+                connectParticles();
+                animationId = requestAnimationFrame(animate);
+            }
+
+            // 鼠标交互
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.x;
+                mouse.y = e.y;
+            });
+
+            window.addEventListener('resize', resize);
+
+            // 初始化和启动
+            resize();
+            animate();
+        })();
+</script>
+</body>
+</html>
