@@ -2510,7 +2510,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初始化拖拽上传
     initDragDrop();
     // 自动从GitHub获取成绩文件
-    fetch('27届龙泉周测成绩（睿智）.xlsx')
+    fetch('27届睿智周测成绩.xlsx')
         .then(response => {
             if (!response.ok) throw new Error('File not found');
             return response.arrayBuffer();
