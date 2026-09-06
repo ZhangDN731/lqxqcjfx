@@ -22,6 +22,9 @@
             font-family: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
         }
 
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap');
+
+        /* 粒子画布 */
         #particles {
             position: fixed;
             top: 0;
@@ -31,6 +34,7 @@
             z-index: 0;
         }
 
+        /* 鼠标跟随光晕 */
         #lightGlow {
             position: fixed;
             width: 320px;
@@ -43,6 +47,7 @@
             transition: 0.12s ease;
         }
 
+        /* 毛玻璃主容器 */
         .glass-box {
             position: relative;
             z-index: 2;
@@ -53,7 +58,7 @@
             border-radius: 24px;
             padding: 52px 46px;
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
-            max-width: 600px;
+            max-width: 900px;
             width: 100%;
         }
 
@@ -66,6 +71,18 @@
             font-weight: 600;
         }
 
+        /* 第一行：三个校区横向排列 */
+        .campus-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .campus-row .entry-card {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
         .entry-card {
             display: block;
             text-decoration: none;
@@ -76,8 +93,6 @@
             margin-bottom: 20px;
             transition: all 0.35s ease;
             text-align: center;
-            position: relative;
-            overflow: hidden;
         }
 
         .entry-card:hover {
@@ -101,27 +116,6 @@
             min-height: 36px;
         }
 
-        /* 倒计时进度条 */
-        .countdown-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #43e97b, #38f9d7);
-            border-radius: 0 0 14px 14px;
-            width: 100%;
-            transition: width 0.1s linear;
-        }
-
-        .countdown-hint {
-            position: absolute;
-            top: 8px;
-            right: 12px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
-            pointer-events: none;
-        }
-
         .footer-tip {
             margin-top: 40px;
             text-align: center;
@@ -130,7 +124,18 @@
             line-height: 1.8;
         }
 
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap');
+        /* 小屏幕适配 */
+        @media (max-width: 700px) {
+            .campus-row {
+                flex-direction: column;
+            }
+            .glass-box {
+                padding: 36px 24px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -138,20 +143,33 @@
     <div id="lightGlow"></div>
 
     <div class="glass-box">
-        <h1>尚学龙泉校区班级成绩分析工具</h1>
+        <h1>河北尚学单招校区成绩分析工具</h1>
 
-        <a href="index-二合一.html" class="entry-card" id="autoEntry">
-            <div class="entry-title">个人+班级成绩分析系统</div>
-            <div class="entry-desc">前面两个网页的结合体，一个网页同时查看</div>
-            <span class="countdown-hint" id="countdownHint">鼠标不操作，5秒后自动进入</span>
-            <div class="countdown-bar" id="countdownBar"></div>
-        </a>
+        <!-- 第一行：三个校区 -->
+        <div class="campus-row">
+            <a href="index-二合一（龙泉校区）.html" class="entry-card">
+                <div class="entry-title">龙泉校区成绩分析系统</div>
+                <div class="entry-desc">个人+班级成绩的展示</div>
+            </a>
 
+            <a href="index-二合一（星耀校区）.html" class="entry-card">
+                <div class="entry-title">星耀校区成绩分析系统</div>
+                <div class="entry-desc">个人+班级成绩的展示</div>
+            </a>
+
+            <a href="index-二合一（睿智校区）.html" class="entry-card">
+                <div class="entry-title">睿智校区成绩分析系统</div>
+                <div class="entry-desc">个人+班级成绩的展示</div>
+            </a>
+        </div>
+
+        <!-- 第二行：个人分析 -->
         <a href="index-个人分析.html" class="entry-card">
             <div class="entry-title">学生个人各科成绩变化</div>
             <div class="entry-desc">用于查看学生个人各科考试成绩变化趋势，追踪分数波动情况</div>
         </a>
 
+        <!-- 第三行：班级分析 -->
         <a href="index-班级分析.html" class="entry-card">
             <div class="entry-title">班级横向成绩对比</div>
             <div class="entry-desc">多班级横向单科目成绩对比，直观展示各班分数差距与排名情况</div>
@@ -236,44 +254,6 @@
             requestAnimationFrame(animate);
         }
         animate();
-
-        // ===== 5秒倒计时自动跳转 =====
-        const TOTAL_TIME = 1000; // 5秒
-        const bar = document.getElementById('countdownBar');
-        const hint = document.getElementById('countdownHint');
-        let startTime = Date.now();
-        let cancelled = false;
-
-        // 进度条动画
-        const timer = setInterval(() => {
-            if (cancelled) return;
-            const elapsed = Date.now() - startTime;
-            const remaining = Math.max(0, TOTAL_TIME - elapsed);
-            const percent = (remaining / TOTAL_TIME) * 100;
-
-            bar.style.width = percent + '%';
-            hint.textContent = Math.ceil(remaining / 1000) + '秒后自动进入';
-
-            if (remaining <= 0) {
-                clearInterval(timer);
-                // 自动跳转
-                window.location.href = 'index-二合一.html';
-            }
-        }, 50);
-
-        // 用户点击任意位置则取消自动跳转
-        document.addEventListener('click', () => {
-            if (!cancelled) {
-                cancelled = true;
-                clearInterval(timer);
-                bar.style.width = '0%';
-                hint.textContent = '已取消自动进入';
-                setTimeout(() => {
-                    hint.style.display = 'none';
-                    bar.style.display = 'none';
-                }, 1500);
-            }
-        });
     </script>
 </body>
 </html>
