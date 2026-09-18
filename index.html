@@ -1,265 +1,443 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>河北尚学单招校区成绩分析</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>河北尚学单招校区成绩分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#2c3e50 0%,#4158d0 50%,#c850c0 100%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+  padding:clamp(14px,2.5vw,28px);
+  font-family:"Inter","Noto Sans SC",-apple-system,BlinkMacSystemFont,"Microsoft YaHei",sans-serif;
+  color:#fff;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+}
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #2c3e50 0%, #4158d0 50%, #c850c0 100%);
-            overflow: hidden;
-            padding: 20px;
-            font-family: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
-        }
+/* ===== 粒子画布 & 光晕 ===== */
+#particles{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#lightGlow{
+  position:fixed;
+  width:320px;height:320px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 70%);
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  z-index:1;
+  transition:opacity .3s;
+  opacity:0;
+}
+#lightGlow.on{opacity:1}
 
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap');
+/* ===== 主容器 ===== */
+.glass-box{
+  position:relative;
+  z-index:2;
+  width:100%;
+  max-width:1000px;
+  padding:clamp(26px,4vw,52px) clamp(20px,3.5vw,46px);
+  background:rgba(255,255,255,.1);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:clamp(18px,2.4vw,26px);
+  box-shadow:0 8px 40px rgba(0,0,0,.25);
+}
 
-        /* 粒子画布 */
-        #particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
+/* ===== 标题 ===== */
+.page-header{text-align:center;margin-bottom:clamp(24px,3.5vw,40px)}
+h1{
+  font-size:clamp(1.15rem,3.2vw,1.75rem);
+  font-weight:700;
+  letter-spacing:clamp(1px,.4vw,3px);
+  color:#fff;
+  line-height:1.35;
+  margin-bottom:8px;
+}
+.page-sub{
+  font-size:clamp(.72rem,.9vw,.84rem);
+  color:rgba(255,255,255,.55);
+  letter-spacing:1px;
+}
 
-        /* 鼠标跟随光晕 */
-        #lightGlow {
-            position: fixed;
-            width: 320px;
-            height: 320px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%);
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            transition: 0.12s ease;
-        }
+/* ===== 区块标题 ===== */
+.section{margin-bottom:clamp(18px,2.6vw,28px)}
+.section:last-of-type{margin-bottom:0}
+.section-label{
+  display:flex;align-items:center;gap:10px;
+  font-size:clamp(.72rem,.88vw,.82rem);
+  font-weight:600;
+  color:rgba(255,255,255,.6);
+  letter-spacing:2px;
+  margin-bottom:clamp(10px,1.5vw,14px);
+}
+.section-label::before{
+  content:'';width:4px;height:14px;border-radius:2px;
+  background:linear-gradient(180deg,#67e8f9,#c850c0);
+  flex:0 0 auto;
+}
+.section-label::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,.18),transparent);
+}
 
-        /* 毛玻璃主容器 */
-        .glass-box {
-            position: relative;
-            z-index: 2;
-            background: rgba(255, 255, 255, 0.10);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            border-radius: 24px;
-            padding: 52px 46px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
-            max-width: 900px;
-            width: 100%;
-        }
+/* ===== 卡片网格 ===== */
+.grid{display:grid;gap:clamp(10px,1.4vw,16px)}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
 
-        h1 {
-            text-align: center;
-            color: #ffffff;
-            font-size: 28px;
-            margin-bottom: 44px;
-            letter-spacing: 3px;
-            font-weight: 600;
-        }
+/* ===== 卡片 ===== */
+.card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:clamp(16px,2vw,22px) clamp(16px,2vw,22px);
+  text-decoration:none;
+  color:inherit;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:14px;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+  min-width:0;
+}
+.card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(103,232,249,.12),transparent 55%);
+  opacity:0;
+  transition:opacity .3s;
+  pointer-events:none;
+}
+.card:hover{
+  background:rgba(255,255,255,.17);
+  border-color:rgba(255,255,255,.38);
+  transform:translateY(-4px);
+  box-shadow:0 14px 34px rgba(0,0,0,.22);
+}
+.card:hover::before{opacity:1}
+.card:active{transform:translateY(-2px)}
 
-        /* 第一行：三个校区横向排列 */
-        .campus-row {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
+/* 校区卡片：放大标题 */
+.card-campus .card-top{gap:12px;margin-bottom:6px}
+.card-campus .card-icon{
+  width:44px;height:44px;
+  font-size:22px;
+  border-radius:12px;
+}
+.card-campus .card-title{
+  font-size:clamp(1.15rem,1.7vw,1.5rem);
+  font-weight:700;
+  letter-spacing:.5px;
+  color:#fff;
+  line-height:1.25;
+  text-shadow:0 2px 12px rgba(103,232,249,.25);
+}
 
-        .campus-row .entry-card {
-            flex: 1;
-            margin-bottom: 0;
-        }
+/* 普通卡片 */
+.card-top{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:2px;
+}
+.card-icon{
+  width:36px;height:36px;
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:10px;
+  background:linear-gradient(135deg,rgba(103,232,249,.22),rgba(200,80,192,.22));
+  border:1px solid rgba(255,255,255,.2);
+  font-size:18px;
+  line-height:1;
+}
+.card-title{
+  font-size:clamp(.96rem,1.2vw,1.1rem);
+  font-weight:600;
+  color:#fff;
+  line-height:1.35;
+  min-width:0;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+.card-desc{
+  font-size:clamp(.76rem,.92vw,.85rem);
+  color:rgba(255,255,255,.68);
+  line-height:1.65;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
 
-        .entry-card {
-            display: block;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 14px;
-            padding: 22px 24px;
-            margin-bottom: 20px;
-            transition: all 0.35s ease;
-            text-align: center;
-        }
+/* 状态徽章 */
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  align-self:flex-start;
+  padding:2px 9px;
+  border-radius:99px;
+  font-size:.68rem;
+  font-weight:600;
+  letter-spacing:.3px;
+  margin-top:4px;
+}
+.badge::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 6px currentColor;
+}
+.badge-ok{color:#6ee7b7;background:rgba(110,231,183,.13);border:1px solid rgba(110,231,183,.3)}
+.badge-soon{color:#fcd34d;background:rgba(252,211,77,.12);border:1px solid rgba(252,211,77,.3)}
+.badge-off{color:#fda4af;background:rgba(253,164,175,.12);border:1px solid rgba(253,164,175,.3)}
 
-        .entry-card:hover {
-            background: rgba(255, 255, 255, 0.18);
-            transform: translateY(-5px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-            border-color: rgba(255, 255, 255, 0.35);
-        }
+/* 更新要点列表 */
+.updates{
+  list-style:none;
+  display:flex;flex-direction:column;gap:3px;
+  margin-top:6px;
+  font-size:clamp(.72rem,.85vw,.78rem);
+  color:rgba(255,255,255,.58);
+  line-height:1.6;
+}
+.updates li{
+  position:relative;
+  padding-left:13px;
+  overflow-wrap:break-word;
+  word-break:break-word;
+}
+.updates li::before{
+  content:'';
+  position:absolute;
+  left:0;top:.62em;
+  width:5px;height:5px;
+  border-radius:50%;
+  background:rgba(103,232,249,.7);
+}
 
-        .entry-title {
-            color: #fff;
-            font-size: 19px;
-            font-weight: 500;
-            margin-bottom: 10px;
-        }
+/* ===== 页脚 ===== */
+.footer-tip{
+  margin-top:clamp(26px,3.5vw,42px);
+  padding-top:clamp(16px,2vw,22px);
+  border-top:1px solid rgba(255,255,255,.12);
+  text-align:center;
+  font-size:clamp(.7rem,.85vw,.78rem);
+  color:rgba(255,255,255,.5);
+  line-height:1.9;
+}
+.footer-tip #currentTime{
+  font-variant-numeric:tabular-nums;
+  font-weight:500;
+  color:rgba(255,255,255,.7);
+  letter-spacing:.5px;
+}
+.footer-author{margin-top:4px;font-size:.72rem;color:rgba(255,255,255,.4)}
+.footer-author b{color:rgba(255,255,255,.62);font-weight:600}
 
-        .entry-desc {
-            color: rgba(255, 255, 255, 0.65);
-            font-size: 14.5px;
-            line-height: 1.6;
-            min-height: 36px;
-        }
-
-        .footer-tip {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.8;
-        }
-
-        /* 小屏幕适配 */
-        @media (max-width: 700px) {
-            .campus-row {
-                flex-direction: column;
-            }
-            .glass-box {
-                padding: 36px 24px;
-            }
-            h1 {
-                font-size: 22px;
-            }
-        }
-    </style>
+/* ===== 响应式 ===== */
+@media (max-width:820px){
+  .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .card-campus .card-title{font-size:1.25rem}
+}
+@media (max-width:640px){
+  body{align-items:flex-start;padding:14px 12px 24px}
+  .glass-box{margin-top:6px}
+  .grid-3,.grid-2{grid-template-columns:1fr}
+  .card{padding:16px 16px}
+  .card:hover{transform:translateY(-2px)}
+  .card-icon{width:32px;height:32px;font-size:16px;border-radius:9px}
+  .card-campus .card-icon{width:42px;height:42px;font-size:21px;border-radius:12px}
+  .card-campus .card-title{font-size:1.32rem}
+}
+@media (max-width:400px){
+  .page-header{margin-bottom:18px}
+  h1{font-size:1.05rem;letter-spacing:.6px}
+  .section-label{letter-spacing:1px}
+  .card-campus .card-title{font-size:1.22rem}
+}
+/* 隐藏鼠标光晕（触屏设备） */
+@media (hover:none){
+  #lightGlow{display:none}
+}
+</style>
 </head>
 <body>
-    <canvas id="particles"></canvas>
-    <div id="lightGlow"></div>
+<canvas id="particles"></canvas>
+<div id="lightGlow"></div>
 
-    <div class="glass-box">
-        <h1>河北尚学单招校区成绩分析</h1>
+<div class="glass-box">
 
-        <!-- 第一行：三个校区 -->
-        <div class="campus-row">
-            <a href="index-二合一（龙泉校区）.html" class="entry-card">
-                <div class="entry-title">龙泉校区成绩分析系统</div>
-                <div class="entry-desc">个人+班级成绩的展示</div>
-                <div class="entry-desc">9月14日：更新9月12日成绩</div>
-                <div class="entry-desc">增加：缺考检测、统一分析面板</div>
-                <div class="entry-desc">优化：零散分析卡片同意显示、成绩排名原则修改、手机端的显示效果</div>
+  <header class="page-header">
+    <h1>河北尚学单招校区成绩分析</h1>
+    <div class="page-sub">CAMPUS SCORE ANALYSIS SYSTEM</div>
+  </header>
 
-            </a>
+  <!-- ===== 校区入口 ===== -->
+  <section class="section">
+    <div class="section-label">校区入口</div>
+    <div class="grid grid-3">
 
-            <a href="index-二合一（星耀校区）.html" class="entry-card">
-                <div class="entry-title">星耀校区成绩分析系统</div>
-                <div class="entry-desc">个人+班级成绩的展示</div>
-                <div class="entry-desc">不能用，没更新</div>
-            </a>
-
-            <a href="index-二合一（睿智校区）.html" class="entry-card">
-                <div class="entry-title">睿智校区成绩分析系统</div>
-                <div class="entry-desc">个人+班级成绩的展示</div>
-                <div class="entry-desc">不能用，没更新</div>
-            </a>
+      <a href="index-二合一（龙泉校区）.html" class="card card-campus">
+        <div class="card-top">
+          <div class="card-icon">🏫</div>
+          <div class="card-title">龙泉校区</div>
         </div>
+        <div class="card-desc">个人 + 班级成绩综合展示</div>
+        <span class="badge badge-ok">最新</span>
+        <ul class="updates">
+          <li>9月14日：更新9月12日成绩</li>
+          <li>新增：缺考检测、统一分析面板</li>
+          <li>优化：分析卡片整合、排名规则、手机端显示</li>
+        </ul>
+      </a>
 
-        <!-- 第二行：个人分析 -->
-        <a href="index-个人分析.html" class="entry-card">
-            <div class="entry-title">学生个人各科成绩变化</div>
-            <div class="entry-desc">用于查看学生个人各科考试成绩变化趋势，追踪分数波动情况</div>
-        </a>
-
-        <!-- 第三行：班级分析 -->
-        <a href="index-班级分析.html" class="entry-card">
-            <div class="entry-title">班级横向成绩对比</div>
-            <div class="entry-desc">多班级横向单科目成绩对比，直观展示各班分数差距与排名情况</div>
-        </a>
-
-        <div class="footer-tip">
-            <div id="currentTime"></div>
-            <div>制作者：ZhangD!n@nmnmnmn</div>
+      <a href="index-二合一（星耀校区）.html" class="card card-campus">
+        <div class="card-top">
+          <div class="card-icon">🏫</div>
+          <div class="card-title">星耀校区</div>
         </div>
+        <div class="card-desc">个人 + 班级成绩综合展示</div>
+        <span class="badge badge-off">未更新</span>
+      </a>
+
+      <a href="index-二合一（睿智校区）.html" class="card card-campus">
+        <div class="card-top">
+          <div class="card-icon">🏫</div>
+          <div class="card-title">睿智校区</div>
+        </div>
+        <div class="card-desc">个人 + 班级成绩综合展示</div>
+        <span class="badge badge-off">未更新</span>
+      </a>
+
     </div>
+  </section>
 
-    <script>
-        // 实时更新时间
-        function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            document.getElementById('currentTime').innerText = timeStr;
-        }
-        updateTime();
-        setInterval(updateTime, 1000);
+  <!-- ===== 专项工具 ===== -->
+  <section class="section">
+    <div class="section-label">专项工具</div>
+    <div class="grid grid-2">
 
-        // 鼠标跟随光效
-        const glow = document.getElementById('lightGlow');
-        document.addEventListener('mousemove', (e) => {
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
-        });
+      <a href="index-个人分析.html" class="card">
+        <div class="card-top">
+          <div class="card-icon">📈</div>
+          <div class="card-title">学生个人各科成绩变化</div>
+        </div>
+        <div class="card-desc">查看学生个人各科考试成绩变化趋势，追踪分数波动情况</div>
+      </a>
 
-        // 粒子特效
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let w, h;
-        let particles = [];
+      <a href="index-班级分析.html" class="card">
+        <div class="card-top">
+          <div class="card-icon">📊</div>
+          <div class="card-title">班级横向成绩对比</div>
+        </div>
+        <div class="card-desc">多班级横向单科目成绩对比，直观展示各班分数差距与排名</div>
+      </a>
 
-        function resize() {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
+    </div>
+  </section>
 
-        class Particle {
-            constructor() {
-                this.x = Math.random() * w;
-                this.y = Math.random() * h;
-                this.radius = Math.random() * 2.2 + 0.4;
-                this.speedX = (Math.random() - 0.5) * 0.7;
-                this.speedY = (Math.random() - 0.5) * 0.7;
-                this.opacity = Math.random() * 0.4 + 0.15;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x < 0 || this.x > w) this.speedX *= -1;
-                if (this.y < 0 || this.y > h) this.speedY *= -1;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255,255,255,${this.opacity})`;
-                ctx.fill();
-            }
-        }
+  <footer class="footer-tip">
+    <div id="currentTime"></div>
+    <div class="footer-author">制作者：<b>ZhangD!n@nmnmnmn</b></div>
+  </footer>
 
-        for(let i = 0; i < 90; i++){
-            particles.push(new Particle());
-        }
+</div>
 
-        function animate(){
-            ctx.clearRect(0,0,w,h);
-            particles.forEach(p=>{
-                p.update();
-                p.draw();
-            })
-            requestAnimationFrame(animate);
-        }
-        animate();
-    </script>
+<script>
+/* ===== 实时时间 ===== */
+(function(){
+  const el = document.getElementById('currentTime');
+  const p = n => String(n).padStart(2,'0');
+  function tick(){
+    const d = new Date();
+    el.textContent =
+      d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()) +
+      ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* ===== 鼠标跟随光晕（仅桌面端） ===== */
+(function(){
+  const glow = document.getElementById('lightGlow');
+  if (window.matchMedia('(hover: none)').matches) return;
+  let raf = null;
+  document.addEventListener('mousemove', e => {
+    glow.classList.add('on');
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top = e.clientY + 'px';
+      raf = null;
+    });
+  });
+  document.addEventListener('mouseleave', () => glow.classList.remove('on'));
+})();
+
+/* ===== 粒子特效 ===== */
+(function(){
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let particles = [];
+
+  function resize(){
+    w = canvas.width = window.innerWidth * dpr;
+    h = canvas.height = window.innerHeight * dpr;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    buildParticles();
+  }
+
+  function buildParticles(){
+    const count = Math.min(Math.floor(window.innerWidth * window.innerHeight / 16000), 90);
+    particles = [];
+    for (let i = 0; i < count; i++){
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: (Math.random() * 1.8 + 0.4) * dpr,
+        vx: (Math.random() - 0.5) * 0.5 * dpr,
+        vy: (Math.random() - 0.5) * 0.5 * dpr,
+        a: Math.random() * 0.35 + 0.15
+      });
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, w, h);
+    for (const p of particles){
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + p.a + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  let t = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(t);
+    t = setTimeout(resize, 160);
+  });
+
+  resize();
+  draw();
+})();
+</script>
 </body>
 </html>
