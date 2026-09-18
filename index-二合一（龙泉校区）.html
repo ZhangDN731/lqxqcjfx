@@ -25,35 +25,111 @@ body{
   background-attachment:fixed;min-height:100vh;line-height:1.6;overflow-x:hidden;
   -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;
 }
-#particleCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.35}
+#particleCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.32}
 
-/* 顶栏 */
+/* ============================================================
+ *  顶部栏（重构为两行：主行 + 设置行）
+ * ============================================================ */
 .topbar{
   position:sticky;top:0;z-index:100;
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  padding:10px 24px;background:rgba(255,255,255,.92);
-  backdrop-filter:blur(20px) saturate(200%);-webkit-backdrop-filter:blur(20px) saturate(200%);
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(20px) saturate(200%);
+  -webkit-backdrop-filter:blur(20px) saturate(200%);
   border-bottom:1px solid rgba(59,130,246,.18);
   box-shadow:0 4px 24px rgba(59,130,246,.1);
 }
-.topbar h1{
+.topbar-inner{
+  max-width:1800px;margin:0 auto;
+  padding:0 24px;
+}
+
+/* 主行：标题 + 操作按钮 */
+.topbar-main{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+  padding:10px 0;
+}
+.topbar-main h1{
   font-size:1.22rem;font-weight:800;color:var(--primary-darker);
-  letter-spacing:-.5px;white-space:nowrap;display:flex;align-items:center;gap:8px;
+  letter-spacing:-.5px;white-space:nowrap;
+  display:flex;align-items:center;gap:9px;margin:0;
 }
-.topbar h1::before{content:'';display:inline-block;width:6px;height:20px;border-radius:3px;background:linear-gradient(180deg,#3b82f6,#1d4ed8)}
-.topbar-center{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
-.topbar-right{display:flex;gap:8px;flex-wrap:wrap}
+.topbar-main h1::before{
+  content:'';display:inline-block;width:6px;height:22px;border-radius:3px;
+  background:linear-gradient(180deg,#3b82f6,#1d4ed8);
+  flex:0 0 auto;
+}
+.topbar-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* 设置行：分数线 + 达标率 */
+.topbar-settings{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:9px 0 12px;
+  border-top:1px dashed rgba(59,130,246,.16);
+}
+.setting-group{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.setting-group-title{
+  font-size:.74rem;font-weight:800;
+  color:var(--primary-dark);
+  letter-spacing:1.2px;
+  padding:2px 9px;border-radius:6px;
+  background:rgba(59,130,246,.1);
+  white-space:nowrap;
+  flex:0 0 auto;
+}
+.setting-group.rate .setting-group-title{
+  color:#15803d;
+  background:rgba(34,197,94,.12);
+}
+.setting-fields{display:flex;gap:6px;flex-wrap:wrap}
+.setting-divider{
+  width:1px;height:22px;
+  background:linear-gradient(180deg,transparent,rgba(59,130,246,.3),transparent);
+  flex:0 0 auto;
+}
+
+/* 单个设置输入框 */
 .line-setting{
-  display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:10px;background:#fff;
-  border:1px solid var(--card-border);font-size:.79rem;color:var(--text-sub);font-weight:600;
-  box-shadow:0 1px 3px rgba(0,0,0,.04);transition:border-color .2s;
+  display:flex;align-items:center;gap:4px;
+  padding:3px 8px;border-radius:8px;background:#fff;
+  border:1px solid var(--card-border);
+  font-size:.78rem;
+  box-shadow:0 1px 3px rgba(0,0,0,.03);
+  transition:all .2s cubic-bezier(.4,0,.2,1);
 }
-.line-setting:hover{border-color:rgba(59,130,246,.4)}
+.line-setting:hover{border-color:rgba(59,130,246,.35)}
+.line-setting:focus-within{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(59,130,246,.13);
+}
+.line-setting .setting-label{
+  font-weight:600;color:var(--text-muted);
+  white-space:nowrap;font-size:.76rem;
+}
 .line-setting input{
-  width:64px;padding:3px 6px;border:1px solid rgba(59,130,246,.25);border-radius:6px;
-  font-size:.82rem;font-weight:700;color:var(--primary-darker);text-align:center;background:#f8fbff;
+  width:46px;padding:2px 4px;border:none;outline:none;
+  background:transparent;
+  font-size:.83rem;font-weight:800;color:var(--primary-darker);
+  text-align:center;font-family:inherit;
+  -moz-appearance:textfield;
 }
-.line-setting input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(59,130,246,.15)}
+.line-setting input::-webkit-outer-spin-button,
+.line-setting input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.line-setting .unit{
+  font-size:.72rem;color:var(--text-muted);font-weight:700;
+}
+.line-setting.rate-setting{
+  background:linear-gradient(135deg,rgba(34,197,94,.05),rgba(59,130,246,.04));
+  border-color:rgba(34,197,94,.22);
+}
+.line-setting.rate-setting:hover{border-color:rgba(34,197,94,.45)}
+.line-setting.rate-setting:focus-within{
+  border-color:#16a34a;
+  box-shadow:0 0 0 3px rgba(34,197,94,.14);
+}
+.line-setting.rate-setting input{color:#15803d}
 
 /* 按钮 */
 .btn{
@@ -75,8 +151,14 @@ body{
 }
 .btn-mini:hover{background:rgba(59,130,246,.1);border-color:var(--primary)}
 
-/* 容器 */
-.container{position:relative;z-index:1;max-width:1800px;margin:0 auto;padding:18px 24px 40px}
+/* ============================================================
+ *  主容器
+ * ============================================================ */
+.container{
+  position:relative;z-index:1;
+  max-width:1800px;margin:0 auto;
+  padding:18px 24px 40px;
+}
 
 /* 状态栏 */
 .status-bar{
@@ -153,7 +235,7 @@ body{
   border-radius:10px;text-align:center;padding:16px;pointer-events:none;
 }
 
-/* ===== 综合分析面板（统一） ===== */
+/* 综合分析面板 */
 .analysis-panel{
   margin-bottom:18px;padding:20px 22px;border-radius:16px;
   background:linear-gradient(135deg,rgba(239,246,255,.96),rgba(224,236,254,.9));
@@ -173,7 +255,6 @@ body{
 .analysis-panel-title .tip{
   font-size:.72rem;font-weight:600;color:#94a3b8;letter-spacing:.5px;margin-left:auto;
 }
-
 .analysis-section{margin-bottom:16px}
 .analysis-section:last-child{margin-bottom:0}
 .analysis-section-title{
@@ -234,31 +315,13 @@ body{
   background:rgba(255,241,242,.7);border:1px dashed rgba(239,68,68,.35);
   font-size:.83rem;color:#7f1d1d;line-height:1.85;
 }
-.absent-list .label{
-  font-weight:800;color:#b91c1c;margin-right:6px;
-  display:inline-block;
-}
+.absent-list .label{font-weight:800;color:#b91c1c;margin-right:6px;display:inline-block}
 .absent-list .name-chip{
   display:inline-block;padding:1px 9px;margin:2px 3px 2px 0;
   border-radius:99px;background:#fff;color:#b91c1c;font-weight:700;
   border:1px solid rgba(239,68,68,.3);font-size:.78rem;
 }
 .absent-list .empty{color:#16a34a;font-weight:700}
-
-/* 响应式 */
-@media (max-width:1200px){.chart-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:760px){.chart-grid{grid-template-columns:1fr}}
-@media (max-width:1500px){.chart-grid-5{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media (max-width:1200px){.chart-grid-5{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:900px){
-  .chart-grid-5{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .chart-grid-5 .chart-box{height:200px}
-}
-@media (max-width:560px){
-  .chart-grid-5{grid-template-columns:1fr}
-  .chart-grid-5 .chart-box{height:210px}
-  .chart-box{height:220px}
-}
 
 /* 筛选区 */
 .filter-row{
@@ -324,8 +387,19 @@ body{
 .font-flat{color:var(--text-muted)}
 .text-green{color:var(--up);font-weight:700}
 .text-red{color:var(--down);font-weight:700}
+.text-warn{color:#f59e0b;font-weight:700}
 
-/* 分析块 */
+/* 达标率单元格 */
+.rate-cell{font-weight:800;font-size:.9rem}
+.rate-good{color:#16a34a}
+.rate-mid{color:#f59e0b}
+.rate-low{color:#dc2626}
+.rate-delta{font-weight:700;font-size:.82rem;display:inline-block;padding:1px 6px;border-radius:5px}
+.rate-delta.up{color:#16a34a;background:rgba(34,197,94,.12)}
+.rate-delta.down{color:#dc2626;background:rgba(239,68,68,.12)}
+.rate-delta.flat{color:#64748b;background:rgba(100,116,139,.1)}
+
+/* 分析块（保留旧样式备用） */
 .analysis-block{margin-top:14px;padding:14px;border-radius:12px;background:rgba(255,255,255,.7);border:1px solid var(--card-border)}
 .analysis-item{margin:5px 0;font-size:.87rem;color:var(--text-sub)}
 .analysis-item b{color:var(--primary-darker)}
@@ -358,30 +432,57 @@ body{
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:.92rem;color:var(--text-sub);font-weight:600}
 
-/* 响应式 */
-@media(max-width:1100px){
-  .topbar h1{font-size:1.1rem}
-  .container{padding:14px 16px 32px}
+/* ============================================================
+ *  响应式
+ * ============================================================ */
+@media (max-width:1500px){
+  .chart-grid-5{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
-@media(max-width:860px){
-  .topbar{padding:10px 14px}
-  .topbar h1{font-size:1rem;width:100%;justify-content:center}
-  .topbar-center{margin-left:0;width:100%;justify-content:center}
-  .topbar-right{width:100%;justify-content:center}
+@media (max-width:1280px){
+  .topbar-main h1{font-size:1.12rem}
+  .topbar-inner{padding:0 18px}
+  .container{padding:16px 18px 36px}
+}
+@media (max-width:1200px){
+  .chart-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chart-grid-5{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:980px){
+  .topbar-settings{gap:10px}
+  .setting-divider{display:none}
+}
+@media (max-width:900px){
+  .chart-grid-5{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chart-grid-5 .chart-box{height:200px}
+}
+@media (max-width:860px){
+  .topbar-inner{padding:0 14px}
+  .topbar-main{padding:9px 0;gap:10px}
+  .topbar-main h1{font-size:1rem}
+  .topbar-settings{gap:8px;padding:7px 0 10px}
+  .setting-group{gap:6px}
+  .setting-group-title{font-size:.7rem;padding:2px 7px;letter-spacing:.8px}
+  .setting-fields{gap:5px}
+  .line-setting{padding:2px 7px}
+  .line-setting input{width:42px;font-size:.78rem}
+  .line-setting .setting-label{font-size:.72rem}
   .container{padding:12px 14px 30px}
   .main-tab{padding:6px 13px;font-size:.82rem}
   .card{padding:14px}
-  .line-setting{font-size:.75rem;padding:3px 8px}
-  .line-setting input{width:56px;font-size:.78rem}
   .big-chart-wrap{height:clamp(400px,60vh,580px);padding:14px 12px 8px}
   .analysis-panel{padding:16px 14px}
   .analysis-grid{grid-template-columns:repeat(2,1fr)}
 }
-@media(max-width:520px){
+@media (max-width:760px){
+  .chart-grid{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .chart-grid-5{grid-template-columns:1fr}
+  .chart-grid-5 .chart-box{height:210px}
+  .chart-box{height:220px}
   .main-tabs{padding:4px;gap:4px}
   .main-tab{padding:6px 10px;font-size:.78rem}
   .btn{padding:6px 11px;font-size:.8rem}
-  .chart-box{height:200px}
   .data-table{font-size:.78rem}
   .data-table th,.data-table td{padding:5px 6px}
   .big-chart-wrap{height:clamp(340px,54vh,480px);padding:10px 8px 4px}
@@ -391,6 +492,12 @@ body{
   .analysis-metric-value{font-size:.96rem}
   .analysis-metric{padding:9px 10px}
   .analysis-panel{padding:14px 12px}
+  .topbar-actions{width:100%;justify-content:center}
+  .topbar-main h1{width:100%;justify-content:center}
+}
+@media (max-width:420px){
+  .setting-group-title{display:none}
+  .line-setting .setting-label{display:none}
 }
 
 ::-webkit-scrollbar{width:8px;height:8px}
@@ -407,19 +514,39 @@ body{
   <div class="loading-text" id="loadingText">正在处理文件...</div>
 </div>
 
+<!-- ============ 顶部栏（两行） ============ -->
 <div class="topbar">
-  <h1>龙泉校区成绩分析系统</h1>
-  <div class="topbar-center">
-    <div class="line-setting"><span>控分线</span><input type="number" id="lineControl" value="0"></div>
-    <div class="line-setting"><span>公办线</span><input type="number" id="linePublic" value="200"></div>
-    <div class="line-setting"><span>民办线</span><input type="number" id="linePrivate" value="200"></div>
-    <div class="line-setting"><span>预估线</span><input type="number" id="lineEstimate" value="0"></div>
-  </div>
-  <div class="topbar-right">
-    <button class="btn" onclick="downloadTemplate()">下载模板</button>
-    <button class="btn btn-primary" id="uploadBtn" onclick="document.getElementById('fileInput').click()">上传 Excel</button>
-    <input type="file" id="fileInput" accept=".xlsx,.xls" multiple style="display:none">
-    <button class="btn btn-success" id="exportBtn" onclick="exportReport()" disabled>导出报告</button>
+  <div class="topbar-inner">
+    <!-- 主行：标题 + 操作按钮 -->
+    <div class="topbar-main">
+      <h1>龙泉校区成绩分析系统</h1>
+      <div class="topbar-actions">
+        <button class="btn" onclick="downloadTemplate()">下载模板</button>
+        <button class="btn btn-primary" id="uploadBtn" onclick="document.getElementById('fileInput').click()">上传 Excel</button>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" multiple style="display:none">
+        <button class="btn btn-success" id="exportBtn" onclick="exportReport()" disabled>导出报告</button>
+      </div>
+    </div>
+    <!-- 设置行：分数线 + 达标率 -->
+    <div class="topbar-settings">
+      <div class="setting-group">
+        <span class="setting-group-title">分数线</span>
+        <div class="setting-fields">
+          <div class="line-setting"><span class="setting-label">控分</span><input type="number" id="lineControl" value="0"></div>
+          <div class="line-setting"><span class="setting-label">公办</span><input type="number" id="linePublic" value="200"></div>
+          <div class="line-setting"><span class="setting-label">民办</span><input type="number" id="linePrivate" value="200"></div>
+          <div class="line-setting"><span class="setting-label">预估</span><input type="number" id="lineEstimate" value="0"></div>
+        </div>
+      </div>
+      <div class="setting-divider"></div>
+      <div class="setting-group rate">
+        <span class="setting-group-title">达标率</span>
+        <div class="setting-fields">
+          <div class="line-setting rate-setting"><span class="setting-label">最低</span><input type="number" id="rateMin" value="60" min="0" max="100" step="1"><span class="unit">%</span></div>
+          <div class="line-setting rate-setting"><span class="setting-label">标准</span><input type="number" id="rateStd" value="80" min="0" max="100" step="1"><span class="unit">%</span></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -444,6 +571,7 @@ body{
     <button class="main-tab" data-page="c1">三分对比图</button>
     <button class="main-tab" data-page="c2">单科成绩</button>
     <button class="main-tab active" data-page="c3">数据明细表</button>
+    <button class="main-tab" data-page="c4">达标率</button>
   </div>
 
   <!-- 个人趋势 -->
@@ -610,6 +738,49 @@ body{
     </div>
   </div>
 
+  <!-- 达标率 -->
+  <div id="page_c4" class="page hidden">
+    <div id="rateSummaryWrap"></div>
+    <div class="card">
+      <div class="page-title">成绩达标率统计</div>
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>考试</label>
+          <select id="rateExamSelect"></select>
+        </div>
+        <span class="info-text">最低达标线 = 科目满分 × <b id="rateMinTip">60</b>%；标准达标线 = 科目满分 × <b id="rateStdTip">80</b>%；达标率可在顶栏调整。同一科目出现多个满分时取最大值。</span>
+      </div>
+      <div class="filter-block">
+        <div class="filter-block-label">科目</div>
+        <div class="filter-block-body">
+          <div id="rateSubjectCheckWrap" class="checkbox-group"></div>
+          <div class="group-actions">
+            <button class="btn-mini" onclick="setAllCheckboxes('rateSubjectCheckWrap',true)">全选</button>
+            <button class="btn-mini" onclick="setAllCheckboxes('rateSubjectCheckWrap',false)">清空</button>
+          </div>
+        </div>
+      </div>
+      <div class="filter-block">
+        <div class="filter-block-label">班级</div>
+        <div class="filter-block-body">
+          <div id="rateClassCheckWrap" class="checkbox-group"></div>
+          <div class="group-actions">
+            <button class="btn-mini" onclick="setAllCheckboxes('rateClassCheckWrap',true)">全选</button>
+            <button class="btn-mini" onclick="setAllCheckboxes('rateClassCheckWrap',false)">清空</button>
+          </div>
+        </div>
+      </div>
+      <div class="data-table-wrap" id="rateTableWrap" style="margin-top:14px"></div>
+      <div class="legend-row" style="margin-top:12px;display:flex;gap:18px;flex-wrap:wrap;font-size:.8rem;color:var(--text-muted)">
+        <span><span class="rate-good">■</span> 达标率 ≥ 80%</span>
+        <span><span class="rate-mid">■</span> 50% ≤ 达标率 &lt; 80%</span>
+        <span><span class="rate-low">■</span> 达标率 &lt; 50%</span>
+        <span><span class="rate-delta up">+5.2pp</span> 较上次上升</span>
+        <span><span class="rate-delta down">-3.1pp</span> 较上次下降</span>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -633,8 +804,46 @@ const classSubCache = new Map();
 const $ = id => document.getElementById(id);
 const uid = () => 'cv' + (++_uid);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-const isTotal = s => s === '总分' || s === '总 分' || s === '总成绩';
+
+/* ============================================================
+ *  科目规范化
+ * ============================================================ */
+const SUBJECT_FULLMARK_RE = /[（(][^)）]*?(\d+(?:\.\d+)?)[^)）]*[)）]\s*$/;
+
+function extractFullMark(orig) {
+  const m = String(orig || '').match(SUBJECT_FULLMARK_RE);
+  if (!m) return null;
+  const n = parseFloat(m[1]);
+  return Number.isNaN(n) || n <= 0 ? null : n;
+}
+function normalizeSubjectKey(orig) {
+  const s = String(orig || '').trim();
+  if (!s) return s;
+  const base = s.replace(SUBJECT_FULLMARK_RE, '').trim();
+  return base || s;
+}
+const isTotal = s => {
+  const clean = normalizeSubjectKey(s);
+  return clean === '总分' || clean === '总 分' || clean === '总成绩';
+};
 const modeLabel = m => ({ avg:'平均分', max:'最高分', min:'最低分' }[m] || m);
+
+const subjectFullMarks = new Map();
+const subjectOriginals = new Map();
+
+function getSubjectFullMark(baseName) {
+  const set = subjectFullMarks.get(baseName);
+  if (!set || !set.size) return null;
+  return Math.max(...set);
+}
+function getSubjectFullMarkList(baseName) {
+  const set = subjectFullMarks.get(baseName);
+  return set ? [...set].sort((a, b) => a - b) : [];
+}
+function getSubjectOriginalNames(baseName) {
+  const set = subjectOriginals.get(baseName);
+  return set ? [...set] : [];
+}
 
 function toNum(v) {
   if (v === null || v === undefined || v === '') return null;
@@ -655,6 +864,23 @@ function fmtDelta(d) {
   const v = Math.round(d * 10) / 10;
   return v > 0 ? '+' + v : String(v);
 }
+function pct(n) { return (n * 100).toFixed(1) + '%'; }
+
+function getRateMin() {
+  const v = parseFloat($('rateMin').value);
+  if (Number.isNaN(v) || v < 0 || v > 100) return 0.6;
+  return v / 100;
+}
+function getRateStd() {
+  const v = parseFloat($('rateStd').value);
+  if (Number.isNaN(v) || v < 0 || v > 100) return 0.8;
+  return v / 100;
+}
+function updateRateTips() {
+  const mn = $('rateMinTip'), st = $('rateStdTip');
+  if (mn) mn.textContent = Math.round(getRateMin() * 100);
+  if (st) st.textContent = Math.round(getRateStd() * 100);
+}
 
 /* =====================================================================
  *  一、数据解析
@@ -670,18 +896,27 @@ function parseSheet(rows, className) {
 
 function parseVertical(rows, className) {
   const headers = (rows[0] || []).map(h => String(h ?? '').trim());
-  const subjects = headers.slice(2).filter(Boolean);
-  if (!subjects.length) return;
+  const rawSubjects = headers.slice(2).filter(Boolean);
+  if (!rawSubjects.length) return;
+  rawSubjects.forEach(registerSubject);
+  const subjects = rawSubjects.map(normalizeSubjectKey);
+
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
     if (!row || row.length < 3) continue;
     const name = String(row[0] ?? '').trim();
     const exam = String(row[1] ?? '').trim();
     if (!name || !exam) continue;
-    const scores = {};
-    subjects.forEach((sub, j) => { scores[sub] = toNum(row[2 + j]); });
     registerExam(exam);
-    subjects.forEach(registerSubject);
+    const scores = {};
+    subjects.forEach((baseKey, j) => {
+      const v = toNum(row[2 + j]);
+      if (v === null) {
+        if (!(baseKey in scores)) scores[baseKey] = null;
+      } else {
+        if (scores[baseKey] == null || v > scores[baseKey]) scores[baseKey] = v;
+      }
+    });
     setScore(className, name, exam, scores);
   }
 }
@@ -702,6 +937,8 @@ function parseHorizontal(rows, className) {
   if (cur && cur.subjects.length) groups.push(cur);
   if (!groups.length) return;
 
+  groups.forEach(g => { g.subjects.forEach(registerSubject); });
+
   for (let r = 2; r < rows.length; r++) {
     const row = rows[r];
     if (!row) continue;
@@ -709,16 +946,37 @@ function parseHorizontal(rows, className) {
     if (!name) continue;
     groups.forEach(g => {
       registerExam(g.exam);
-      g.subjects.forEach(registerSubject);
       const scores = {};
-      g.subjects.forEach((sub, i) => { scores[sub] = toNum(row[g.start + i]); });
+      g.subjects.forEach((rawSub, i) => {
+        const baseKey = normalizeSubjectKey(rawSub);
+        const v = toNum(row[g.start + i]);
+        if (v === null) {
+          if (!(baseKey in scores)) scores[baseKey] = null;
+        } else {
+          if (scores[baseKey] == null || v > scores[baseKey]) scores[baseKey] = v;
+        }
+      });
       setScore(className, name, g.exam, scores);
     });
   }
 }
 
 function registerExam(e) { if (e && !state.examList.includes(e)) state.examList.push(e); }
-function registerSubject(s) { if (s && !state.subjectList.includes(s)) state.subjectList.push(s); }
+
+function registerSubject(orig) {
+  if (!orig) return;
+  const baseKey = normalizeSubjectKey(orig);
+  if (!baseKey) return;
+  if (!state.subjectList.includes(baseKey)) state.subjectList.push(baseKey);
+
+  if (!subjectFullMarks.has(baseKey)) subjectFullMarks.set(baseKey, new Set());
+  if (!subjectOriginals.has(baseKey)) subjectOriginals.set(baseKey, new Set());
+  subjectOriginals.get(baseKey).add(orig);
+
+  const fm = extractFullMark(orig);
+  if (fm != null) subjectFullMarks.get(baseKey).add(fm);
+}
+
 function registerClass(c) {
   if (!state.classList.includes(c)) state.classList.push(c);
   if (!state.classes[c]) state.classes[c] = { students: {} };
@@ -826,7 +1084,6 @@ function countUpDown(cls, sub) {
 }
 
 /* ====== 缺考检测 ====== */
-/* 判断某学生在某次考试中是否参加（该场考试至少有一门科目有有效成绩） */
 function hasAttended(stu, exam) {
   const scores = stu?.[exam];
   if (!scores) return false;
@@ -836,15 +1093,14 @@ function hasAttended(stu, exam) {
   return false;
 }
 
-/* 班级整体缺考信息 */
 function getAbsenteeInfo(cls) {
   const students = Object.keys(state.classes[cls]?.students || {});
   const exams = state.examList;
   if (!exams.length || !students.length) return null;
 
   const neverTested = [];
-  const multiAbsent = [];   // 缺考>=2次
-  const consecutiveAbsent = []; // 连续缺考>=2次
+  const multiAbsent = [];
+  const consecutiveAbsent = [];
 
   students.forEach(name => {
     const stu = state.classes[cls].students[name];
@@ -853,7 +1109,6 @@ function getAbsenteeInfo(cls) {
 
     if (attendCount === 0) { neverTested.push(name); return; }
 
-    // 找最长连续缺考段
     const segs = [];
     let cur = 0;
     flags.forEach(f => {
@@ -873,14 +1128,12 @@ function getAbsenteeInfo(cls) {
   return { neverTested, multiAbsent, consecutiveAbsent, totalStudents: students.length, totalExams: exams.length };
 }
 
-/* 单个学生缺考信息 */
 function getStudentAbsence(stu, exams) {
   const flags = exams.map(ex => hasAttended(stu, ex));
   const absent = exams.filter((_, i) => !flags[i]);
   return { attendedCount: flags.filter(Boolean).length, total: exams.length, absent, flags };
 }
 
-/* 渲染缺考块 */
 function renderAbsentBlock(info) {
   if (!info) return '';
   if (!info.neverTested.length && !info.multiAbsent.length) return '';
@@ -896,7 +1149,6 @@ function renderAbsentBlock(info) {
     html += consec.map(x => '<span class="name-chip">' + esc(x.name) + '（连续 ' + x.maxSeg + ' 次）</span>').join('');
     html += '</div>';
   }
-  // 多次缺考但不属于连续，或额外列出
   const multiOnly = info.multiAbsent.filter(x => !consec.some(c => c.name === x.name));
   if (multiOnly.length) {
     html += '<div><span class="label">多次缺考（含不连续）：</span>';
@@ -1019,7 +1271,6 @@ function makeLineChart(canvasId, labels, datasets, showLines, opts) {
 /* =====================================================================
  *  四、统一分析面板工具
  * ===================================================================== */
-/* sections: [{title, items:[{label,value,cls}], paras:[html], extra:html}] */
 function analysisPanel(sections) {
   if (!sections || !sections.length) return '';
   let html = '<div class="analysis-panel"><div class="analysis-panel-title">综合分析总结<span class="tip">教学洞察</span></div>';
@@ -1051,6 +1302,13 @@ function analysisPanel(sections) {
   return html;
 }
 
+function subjectLabel(baseKey) {
+  const fms = getSubjectFullMarkList(baseKey);
+  if (!fms.length) return baseKey;
+  if (fms.length === 1) return baseKey + '（' + fms[0] + '）';
+  return baseKey + '（' + fms.join('/') + '）';
+}
+
 /* =====================================================================
  *  五、各页面分析构建
  * ===================================================================== */
@@ -1071,7 +1329,6 @@ function buildP1Analysis(studentName, stu) {
     { label: '最新总分', value: totLast != null ? totLast : '-' }
   ];
 
-  /* 缺考信息 */
   const absence = getStudentAbsence(stu, exams);
   let absentHtml = '';
   if (absence.absent.length) {
@@ -1088,7 +1345,6 @@ function buildP1Analysis(studentName, stu) {
     ]);
   }
 
-  /* 使用最近两次该生均有成绩的考试 */
   const validExams = exams.filter(ex => hasAttended(stu, ex));
   const lastV = validExams[validExams.length - 1];
   const prevV = validExams[validExams.length - 2];
@@ -1193,7 +1449,6 @@ function buildP2Analysis(cls) {
   }
   sections.push({ title: '班级整体表现', items });
 
-  /* 段落 */
   const paras = [];
   if (bestSubAvg) paras.push('当前班级最强科目为 <b class="hl">' + esc(bestSubAvg.sub) + '</b>（平均 ' + bestSubAvg.v + ' 分）。');
   if (worstSubAvg && bestSubAvg && worstSubAvg.sub !== bestSubAvg.sub) paras.push('相对薄弱科目为 <b class="hl">' + esc(worstSubAvg.sub) + '</b>（平均 ' + worstSubAvg.v + ' 分）。');
@@ -1203,7 +1458,6 @@ function buildP2Analysis(cls) {
   else if (downSubs > upSubs) paras.push('多数科目出现回落，建议结合具体科目调整教学计划。');
   sections.push({ title: '教学要点', paras });
 
-  /* 各科目进退步前 5 */
   if (exams.length >= 2) {
     const studentMap = state.classes[cls].students;
     let detailHtml = '<div class="subject-wrap" style="margin-top:6px">';
@@ -1227,7 +1481,6 @@ function buildP2Analysis(cls) {
     sections.push({ title: '各科目进步 / 退步学生 Top 5', extra: detailHtml });
   }
 
-  /* 缺考名单 */
   if (absentee) sections.push({ title: '缺考名单记录', extra: renderAbsentBlock(absentee) });
 
   return analysisPanel(sections);
@@ -1255,6 +1508,7 @@ function buildP3Analysis(cls, sub) {
   const t2 = Math.ceil((total - t1) / 2);
   const t3 = total - t1 - t2;
 
+  const fullMark = getSubjectFullMark(sub);
   const items = [
     { label: '科目', value: esc(sub) },
     { label: '参考人数', value: total + ' 人' },
@@ -1262,8 +1516,8 @@ function buildP3Analysis(cls, sub) {
     { label: '最高分', value: max },
     { label: '最低分', value: min }
   ];
+  if (fullMark != null) items.push({ label: '科目满分', value: fullMark });
 
-  /* 最近两次对比 */
   let upCnt = 0, downCnt = 0, avgDelta = null, maxDelta = null, minDelta = null;
   if (exams.length >= 2) {
     const prev = exams[exams.length - 2];
@@ -1286,7 +1540,6 @@ function buildP3Analysis(cls, sub) {
     items.push({ label: '进步 / 退步', value: upCnt + ' / ' + downCnt });
   }
 
-  /* 总分分数线 */
   if (isTotal(sub)) {
     const pub = readLine('linePublic'), priv = readLine('linePrivate');
     const ctrl = readLine('lineControl'), est = readLine('lineEstimate');
@@ -1336,7 +1589,6 @@ function buildP4Analysis(cls) {
   const last = exams[exams.length - 1], prev = exams[exams.length - 2];
   let bestSub = null, worstSub = null;
   let bestAvgSub = null, worstAvgSub = null;
-  const studentTotChanges = [];
 
   subs.forEach(sub => {
     const lv = getStat(cls, last, sub, 'avg');
@@ -1351,7 +1603,6 @@ function buildP4Analysis(cls) {
     if (!worstSub || rate < worstSub.rate) worstSub = { sub, ...cnt, rate };
   });
 
-  /* 总分平均变化 */
   const totAvgLast = getStat(cls, last, '总分', 'avg');
   const totAvgPrev = getStat(cls, prev, '总分', 'avg');
   if (totAvgLast != null && totAvgPrev != null) {
@@ -1447,6 +1698,9 @@ function buildC2Analysis(mode, sub, classes) {
   const valid = list.filter(x => x.s !== null).sort((a, b) => b.s - a.s);
   if (!valid.length) return '';
 
+  const fullMark = getSubjectFullMark(sub);
+  const fmList = getSubjectFullMarkList(sub);
+
   const items = [
     { label: '科目', value: esc(sub) },
     { label: '统计维度', value: modeLabel(mode) },
@@ -1454,6 +1708,7 @@ function buildC2Analysis(mode, sub, classes) {
     { label: '领先班级', value: esc(valid[0].cls), cls: 'font-up' },
     { label: '末位班级', value: esc(valid[valid.length - 1].cls), cls: 'font-down' }
   ];
+  if (fullMark != null) items.push({ label: '科目满分', value: fullMark });
   if (valid.length >= 2) {
     items.push({ label: '首尾差距', value: (valid[0].s - valid[valid.length - 1].s).toFixed(1) + ' 分' });
   }
@@ -1463,6 +1718,9 @@ function buildC2Analysis(mode, sub, classes) {
     paras.push('「' + esc(sub) + '」末次考试中，<b class="hl">' + esc(valid[0].cls) + '</b> 以 ' + valid[0].s + ' 分领先，<b class="hl">' + esc(valid[valid.length - 1].cls) + '</b> 为 ' + valid[valid.length - 1].s + ' 分。');
   } else if (valid.length === 1) {
     paras.push('「' + esc(sub) + '」末次考试中，<b>' + esc(valid[0].cls) + '</b> 为 ' + valid[0].s + ' 分。');
+  }
+  if (fmList.length > 1) {
+    paras.push('该科目在数据中存在多种满分：<b>' + fmList.join(' / ') + '</b>，已按同一科目合并统计（满分取最大值 ' + fullMark + '）。');
   }
   const withDelta = valid.filter(x => x.delta !== null);
   if (withDelta.length) {
@@ -1483,7 +1741,6 @@ function buildC2Analysis(mode, sub, classes) {
     if (est != null) paras.push('预估线达标班级：<b class="hl">' + valid.filter(x => x.s >= est).length + ' / ' + valid.length + '</b>。');
   }
 
-  /* 连续 2 次上升 / 下降 */
   const upStreak = [], downStreak = [];
   if (exams.length >= 3) {
     const [e0, e1, e2] = exams.slice(-3);
@@ -1551,6 +1808,82 @@ function buildC3Analysis(mode, classes, subs) {
   return analysisPanel([{ title: '明细数据综合对比', items, paras }]);
 }
 
+/* -------- C4 达标率分析 -------- */
+function buildC4Analysis(rows, examName, prevExamName) {
+  if (!rows.length) return '';
+  let totalRef = 0, totalMinPass = 0, totalStdPass = 0;
+  let prevWeighted = 0, prevMinSum = 0, prevStdSum = 0;
+  rows.forEach(r => {
+    totalRef += r.total;
+    totalMinPass += r.minPass;
+    totalStdPass += r.stdPass;
+    if (r.prevMinRate != null && r.prevStdRate != null && r.prevTotal) {
+      prevWeighted += r.prevTotal;
+      prevMinSum += r.prevMinRate * r.prevTotal;
+      prevStdSum += r.prevStdRate * r.prevTotal;
+    }
+  });
+  const avgMinRate = totalRef ? totalMinPass / totalRef : 0;
+  const avgStdRate = totalRef ? totalStdPass / totalRef : 0;
+
+  const sortedByMin = [...rows].sort((a, b) => b.minRate - a.minRate);
+  const bestMin = sortedByMin[0];
+  const worstMin = sortedByMin[sortedByMin.length - 1];
+  const sortedByStd = [...rows].sort((a, b) => b.stdRate - a.stdRate);
+  const bestStd = sortedByStd[0];
+  const worstStd = sortedByStd[sortedByStd.length - 1];
+
+  const items = [
+    { label: '统计考试', value: esc(examName) },
+    { label: '统计项', value: rows.length + ' 项' },
+    { label: '最低达标率均值', value: pct(avgMinRate) },
+    { label: '标准达标率均值', value: pct(avgStdRate) }
+  ];
+
+  if (prevWeighted > 0) {
+    const prevMinAvg = prevMinSum / prevWeighted;
+    const prevStdAvg = prevStdSum / prevWeighted;
+    const dMin = (avgMinRate - prevMinAvg) * 100;
+    const dStd = (avgStdRate - prevStdAvg) * 100;
+    items.push({
+      label: '最低达标率变化',
+      value: (dMin > 0 ? '+' : '') + dMin.toFixed(1) + 'pp',
+      cls: dMin > 0 ? 'font-up' : dMin < 0 ? 'font-down' : 'font-flat'
+    });
+    items.push({
+      label: '标准达标率变化',
+      value: (dStd > 0 ? '+' : '') + dStd.toFixed(1) + 'pp',
+      cls: dStd > 0 ? 'font-up' : dStd < 0 ? 'font-down' : 'font-flat'
+    });
+  }
+
+  const paras = [];
+  if (bestMin && bestMin.minRate > 0) {
+    paras.push('最低达标率最高：<b class="hl">' + esc(bestMin.cls) + ' · ' + esc(bestMin.sub) + '</b>（' + pct(bestMin.minRate) + '）。');
+  }
+  if (worstMin && worstMin !== bestMin) {
+    paras.push('最低达标率最低：<b class="warn">' + esc(worstMin.cls) + ' · ' + esc(worstMin.sub) + '</b>（' + pct(worstMin.minRate) + '），建议重点关注。');
+  }
+  if (bestStd && bestStd.stdRate > 0 && (!bestMin || bestStd.cls !== bestMin.cls || bestStd.sub !== bestMin.sub)) {
+    paras.push('标准达标率最高：<b class="hl">' + esc(bestStd.cls) + ' · ' + esc(bestStd.sub) + '</b>（' + pct(bestStd.stdRate) + '）。');
+  }
+  if (worstStd && worstStd !== bestStd) {
+    paras.push('标准达标率最低：<b class="warn">' + esc(worstStd.cls) + ' · ' + esc(worstStd.sub) + '</b>（' + pct(worstStd.stdRate) + '）。');
+  }
+  if (prevExamName && prevWeighted > 0) {
+    const prevMinAvg = prevMinSum / prevWeighted;
+    const prevStdAvg = prevStdSum / prevWeighted;
+    const dMin = (avgMinRate - prevMinAvg) * 100;
+    const dStd = (avgStdRate - prevStdAvg) * 100;
+    paras.push('对比上次（<b>' + esc(prevExamName) + '</b>）：最低达标率变化 <b class="' + (dMin >= 0 ? 'font-up' : 'font-down') + '">' + (dMin > 0 ? '+' : '') + dMin.toFixed(1) + 'pp</b>，标准达标率变化 <b class="' + (dStd >= 0 ? 'font-up' : 'font-down') + '">' + (dStd > 0 ? '+' : '') + dStd.toFixed(1) + 'pp</b>。');
+  }
+  if (avgMinRate >= 0.8) paras.push('整体最低达标率表现良好，教学基本达标。');
+  else if (avgMinRate >= 0.5) paras.push('整体最低达标率处于中等水平，仍有提升空间。');
+  else if (rows.length) paras.push('整体最低达标率偏低，建议整体加强基础教学。');
+
+  return analysisPanel([{ title: '达标率综合统计', items, paras }]);
+}
+
 /* -------- 三分对比图卡片内的单科分析文字 -------- */
 function buildSubjectAnalysis(sub, mode, classes) {
   const exams = state.examList;
@@ -1585,11 +1918,13 @@ function buildSubjectAnalysis(sub, mode, classes) {
     });
   }
   const pub = readLine('linePublic'), priv = readLine('linePrivate');
+  const fmList = getSubjectFullMarkList(sub);
   let pubHtml = '仅总分科目', privHtml = '仅总分科目';
   if (isTotal(sub)) {
     pubHtml = pub === null ? '未设置' : list.filter(x => x.s !== null && x.s >= pub).length + ' 个班级';
     privHtml = priv === null ? '未设置' : list.filter(x => x.s !== null && x.s >= priv).length + ' 个班级';
   }
+  const fmHtml = fmList.length ? '<div>科目满分：' + fmList.join(' / ') + (fmList.length > 1 ? '（已按同一科目合并）' : '') + '</div>' : '';
   return '<div class="sub-analysis-title" style="font-weight:800;color:var(--primary-darker);margin-bottom:4px;font-size:.82rem">' + esc(sub) + '｜' + modeLabel(mode) + '分析【最新：' + esc(lastExam) + '】</div>' +
     '<div style="font-size:.78rem;line-height:1.75;color:var(--text-sub)">' +
     '<div>最优：' + esc(best) + ' &nbsp;|&nbsp; 最差：' + esc(worst) + '</div>' +
@@ -1597,6 +1932,7 @@ function buildSubjectAnalysis(sub, mode, classes) {
     '<div>连续 2 次上升：' + (upStreak.length ? esc(upStreak.join('、')) : '—') + '</div>' +
     '<div>连续 2 次下降：' + (downStreak.length ? esc(downStreak.join('、')) : '—') + '</div>' +
     '<div>公办线达标：' + pubHtml + ' &nbsp;|&nbsp; 民办线达标：' + privHtml + '</div>' +
+    fmHtml +
     '</div>';
 }
 
@@ -1615,12 +1951,13 @@ function renderCurrentPage() {
     case 'c1': renderPageC1(); break;
     case 'c2': renderPageC2(); break;
     case 'c3': renderPageC3(); break;
+    case 'c4': renderPageC4(); break;
   }
 }
 function switchPage(page) {
   state.currentPage = page;
   document.querySelectorAll('.main-tab').forEach(b => b.classList.toggle('active', b.dataset.page === page));
-  ['p1', 'p2', 'p3', 'p4', 'c1', 'c2', 'c3'].forEach(p => {
+  ['p1', 'p2', 'p3', 'p4', 'c1', 'c2', 'c3', 'c4'].forEach(p => {
     const el = $('page_' + p);
     if (el) el.classList.toggle('hidden', p !== page);
   });
@@ -1661,7 +1998,7 @@ function renderPage1() {
     const card = document.createElement('div');
     card.className = 'chart-card';
     const id = uid();
-    card.innerHTML = '<h4 title="' + esc(sub) + '">' + esc(sub) + ' 成绩趋势</h4><div class="chart-box"><canvas id="' + id + '"></canvas></div>';
+    card.innerHTML = '<h4 title="' + esc(subjectLabel(sub)) + '">' + esc(sub) + ' 成绩趋势</h4><div class="chart-box"><canvas id="' + id + '"></canvas></div>';
     container.appendChild(card);
     const data = exams.map(ex => {
       const v = stu[ex]?.[sub];
@@ -1701,7 +2038,7 @@ function renderPage2() {
     const card = document.createElement('div');
     card.className = 'chart-card';
     const id = uid();
-    card.innerHTML = '<h4 title="' + esc(sub) + '">' + esc(sub) + '</h4><div class="chart-box"><canvas id="' + id + '"></canvas></div>';
+    card.innerHTML = '<h4 title="' + esc(subjectLabel(sub)) + '">' + esc(sub) + '</h4><div class="chart-box"><canvas id="' + id + '"></canvas></div>';
     wrap.appendChild(card);
     const avg = exams.map(ex => getStat(cls, ex, sub, 'avg'));
     const max = exams.map(ex => getStat(cls, ex, sub, 'max'));
@@ -1860,7 +2197,7 @@ function renderStudentCharts(card) {
     const item = document.createElement('div');
     item.className = 'chart-card';
     const id = uid();
-    item.innerHTML = '<h4 title="' + esc(sub) + '">' + esc(sub) + '</h4><div class="chart-box"><canvas id="' + id + '"></canvas></div>';
+    item.innerHTML = '<h4 title="' + esc(subjectLabel(sub)) + '">' + esc(sub) + '</h4><div class="chart-box"><canvas id="' + id + '"></canvas></div>';
     grid.appendChild(item);
     addChart(makeLineChart(id, exams, [{
       label: sub, data,
@@ -1898,7 +2235,7 @@ function renderPageC1() {
     const card = document.createElement('div');
     card.className = 'chart-card';
     const id = uid();
-    card.innerHTML = '<h4 title="' + esc(sub) + '">' + esc(sub) + '｜' + modeLabel(mode) + '对比</h4>' +
+    card.innerHTML = '<h4 title="' + esc(subjectLabel(sub)) + '">' + esc(sub) + '｜' + modeLabel(mode) + '对比</h4>' +
       '<div class="chart-box"><canvas id="' + id + '"></canvas></div>' +
       '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(248,251,255,.9);border:1px dashed rgba(59,130,246,.25)">' +
       buildSubjectAnalysis(sub, mode, classes) + '</div>';
@@ -1985,7 +2322,7 @@ function renderPageC2() {
       plugins: {
         legend: { position: 'top', labels: { boxWidth: 24, boxHeight: 13, font: { size: 13, weight: '600' }, padding: 18, usePointStyle: true, pointStyle: 'line' } },
         tooltip: { mode: 'index', intersect: false, titleFont: { size: 13.5, weight: '700' }, bodyFont: { size: 13 }, padding: 14, boxPadding: 8, backgroundColor: 'rgba(30,58,95,.94)', cornerRadius: 8 },
-        title: { display: true, text: sub + '｜' + modeLabel(mode) + '对比', font: { size: 17, weight: '700' }, color: '#1d4ed8', padding: { top: 4, bottom: 20 } }
+        title: { display: true, text: subjectLabel(sub) + '｜' + modeLabel(mode) + '对比', font: { size: 17, weight: '700' }, color: '#1d4ed8', padding: { top: 4, bottom: 20 } }
       },
       scales: {
         x: { grid: { display: false }, ticks: { font: { size: 12.5 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 18, padding: 6 } },
@@ -2081,6 +2418,137 @@ function renderPageC3() {
   });
 }
 
+/* ---------- C4 达标率 ---------- */
+function renderPageC4() {
+  const wrap = $('rateTableWrap');
+  const summaryWrap = $('rateSummaryWrap');
+  const classes = getChecked('rateClassCheckWrap');
+  const subs = getChecked('rateSubjectCheckWrap');
+  const exams = state.examList;
+  summaryWrap.innerHTML = '';
+
+  if (!classes.length || !subs.length || !exams.length) {
+    wrap.innerHTML = '<div class="empty-hint">请勾选至少一个班级和至少一个科目</div>';
+    return;
+  }
+
+  const examIdx = getRateExamIdx();
+  if (examIdx < 0) {
+    wrap.innerHTML = '<div class="empty-hint">暂无可选考试</div>';
+    return;
+  }
+  const curExam = exams[examIdx];
+  const prevExam = examIdx > 0 ? exams[examIdx - 1] : null;
+
+  const minPct = getRateMin();
+  const stdPct = getRateStd();
+  const minPctText = Math.round(minPct * 100) + '%';
+  const stdPctText = Math.round(stdPct * 100) + '%';
+
+  const rows = [];
+  subs.forEach(sub => {
+    const fullMark = getSubjectFullMark(sub);
+    if (fullMark == null) return;
+    const minLine = Math.round(fullMark * minPct * 10) / 10;
+    const stdLine = Math.round(fullMark * stdPct * 10) / 10;
+
+    classes.forEach(cls => {
+      const students = state.classes[cls]?.students || {};
+
+      const scores = [];
+      for (const name in students) {
+        const v = students[name]?.[curExam]?.[sub];
+        if (typeof v === 'number') scores.push(v);
+      }
+      if (!scores.length) return;
+      const total = scores.length;
+      const minPass = scores.filter(s => s >= minLine).length;
+      const stdPass = scores.filter(s => s >= stdLine).length;
+
+      let prevMinRate = null, prevStdRate = null, prevTotal = 0;
+      if (prevExam) {
+        const ps = [];
+        for (const name in students) {
+          const v = students[name]?.[prevExam]?.[sub];
+          if (typeof v === 'number') ps.push(v);
+        }
+        if (ps.length) {
+          prevTotal = ps.length;
+          prevMinRate = ps.filter(s => s >= minLine).length / ps.length;
+          prevStdRate = ps.filter(s => s >= stdLine).length / ps.length;
+        }
+      }
+
+      rows.push({
+        sub, cls, fullMark, minLine, stdLine, total,
+        minPass, stdPass,
+        minRate: minPass / total,
+        stdRate: stdPass / total,
+        prevMinRate, prevStdRate, prevTotal
+      });
+    });
+  });
+
+  if (!rows.length) {
+    wrap.innerHTML = '<div class="empty-hint">所选条件下暂无可用数据（请确认科目名称中含括号满分，如「信息技术（210）」）</div>';
+    return;
+  }
+
+  rows.sort((a, b) => {
+    const c = a.sub.localeCompare(b.sub, 'zh');
+    if (c) return c;
+    return a.cls.localeCompare(b.cls, 'zh');
+  });
+
+  summaryWrap.innerHTML = buildC4Analysis(rows, curExam, prevExam);
+
+  const rateCls = r => r >= 0.8 ? 'rate-good' : r >= 0.5 ? 'rate-mid' : 'rate-low';
+  function deltaHtml(cur, prev) {
+    if (prev == null) return '<span class="rate-delta flat">—</span>';
+    const d = (cur - prev) * 100;
+    if (Math.abs(d) < 0.05) return '<span class="rate-delta flat">0.0pp</span>';
+    return '<span class="rate-delta ' + (d > 0 ? 'up' : 'down') + '">' + (d > 0 ? '+' : '') + d.toFixed(1) + 'pp</span>';
+  }
+
+  let html = '<table class="data-table"><thead><tr>' +
+    '<th>序号</th>' +
+    '<th>科目</th>' +
+    '<th>班级</th>' +
+    '<th>参考人数</th>' +
+    '<th>满分</th>' +
+    '<th>最低达标线<br><span style="font-weight:500;font-size:.72rem;opacity:.85">(满分×' + minPctText + ')</span></th>' +
+    '<th>最低达标人数</th>' +
+    '<th>最低达标率</th>' +
+    '<th>最低达标率<br>对比上次</th>' +
+    '<th>标准达标线<br><span style="font-weight:500;font-size:.72rem;opacity:.85">(满分×' + stdPctText + ')</span></th>' +
+    '<th>标准达标人数</th>' +
+    '<th>标准达标率</th>' +
+    '<th>标准达标率<br>对比上次</th>' +
+    '</tr></thead><tbody>';
+
+  rows.forEach((r, i) => {
+    const fmList = getSubjectFullMarkList(r.sub);
+    const fmLabel = fmList.length > 1 ? fmList.join('/') : r.fullMark;
+    html += '<tr>' +
+      '<td style="font-weight:700">' + (i + 1) + '</td>' +
+      '<td class="cell-subject">' + esc(r.sub) + '</td>' +
+      '<td class="cell-class">' + esc(r.cls) + '</td>' +
+      '<td>' + r.total + '</td>' +
+      '<td>' + fmLabel + '</td>' +
+      '<td>' + r.minLine + '</td>' +
+      '<td>' + r.minPass + '</td>' +
+      '<td class="rate-cell ' + rateCls(r.minRate) + '">' + pct(r.minRate) + '</td>' +
+      '<td>' + deltaHtml(r.minRate, r.prevMinRate) + '</td>' +
+      '<td>' + r.stdLine + '</td>' +
+      '<td>' + r.stdPass + '</td>' +
+      '<td class="rate-cell ' + rateCls(r.stdRate) + '">' + pct(r.stdRate) + '</td>' +
+      '<td>' + deltaHtml(r.stdRate, r.prevStdRate) + '</td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
 /* =====================================================================
  *  七、UI 初始化与交互
  * ===================================================================== */
@@ -2089,11 +2557,16 @@ function renderCheckboxes(wrapId, values, checkedValues) {
   if (!wrap) return;
   const checkedSet = new Set(checkedValues || []);
   if (!values.length) { wrap.innerHTML = '<span class="info-text">暂无可选项</span>'; return; }
-  wrap.innerHTML = values.map(v =>
-    '<label class="checkbox-item' + (checkedSet.has(v) ? ' checked' : '') + '">' +
-    '<input type="checkbox" value="' + esc(v) + '"' + (checkedSet.has(v) ? ' checked' : '') + '>' +
-    '<span>' + esc(v) + '</span></label>'
-  ).join('');
+  wrap.innerHTML = values.map(v => {
+    const fms = getSubjectFullMarkList(v);
+    let label = v;
+    if (fms.length === 1) label = v + '（' + fms[0] + '）';
+    else if (fms.length > 1) label = v + '（' + fms.join('/') + '）';
+    const tip = getSubjectOriginalNames(v).join(' / ');
+    return '<label class="checkbox-item' + (checkedSet.has(v) ? ' checked' : '') + '" title="' + esc(tip) + '">' +
+      '<input type="checkbox" value="' + esc(v) + '"' + (checkedSet.has(v) ? ' checked' : '') + '>' +
+      '<span>' + esc(label) + '</span></label>';
+  }).join('');
 }
 function setAllCheckboxes(wrapId, checked) {
   const wrap = $(wrapId);
@@ -2155,11 +2628,11 @@ function updateClassDependentSelects() {
   const classSubs = getClassSubjects(cls);
   const prevSel = $('subjectSelect').value;
   $('subjectSelect').innerHTML = '<option value="all">所有科目</option>' +
-    classSubs.map(s => '<option value="' + esc(s) + '">' + esc(s) + '</option>').join('');
+    classSubs.map(s => '<option value="' + esc(s) + '">' + esc(subjectLabel(s)) + '</option>').join('');
   if (prevSel && (prevSel === 'all' || classSubs.includes(prevSel))) $('subjectSelect').value = prevSel;
   const prevClassSub = $('classSubjectSelect').value;
   $('classSubjectSelect').innerHTML = classSubs.length
-    ? classSubs.map(s => '<option value="' + esc(s) + '">' + esc(s) + '</option>').join('')
+    ? classSubs.map(s => '<option value="' + esc(s) + '">' + esc(subjectLabel(s)) + '</option>').join('')
     : '<option value="">暂无科目</option>';
   if (prevClassSub && classSubs.includes(prevClassSub)) $('classSubjectSelect').value = prevClassSub;
 }
@@ -2168,10 +2641,32 @@ function updateSubjectChartSelect() {
   if (!sel) return;
   const prev = sel.value;
   if (!state.subjectList.length) { sel.innerHTML = '<option value="">暂无科目</option>'; return; }
-  sel.innerHTML = state.subjectList.map(s => '<option value="' + esc(s) + '">' + esc(s) + '</option>').join('');
+  sel.innerHTML = state.subjectList.map(s =>
+    '<option value="' + esc(s) + '">' + esc(subjectLabel(s)) + '</option>').join('');
   if (prev && state.subjectList.includes(prev)) sel.value = prev;
   else if (state.subjectList.includes('总分')) sel.value = '总分';
   else sel.value = state.subjectList[0];
+}
+function populateRateExamSelect() {
+  const sel = $('rateExamSelect');
+  if (!sel) return;
+  const prev = sel.value;
+  const exams = state.examList;
+  if (!exams.length) { sel.innerHTML = '<option value="">暂无考试</option>'; return; }
+  sel.innerHTML = exams.map((ex, i) =>
+    '<option value="' + i + '">' + esc(ex) + (i === exams.length - 1 ? '（最新）' : '') + '</option>'
+  ).join('');
+  const pv = parseInt(prev, 10);
+  if (!Number.isNaN(pv) && pv >= 0 && pv < exams.length) sel.value = String(pv);
+  else sel.value = String(exams.length - 1);
+}
+function getRateExamIdx() {
+  const sel = $('rateExamSelect');
+  const exams = state.examList;
+  if (!sel) return exams.length - 1;
+  const v = parseInt(sel.value, 10);
+  if (Number.isNaN(v) || v < 0 || v >= exams.length) return exams.length - 1;
+  return v;
 }
 function initUI() {
   $('statusBar').style.display = 'flex';
@@ -2192,8 +2687,15 @@ function initUI() {
   renderCheckboxes('tableSubjectCheckWrap', allSubjects, defaultSub ? [defaultSub] : []);
   renderCheckboxes('tableClassCheckWrap', allClasses, classesWithDefault);
 
+  const subjectsWithMark = allSubjects.filter(s => getSubjectFullMark(s) != null);
+  const defaultRateSubs = subjectsWithMark.length ? subjectsWithMark : allSubjects;
+  renderCheckboxes('rateSubjectCheckWrap', allSubjects, defaultRateSubs);
+  renderCheckboxes('rateClassCheckWrap', allClasses, allClasses);
+
+  populateRateExamSelect();
   updateSubjectChartSelect();
   updateClassDependentSelects();
+  updateRateTips();
   bindCheckboxEvents();
   autoSetScoreLines();
   switchPage('c3');
@@ -2204,16 +2706,21 @@ function resetAll() {
   destroyCharts();
   statCache.clear();
   classSubCache.clear();
+  subjectFullMarks.clear();
+  subjectOriginals.clear();
   state.classList = []; state.examList = []; state.subjectList = []; state.classes = {};
   state.currentClass = ''; _uid = 0;
   ['chartsContainer', 'subjectChartWrap', 'classTableContainer',
-   'page4Container', 'tripleSubjectWrap', 'dataTableWrap',
+   'page4Container', 'tripleSubjectWrap', 'dataTableWrap', 'rateTableWrap',
    'personSummaryWrap', 'classSummaryWrap', 'singleClassSummaryWrap',
    'allClassSummaryWrap', 'tripleSummaryWrap', 'subjectSummaryWrap',
-   'dataTableSummaryWrap'].forEach(id => { const el = $(id); if (el) el.innerHTML = ''; });
+   'dataTableSummaryWrap', 'rateSummaryWrap'].forEach(id => { const el = $(id); if (el) el.innerHTML = ''; });
   ['tripleClassCheckWrap', 'subjectChartClassWrap', 'tableClassCheckWrap',
-   'tableSubjectCheckWrap'].forEach(id => { const el = $(id); if (el) el.innerHTML = ''; });
+   'tableSubjectCheckWrap', 'rateSubjectCheckWrap', 'rateClassCheckWrap'].forEach(id => {
+    const el = $(id); if (el) el.innerHTML = '';
+  });
   const se = $('subjectChartEmpty'); if (se) se.classList.add('hidden');
+  const rsel = $('rateExamSelect'); if (rsel) rsel.innerHTML = '';
   $('statusBar').style.display = 'none';
 }
 
@@ -2308,7 +2815,7 @@ function autoSetScoreLines() {
 function downloadTemplate() {
   const wb = XLSX.utils.book_new();
   const h1 = ['学生','第一次考试','第一次考试','第一次考试','第一次考试','第二次考试','第二次考试','第二次考试','第二次考试'];
-  const h2 = ['学生','语文','数学','英语','总分','语文','数学','英语','总分'];
+  const h2 = ['学生','语文（100）','数学（100）','英语（100）','总分','语文（100）','数学（100）','英语（100）','总分'];
   const merges = [
     { s: { r: 0, c: 0 }, e: { r: 1, c: 0 } },
     { s: { r: 0, c: 1 }, e: { r: 0, c: 4 } },
@@ -2358,6 +2865,8 @@ async function exportReport() {
     } else if (state.currentPage === 'c2') {
       const sub = $('subjectChartSubSelect').value || '单科';
       fileName = sub + '_单科成绩对比';
+    } else if (state.currentPage === 'c4') {
+      fileName = '成绩达标率统计';
     } else {
       const sel = getChecked('tableClassCheckWrap');
       if (sel.length) fileName = sel.join('_') + '_班级对比';
@@ -2396,13 +2905,28 @@ function bindEvents() {
     if (state.currentPage === 'c2') renderCurrentPage();
   });
   $('tableModeSelect').addEventListener('change', () => { if (state.currentPage === 'c3') renderCurrentPage(); });
-  ['lineControl', 'linePublic', 'linePrivate', 'lineEstimate'].forEach(id => {
-    $(id).addEventListener('change', () => renderCurrentPage());
-    $(id).addEventListener('input', () => {
+
+  const rateExamSel = $('rateExamSelect');
+  if (rateExamSel) {
+    rateExamSel.addEventListener('change', () => {
+      if (state.currentPage === 'c4') renderPageC4();
+    });
+  }
+
+  ['lineControl', 'linePublic', 'linePrivate', 'lineEstimate', 'rateMin', 'rateStd'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('change', () => {
+      updateRateTips();
+      renderCurrentPage();
+    });
+    el.addEventListener('input', () => {
+      updateRateTips();
       clearTimeout(window.__lineTimer);
       window.__lineTimer = setTimeout(() => renderCurrentPage(), 380);
     });
   });
+
   let resizeTimer = null;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
