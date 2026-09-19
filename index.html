@@ -97,6 +97,8 @@ h1{
 .grid{display:grid;gap:clamp(10px,1.4vw,16px)}
 .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* 专项工具网格：桌面3列 */
+.grid-tools{grid-template-columns:repeat(3,minmax(0,1fr))}
 
 /* ===== 卡片 ===== */
 .card{
@@ -244,14 +246,19 @@ h1{
 .footer-author b{color:rgba(255,255,255,.62);font-weight:600}
 
 /* ===== 响应式 ===== */
+@media (max-width:900px){
+  .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid-tools{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 @media (max-width:820px){
   .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid-tools{grid-template-columns:repeat(2,minmax(0,1fr))}
   .card-campus .card-title{font-size:1.25rem}
 }
 @media (max-width:640px){
   body{align-items:flex-start;padding:14px 12px 24px}
   .glass-box{margin-top:6px}
-  .grid-3,.grid-2{grid-template-columns:1fr}
+  .grid-3,.grid-2,.grid-tools{grid-template-columns:1fr}
   .card{padding:16px 16px}
   .card:hover{transform:translateY(-2px)}
   .card-icon{width:32px;height:32px;font-size:16px;border-radius:9px}
@@ -295,27 +302,31 @@ h1{
         <span class="badge badge-ok">最新</span>
         <ul class="updates">
           <li>成绩：更新9月12日周测成绩</li>
-          <li>新增：缺考检测、统一分析面板、四线分、达标率</li>
-          <li>优化：分析卡片整合、排名规则、手机端显示</li>
         </ul>
       </a>
 
-      <a href="index-二合一（星耀校区）.html" class="card card-campus">
+      <a href="index-404.html" class="card card-campus">
         <div class="card-top">
           <div class="card-icon">🏫</div>
           <div class="card-title">星耀校区</div>
         </div>
         <div class="card-desc">个人 + 班级成绩综合展示</div>
         <span class="badge badge-off">未更新</span>
+        <ul class="updates">
+          <li>成绩：无</li>
+        </ul>
       </a>
 
-      <a href="index-二合一（睿智校区）.html" class="card card-campus">
+      <a href="index-404.html" class="card card-campus">
         <div class="card-top">
           <div class="card-icon">🏫</div>
           <div class="card-title">睿智校区</div>
         </div>
         <div class="card-desc">个人 + 班级成绩综合展示</div>
         <span class="badge badge-off">未更新</span>
+        <ul class="updates">
+          <li>成绩：无</li>
+        </ul>
       </a>
 
     </div>
@@ -324,22 +335,33 @@ h1{
   <!-- ===== 专项工具 ===== -->
   <section class="section">
     <div class="section-label">专项工具</div>
-    <div class="grid grid-2">
+    <div class="grid grid-tools">
 
-      <a href="index-个人分析.html" class="card">
+      <!-- 学生个人各科成绩变化：加“暂停使用”徽章 -->
+      <a href="index-404.html" class="card">
         <div class="card-top">
           <div class="card-icon">📈</div>
           <div class="card-title">学生个人各科成绩变化</div>
         </div>
-        <div class="card-desc">查看学生个人各科考试成绩变化趋势，追踪分数波动情况</div>
+        <span class="badge badge-soon">暂停使用</span>
       </a>
 
-      <a href="index-班级分析.html" class="card">
+      <!-- 班级横向成绩对比：加“暂停使用”徽章 -->
+      <a href="index-404.html" class="card">
         <div class="card-top">
           <div class="card-icon">📊</div>
           <div class="card-title">班级横向成绩对比</div>
         </div>
-        <div class="card-desc">多班级横向单科目成绩对比，直观展示各班分数差距与排名</div>
+        <span class="badge badge-soon">暂停使用</span>
+      </a>
+
+      <!-- 通用分析卡片 -->
+      <a href="index-通用.html" class="card">
+        <div class="card-top">
+          <div class="card-icon">🧩</div>
+          <div class="card-title">通用分析</div>
+        </div>
+        <span class="badge badge-soon">全新</span>
       </a>
 
     </div>

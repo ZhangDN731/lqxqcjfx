@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>睿智校区成绩分析系统</title>
+<title>成绩分析系统 · 通用模板</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
+/* ========== 全局样式 ========== */
 :root{
   --primary:#3b82f6;--primary-dark:#2563eb;--primary-darker:#1d4ed8;
   --text-main:#1a1a2e;--text-sub:#334155;--text-muted:#64748b;
@@ -27,6 +28,7 @@ body{
 }
 #particleCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.28}
 
+/* ========== 顶栏 ========== */
 .topbar{position:sticky;top:0;z-index:100;background:#ffffff;border-bottom:1px solid rgba(59,130,246,.18);box-shadow:0 4px 20px rgba(59,130,246,.08)}
 .topbar-inner{max-width:1800px;margin:0 auto;padding:0 24px}
 .topbar-main{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:10px 0}
@@ -50,6 +52,7 @@ body{
 .line-setting.rate-setting:hover{border-color:rgba(34,197,94,.5)}
 .line-setting.rate-setting input{color:#15803d}
 
+/* ========== 按钮 ========== */
 .btn{padding:7px 14px;border-radius:10px;font-size:.85rem;font-weight:600;border:1px solid rgba(59,130,246,.25);background:#ffffff;color:#1e3a5f;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-family:inherit}
 .btn:hover{border-color:var(--primary);color:var(--primary-dark);background:#eff6ff;box-shadow:0 4px 14px rgba(59,130,246,.2)}
 .btn-primary{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(59,130,246,.3)}
@@ -60,8 +63,8 @@ body{
 .btn-mini{padding:3px 10px;font-size:.75rem;border-radius:7px;border:1px solid rgba(59,130,246,.25);background:#fff;color:var(--primary-dark);cursor:pointer;font-weight:600;transition:all .18s;font-family:inherit}
 .btn-mini:hover{background:rgba(59,130,246,.1);border-color:var(--primary)}
 
+/* ========== 容器与状态栏 ========== */
 .container{position:relative;z-index:1;max-width:1800px;margin:0 auto;padding:18px 24px 40px}
-
 .status-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:#ffffff;border:1px solid var(--card-border);border-radius:var(--radius);padding:10px 18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(59,130,246,.06)}
 .status-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .status-label{font-weight:600;font-size:.85rem;color:var(--text-sub)}
@@ -70,20 +73,20 @@ body{
 .status-select{padding:6px 12px;border:1px solid rgba(59,130,246,.25);border-radius:9px;background:#fff;font-size:.85rem;color:var(--text-main);cursor:pointer;font-family:inherit}
 .status-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
 
+/* ========== 主/子标签页 ========== */
 .main-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:6px;margin-bottom:16px;background:#ffffff;border:1px solid var(--card-border);border-radius:14px;box-shadow:0 2px 12px rgba(59,130,246,.06)}
 .main-tab{padding:8px 18px;border:none;border-radius:9px;background:transparent;color:var(--text-sub);font-size:.87rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
 .main-tab:hover{background:#eff6ff;color:var(--primary-dark)}
 .main-tab.active{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,.3)}
-
 .sub-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:5px;margin-bottom:14px;background:#f8fbff;border:1px solid var(--card-border);border-radius:12px;width:fit-content}
 .sub-tab{padding:6px 14px;border:none;border-radius:7px;background:transparent;color:var(--text-sub);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
 .sub-tab:hover{background:#dbeafe;color:var(--primary-dark)}
 .sub-tab.active{background:var(--primary);color:#fff;box-shadow:0 3px 10px rgba(59,130,246,.3)}
 
+/* ========== 卡片与图表 ========== */
 .card{background:#ffffff;border:1px solid var(--card-border);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(59,130,246,.06)}
 .card h3{font-size:1.02rem;margin-bottom:12px;color:var(--primary-darker)}
 .card h4{font-size:.95rem;margin-bottom:10px;color:var(--primary-darker)}
-
 .chart-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
 .chart-grid-5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:start}
 .chart-grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
@@ -93,12 +96,12 @@ body{
 .chart-box{position:relative;width:100%;height:clamp(240px,32vh,400px);min-width:0}
 .chart-grid-5 .chart-box{height:clamp(180px,24vh,280px)}
 .chart-grid-2 .chart-box{height:clamp(260px,36vh,420px)}
-
 .big-chart-wrap{position:relative;width:100%;height:clamp(560px,78vh,960px);margin-top:16px;background:#ffffff;border:1px solid var(--card-border);border-radius:14px;padding:22px}
 .big-chart-wrap canvas{width:100%!important;height:100%!important;display:block}
 .chart-empty-overlay{position:absolute;inset:16px;display:flex;align-items:center;justify-content:center;background:#ffffff;color:var(--text-muted);font-size:.92rem;font-weight:600;border-radius:10px;text-align:center;padding:16px;pointer-events:none}
 .triple-chart-card .chart-box{height:clamp(280px,40vh,460px)}
 
+/* ========== 分析面板 ========== */
 .analysis-panel{margin-bottom:18px;padding:20px 22px;border-radius:16px;background:#eff6ff;border:1px solid rgba(59,130,246,.2);box-shadow:0 6px 22px rgba(59,130,246,.08)}
 .analysis-panel-title{font-size:1.04rem;font-weight:800;color:var(--primary-darker);margin-bottom:16px;display:flex;align-items:center;gap:10px;padding-bottom:11px;border-bottom:2px dashed rgba(59,130,246,.24)}
 .analysis-panel-title::before{content:'';display:inline-block;width:5px;height:20px;border-radius:3px;background:linear-gradient(180deg,#3b82f6,#1d4ed8)}
@@ -116,7 +119,6 @@ body{
 .analysis-metric-value.font-up{color:var(--up)}
 .analysis-metric-value.font-down{color:var(--down)}
 .analysis-metric-value.font-flat{color:var(--text-muted)}
-
 .analysis-text p{font-size:.86rem;color:var(--text-sub);line-height:1.95;padding-left:16px;position:relative;margin-bottom:5px}
 .analysis-text p:last-child{margin-bottom:0}
 .analysis-text p::before{content:'';position:absolute;left:2px;top:.82em;width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#1d4ed8);opacity:.65}
@@ -125,18 +127,17 @@ body{
 .analysis-text b.font-down{color:var(--down)}
 .analysis-text b.hl{display:inline-block;padding:0 6px;border-radius:5px;background:#dbeafe;color:var(--primary-darker);font-weight:800;line-height:1.5}
 .analysis-text b.warn{display:inline-block;padding:0 6px;border-radius:5px;background:#fee2e2;color:#b91c1c;font-weight:800;line-height:1.5}
-
 .absent-list{margin-top:6px;padding:10px 12px;border-radius:10px;background:#fef2f2;border:1px dashed rgba(239,68,68,.4);font-size:.83rem;color:#7f1d1d;line-height:1.85}
 .absent-list .label{font-weight:800;color:#b91c1c;margin-right:6px;display:inline-block}
 .absent-list .name-chip{display:inline-block;padding:1px 9px;margin:2px 3px 2px 0;border-radius:99px;background:#ffffff;color:#b91c1c;font-weight:700;border:1px solid rgba(239,68,68,.3);font-size:.78rem}
 
+/* ========== 筛选与复选框 ========== */
 .filter-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid rgba(59,130,246,.12)}
 .filter-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
 .filter-group{display:flex;align-items:center;gap:8px}
 .filter-group>label{font-size:.85rem;font-weight:600;color:var(--text-sub);white-space:nowrap}
 .filter-group select,.filter-group input{padding:6px 12px;border:1px solid rgba(59,130,246,.25);border-radius:9px;background:#fff;font-size:.85rem;color:var(--text-main);cursor:pointer;font-family:inherit;min-width:110px}
 .filter-group select:focus,.filter-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
-
 .filter-block{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(59,130,246,.14)}
 .filter-block:last-child{border-bottom:none}
 .filter-block-label{flex:0 0 auto;font-size:.85rem;font-weight:700;color:var(--text-sub);padding-top:5px;white-space:nowrap;min-width:44px}
@@ -150,145 +151,56 @@ body{
 .checkbox-item.checked::before{opacity:1;background:#fff}
 .group-actions{display:flex;gap:6px;flex:0 0 auto;padding-top:1px}
 
-/* ============================================================
- *  ★★★ 表格：原生 table + table-layout:fixed ★★★
- * ============================================================ */
-.grid-table-scroll{
-  overflow:auto;
-  max-height:75vh;
-  margin-top:4px;
-  border-radius:12px;
-  border:1px solid var(--card-border);
-  background:#ffffff;
-  -webkit-overflow-scrolling:touch;
-  position:relative;
-}
-
-table.data-table{
-  table-layout:fixed;
-  border-collapse:separate;
-  border-spacing:0;
-  width:100%;
-  font-variant-numeric:tabular-nums;
-}
-
-table.data-table th,
-table.data-table td{
-  box-sizing:border-box;
-  height:42px;
-  padding:2px 10px;
-  text-align:center;
-  vertical-align:middle;
-  font-size:.84rem;
-  line-height:1.25;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  border-right:1px solid rgba(59,130,246,.14);
-  border-bottom:1px solid rgba(59,130,246,.14);
-  background:#ffffff;
-}
-table.data-table th:last-child,
-table.data-table td:last-child{border-right:none}
-
-table.data-table thead th{
-  position:sticky;
-  top:0;
-  z-index:3;
-  height:46px;
-  padding:2px 8px;
-  background:linear-gradient(135deg,#3b82f6,#2563eb);
-  color:#ffffff;
-  font-weight:700;
-  font-size:.85rem;
-  letter-spacing:.2px;
-  border-right:1px solid rgba(255,255,255,.18);
-  border-bottom:1px solid rgba(255,255,255,.28);
-}
+/* ========== 表格 ========== */
+.grid-table-scroll{overflow:auto;max-height:75vh;margin-top:4px;border-radius:12px;border:1px solid var(--card-border);background:#ffffff;-webkit-overflow-scrolling:touch;position:relative}
+table.data-table{table-layout:fixed;border-collapse:separate;border-spacing:0;width:100%;font-variant-numeric:tabular-nums}
+table.data-table th,table.data-table td{box-sizing:border-box;height:42px;padding:2px 10px;text-align:center;vertical-align:middle;font-size:.84rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-right:1px solid rgba(59,130,246,.14);border-bottom:1px solid rgba(59,130,246,.14);background:#ffffff}
+table.data-table th:last-child,table.data-table td:last-child{border-right:none}
+table.data-table thead th{position:sticky;top:0;z-index:3;height:46px;padding:2px 8px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#ffffff;font-weight:700;font-size:.85rem;letter-spacing:.2px;border-right:1px solid rgba(255,255,255,.18);border-bottom:1px solid rgba(255,255,255,.28)}
 table.data-table thead th.sortable{cursor:pointer;user-select:none}
-table.data-table thead th.sortable::after{
-  content:'⇅';
-  display:inline-block;
-  margin-left:5px;
-  font-size:.7rem;
-  opacity:.6;
-  vertical-align:1px;
-}
+table.data-table thead th.sortable::after{content:'⇅';display:inline-block;margin-left:5px;font-size:.7rem;opacity:.6;vertical-align:1px}
 table.data-table thead th.sortable:hover{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
 table.data-table thead th.sort-asc::after{content:'▲';opacity:1}
 table.data-table thead th.sort-desc::after{content:'▼';opacity:1}
-
-table.data-table th.sticky-col,
-table.data-table td.sticky-col{
-  position:sticky;
-  z-index:2;
-  box-shadow:6px 0 8px -6px rgba(15,23,42,.16);
-}
+table.data-table th.sticky-col,table.data-table td.sticky-col{position:sticky;z-index:2;box-shadow:6px 0 8px -6px rgba(15,23,42,.16)}
 table.data-table thead th.sticky-col{z-index:4}
-
 table.data-table tbody tr:nth-child(even) td{background:#f5f9ff}
 table.data-table tbody tr:hover td{background:#e0efff}
-
 table.data-table td.cell-subject{font-weight:700;background:#eff6ff!important}
 table.data-table td.cell-class{font-weight:700;background:#f1f5f9!important}
 table.data-table td.cell-streak-up{background:#dcfce7!important}
 table.data-table td.cell-streak-down{background:#fee2e2!important}
-
-table.data-table td.grid-empty{
-  height:110px;
-  color:#94a3b8;
-  font-size:.9rem;
-  background:#ffffff!important;
-  border-right:none;
-}
-
+table.data-table td.grid-empty{height:110px;color:#94a3b8;font-size:.9rem;background:#ffffff!important;border-right:none}
 .score-main{display:block;font-size:.9rem;font-weight:700;line-height:1.25;color:var(--text-main)}
 .score-diff{display:inline-block;font-size:.7rem;font-weight:600;line-height:1.2;margin:0 2px;vertical-align:middle}
 .diff-up{color:var(--up)}.diff-down{color:var(--down)}.diff-flat{color:var(--text-muted)}
-.font-up{color:var(--up);font-weight:700}
-.font-down{color:var(--down);font-weight:700}
-.font-flat{color:var(--text-muted)}
-.text-green{color:var(--up);font-weight:700}
-.text-red{color:var(--down);font-weight:700}
-.text-warn{color:#f59e0b;font-weight:700}
-
+.font-up{color:var(--up);font-weight:700}.font-down{color:var(--down);font-weight:700}.font-flat{color:var(--text-muted)}
+.text-green{color:var(--up);font-weight:700}.text-red{color:var(--down);font-weight:700}.text-warn{color:#f59e0b;font-weight:700}
 .rate-cell{font-weight:800;font-size:.9rem}
-.rate-good{color:#16a34a}
-.rate-mid{color:#f59e0b}
-.rate-low{color:#dc2626}
+.rate-good{color:#16a34a}.rate-mid{color:#f59e0b}.rate-low{color:#dc2626}
 .rate-delta{font-weight:700;font-size:.82rem;display:inline-block;padding:1px 6px;border-radius:5px;line-height:1.4}
 .rate-delta.up{color:#16a34a;background:#dcfce7}
 .rate-delta.down{color:#dc2626;background:#fee2e2}
 .rate-delta.flat{color:#64748b;background:#f1f5f9}
 .fullmark-changed{color:#f59e0b;font-weight:700;font-size:.78rem}
-
 .count-cell{cursor:help;display:inline-block;padding:2px 6px;border-radius:5px;font-weight:700;transition:all .15s}
 .count-cell:hover{background:#dbeafe;color:var(--primary-darker)}
-
 .seg-badge{display:inline-block;padding:1px 8px;border-radius:99px;font-size:.75rem;font-weight:700}
-.seg-s{background:#dcfce7;color:#166534}
-.seg-a{background:#dbeafe;color:#1e40af}
-.seg-b{background:#e0e7ff;color:#3730a3}
-.seg-c{background:#fef3c7;color:#92400e}
+.seg-s{background:#dcfce7;color:#166534}.seg-a{background:#dbeafe;color:#1e40af}
+.seg-b{background:#e0e7ff;color:#3730a3}.seg-c{background:#fef3c7;color:#92400e}
 .seg-d{background:#fee2e2;color:#991b1b}
-
-.rank-up{color:#16a34a;font-weight:700}
-.rank-down{color:#dc2626;font-weight:700}
-.rank-flat{color:#64748b;font-weight:600}
-.rank-new{color:#8b5cf6;font-weight:700}
-.stability-good{color:#16a34a;font-weight:700}
-.stability-mid{color:#f59e0b;font-weight:700}
-.stability-poor{color:#dc2626;font-weight:700}
-
+.rank-up{color:#16a34a;font-weight:700}.rank-down{color:#dc2626;font-weight:700}
+.rank-flat{color:#64748b;font-weight:600}.rank-new{color:#8b5cf6;font-weight:700}
+.stability-good{color:#16a34a;font-weight:700}.stability-mid{color:#f59e0b;font-weight:700}.stability-poor{color:#dc2626;font-weight:700}
 .stu-row-card{padding:16px;border:1px solid var(--card-border);border-radius:14px;background:#ffffff;margin-bottom:16px;box-shadow:0 2px 12px rgba(59,130,246,.05)}
 .stu-row-header{font-weight:800;font-size:1rem;color:var(--primary-darker);margin-bottom:12px;padding-left:10px;border-left:4px solid var(--primary);line-height:1.2}
-
 .empty-hint{text-align:center;padding:60px 10px;color:#94a3b8;font-size:.9rem}
 .info-text{font-size:.8rem;color:var(--text-muted)}
 .hidden{display:none!important}
 .page-title{font-size:1.02rem;font-weight:800;color:var(--primary-darker);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .page-title::before{content:'';display:inline-block;width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,#3b82f6,#1d4ed8)}
 
+/* ========== 悬浮提示 ========== */
 .hover-tip{position:fixed;z-index:9999;max-width:340px;max-height:60vh;overflow-y:auto;background:#1e3a5f;color:#fff;border-radius:10px;padding:10px 12px;font-size:.8rem;line-height:1.7;box-shadow:0 8px 28px rgba(0,0,0,.25);pointer-events:none;opacity:0;transition:opacity .15s;font-family:inherit}
 .hover-tip.show{opacity:1}
 .hover-tip-title{font-weight:800;font-size:.83rem;padding-bottom:5px;margin-bottom:6px;border-bottom:1px dashed rgba(255,255,255,.25);color:#93c5fd}
@@ -299,12 +211,14 @@ table.data-table td.grid-empty{
 .hover-tip-item.bad .val{color:#fca5a5}
 .hover-tip-empty{color:#94a3b8;font-style:italic;font-size:.76rem}
 
+/* ========== 加载动画 ========== */
 .loading-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(240,244,255,.95);justify-content:center;align-items:center;flex-direction:column;gap:16px}
 .loading-overlay.show{display:flex}
 .spinner{width:42px;height:42px;border-radius:50%;border:4px solid rgba(37,99,235,.15);border-top-color:#2563eb;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:.92rem;color:var(--text-sub);font-weight:600}
 
+/* ========== 响应式 ========== */
 @media (max-width:1500px){.chart-grid-5{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:1280px){
   .topbar-main h1{font-size:1.12rem}
@@ -338,8 +252,7 @@ table.data-table td.grid-empty{
   .analysis-panel{padding:16px 14px}
   .analysis-grid{grid-template-columns:repeat(2,1fr)}
   .grid-table-scroll{max-height:65vh}
-  table.data-table th,
-  table.data-table td{height:38px;font-size:.8rem;padding:2px 6px}
+  table.data-table th,table.data-table td{height:38px;font-size:.8rem;padding:2px 6px}
   table.data-table thead th{height:42px}
 }
 @media (max-width:760px){.chart-grid{grid-template-columns:1fr}}
@@ -366,7 +279,6 @@ table.data-table td.grid-empty{
   .setting-group-title{display:none}
   .line-setting .setting-label{display:none}
 }
-
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-track{background:#f1f5f9}
 ::-webkit-scrollbar-thumb{background:rgba(59,130,246,.45);border-radius:4px}
@@ -386,7 +298,7 @@ table.data-table td.grid-empty{
 <div class="topbar">
   <div class="topbar-inner">
     <div class="topbar-main">
-      <h1>睿智校区成绩分析系统</h1>
+      <h1>成绩分析系统 · 通用模板</h1>
       <div class="topbar-actions">
         <button class="btn" onclick="downloadTemplate()">下载模板</button>
         <button class="btn btn-primary" id="uploadBtn" onclick="document.getElementById('fileInput').click()">上传 Excel</button>
@@ -442,11 +354,11 @@ table.data-table td.grid-empty{
 
 <script>
 /* =====================================================================
- *  睿智校区成绩分析系统 v2.3.0
- *  · 表格使用原生 table + table-layout:fixed，彻底解决错位
- *  · 班级 / 科目 默认均不选中，需用户自行勾选
- *  · 科目变化自动勾选有该科目数据的班级；班级变化自动勾选有该班级数据的科目
- *  · 导出 PDF 文件名智能拼装
+ *  成绩分析系统 · 通用模板 v1.0.0
+ *  · 适用任意学校/班级，不依赖特定名称
+ *  · 表格原生 table + table-layout:fixed，无错位
+ *  · 班级/科目默认不选中，联动勾选智能辅助
+ *  · 导出 PDF 文件名通用拼装
  * ===================================================================== */
 
 const state = {
@@ -568,9 +480,7 @@ function bindHoverTips() {
 }
 
 /* ============================================================
- *  ★★★ 自动联动核心 ★★★
- *  科目变化 → 自动勾选有该科目数据的班级
- *  班级变化 → 自动勾选有该班级数据的科目
+ *  自动联动：科目变化 → 勾选相关班级；班级变化 → 勾选相关科目
  * ============================================================ */
 function classHasSubjectData(cls, sub, exam) {
   const students = state.classes[cls]?.students;
@@ -589,7 +499,6 @@ function classHasSubjectData(cls, sub, exam) {
   }
   return false;
 }
-
 function autoSelectBySubjects(subjectWrapId, classWrapId, exam) {
   const selSubs = getChecked(subjectWrapId);
   const wrap = $(classWrapId);
@@ -603,7 +512,6 @@ function autoSelectBySubjects(subjectWrapId, classWrapId, exam) {
     item.classList.toggle('checked', has);
   });
 }
-
 function autoSelectByClasses(classWrapId, subjectWrapId, exam) {
   const selClasses = getChecked(classWrapId);
   const wrap = $(subjectWrapId);
@@ -619,7 +527,7 @@ function autoSelectByClasses(classWrapId, subjectWrapId, exam) {
 }
 
 /* ============================================================
- *  ★★★ 表格：原生 table + colgroup 固定列宽 ★★★
+ *  表格渲染
  * ============================================================ */
 function renderGridTable(cols, rows, sortKey, wrapEl, onSort) {
   const st = sortState[sortKey] || (sortState[sortKey] = { col: -1, asc: true });
@@ -662,7 +570,6 @@ function renderGridTable(cols, rows, sortKey, wrapEl, onSort) {
   let html = '<div class="grid-table-scroll">';
   html += '<table class="data-table" style="min-width:' + totalWidth + 'px">';
   html += '<colgroup>' + cols.map(c => '<col style="width:' + (c.width || 100) + 'px">').join('') + '</colgroup>';
-
   html += '<thead><tr>';
   cols.forEach((c, i) => {
     const cls = [];
@@ -1469,7 +1376,6 @@ function renderF2b(root) {
         '<div class="filter-block-label">班级</div>' +
         '<div class="filter-block-body">' +
           '<div id="tripleClassWrap" class="checkbox-group">' +
-            /* ★ 默认不选中 ★ */
             classes.map(c=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(c)+'"><span>'+esc(c)+'</span></label>').join('') +
           '</div>' +
           '<div class="group-actions">' +
@@ -1588,9 +1494,9 @@ function renderF2c(root) {
       '</div>' +
     '</div>';
   const initSub = subs[0] || '';
-  renderSubClassCheckboxes(initSub, false); /* 初始不自动勾选 */
+  renderSubClassCheckboxes(initSub, false);
   $('subSub').addEventListener('change', e => {
-    renderSubClassCheckboxes(e.target.value, true); /* 科目变化时自动勾选 */
+    renderSubClassCheckboxes(e.target.value, true);
     drawF2c();
   });
   $('subMode').addEventListener('change', drawF2c);
@@ -2009,25 +1915,21 @@ function renderF4b(root) {
   const sel = $('segExam');
   sel.innerHTML = state.examList.map((ex,i)=>'<option value="'+i+'"'+(i===state.examList.length-1?' selected':'')+'>'+esc(ex)+'</option>').join('');
   const subs = state.subjectList.slice();
-  /* ★ 默认都不选中 ★ */
   $('segSubjectWrap').innerHTML = subs.map(s=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(s)+'"><span>'+esc(subjectLabel(s))+'</span></label>').join('');
   $('segClassWrap').innerHTML = state.classList.map(c=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(c)+'"><span>'+esc(c)+'</span></label>').join('');
   bindAllCheckboxes('segSubjectWrap');
   bindAllCheckboxes('segClassWrap');
 
-  /* ★ 科目变化 → 自动勾选相关班级 ★ */
   $('segSubjectWrap').addEventListener('change', () => {
     const exam = state.examList[parseInt($('segExam').value, 10)];
     autoSelectBySubjects('segSubjectWrap', 'segClassWrap', exam);
     drawF4b();
   });
-  /* ★ 班级变化 → 自动勾选相关科目 ★ */
   $('segClassWrap').addEventListener('change', () => {
     const exam = state.examList[parseInt($('segExam').value, 10)];
     autoSelectByClasses('segClassWrap', 'segSubjectWrap', exam);
     drawF4b();
   });
-  /* 考试变化 → 按当前科目重新计算班级 */
   $('segExam').addEventListener('change', () => {
     const exam = state.examList[parseInt($('segExam').value, 10)];
     autoSelectBySubjects('segSubjectWrap', 'segClassWrap', exam);
@@ -2197,18 +2099,15 @@ function renderF5(root) {
     '</div>';
   const subs = state.subjectList.slice();
   const classes = state.classList.slice();
-  /* ★ 默认都不选中 ★ */
   $('tableSubjectWrap').innerHTML = subs.map(s=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(s)+'"><span>'+esc(subjectLabel(s))+'</span></label>').join('');
   $('tableClassWrap').innerHTML = classes.map(c=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(c)+'"><span>'+esc(c)+'</span></label>').join('');
   bindAllCheckboxes('tableSubjectWrap');
   bindAllCheckboxes('tableClassWrap');
 
-  /* ★ 科目变化 → 自动勾选相关班级 ★ */
   $('tableSubjectWrap').addEventListener('change', () => {
     autoSelectBySubjects('tableSubjectWrap', 'tableClassWrap', null);
     drawF5();
   });
-  /* ★ 班级变化 → 自动勾选相关科目 ★ */
   $('tableClassWrap').addEventListener('change', () => {
     autoSelectByClasses('tableClassWrap', 'tableSubjectWrap', null);
     drawF5();
@@ -2323,7 +2222,6 @@ function renderF6(root) {
       '<div id="rateTable"></div>' +
     '</div>';
   const subs = state.subjectList.slice();
-  /* ★ 默认都不选中 ★ */
   $('rateSubjectWrap').innerHTML = subs.map(s=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(s)+'"><span>'+esc(subjectLabel(s))+'</span></label>').join('');
   const classes = state.classList.slice();
   $('rateClassWrap').innerHTML = classes.map(c=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(c)+'"><span>'+esc(c)+'</span></label>').join('');
@@ -2332,19 +2230,16 @@ function renderF6(root) {
   bindAllCheckboxes('rateSubjectWrap');
   bindAllCheckboxes('rateClassWrap');
 
-  /* ★ 科目变化 → 自动勾选相关班级 ★ */
   $('rateSubjectWrap').addEventListener('change', () => {
     const exam = state.examList[parseInt($('rateExam').value, 10)];
     autoSelectBySubjects('rateSubjectWrap', 'rateClassWrap', exam);
     drawF6();
   });
-  /* ★ 班级变化 → 自动勾选相关科目 ★ */
   $('rateClassWrap').addEventListener('change', () => {
     const exam = state.examList[parseInt($('rateExam').value, 10)];
     autoSelectByClasses('rateClassWrap', 'rateSubjectWrap', exam);
     drawF6();
   });
-  /* 考试变化 → 按当前科目重新计算班级 */
   $('rateExam').addEventListener('change', () => {
     const exam = state.examList[parseInt($('rateExam').value, 10)];
     autoSelectBySubjects('rateSubjectWrap', 'rateClassWrap', exam);
@@ -2476,7 +2371,6 @@ function setAllCheckboxes(wrapId, checked) {
     inp.checked = checked;
     inp.closest('.checkbox-item').classList.toggle('checked', checked);
   });
-  /* ★ 全选/清空时也触发联动 ★ */
   if (state.currentPage === 'f4' && state.currentSub.f4 === 'f4b') {
     const exam = state.examList[parseInt($('segExam').value, 10)];
     if (wrapId === 'segSubjectWrap') autoSelectBySubjects('segSubjectWrap', 'segClassWrap', exam);
@@ -2489,7 +2383,6 @@ function setAllCheckboxes(wrapId, checked) {
     if (wrapId === 'rateSubjectWrap') autoSelectBySubjects('rateSubjectWrap', 'rateClassWrap', exam);
     else if (wrapId === 'rateClassWrap') autoSelectByClasses('rateClassWrap', 'rateSubjectWrap', exam);
   }
-  /* 重绘 */
   if (state.currentPage === 'f6') drawF6();
   else if (state.currentPage === 'f4' && state.currentSub.f4 === 'f4b') drawF4b();
   else if (state.currentPage === 'f5') drawF5();
@@ -2619,7 +2512,7 @@ function downloadTemplate() {
 }
 
 /* ============================================================
- *  导出 PDF —— 文件名智能拼装
+ *  导出 PDF —— 文件名通用拼装
  * ============================================================ */
 function sanitizeFileName(s) {
   return String(s == null ? '' : s)
@@ -2641,7 +2534,7 @@ function buildExportFileName() {
     f4a:'全班图表', f4b:'分数段分布'
   };
   const page = state.currentPage;
-  const parts = ['睿智校区'];
+  const parts = ['成绩分析'];
 
   const collectChecked = wrapId => {
     const el = $(wrapId);
@@ -2687,7 +2580,7 @@ function buildExportFileName() {
   );
 
   const name = parts.filter(Boolean).map(sanitizeFileName).filter(Boolean).join('_');
-  return (name || '睿智校区_成绩分析') + '.pdf';
+  return (name || '成绩分析报告') + '.pdf';
 }
 
 async function exportReport() {
@@ -2724,6 +2617,7 @@ async function exportReport() {
   }
 }
 
+/* ============ 分数线自动设置（通用模板默认不设） ============ */
 const CLASS_LINE_MAP = {
   '1类':{control:330,public:376,private:330,estimate:380},
   '2类':{control:291,public:504,private:291,estimate:341},
@@ -2784,22 +2678,7 @@ function bindEvents() {
 
 document.addEventListener('DOMContentLoaded', () => {
   bindEvents();
-  fetch('27届睿智周测成绩.xlsx')
-    .then(res => { if (!res.ok) throw new Error('not found'); return res.arrayBuffer(); })
-    .then(buf => {
-      showLoading('正在自动加载成绩数据...');
-      const wb = XLSX.read(new Uint8Array(buf), { type:'array' });
-      wb.SheetNames.forEach(sheetName => {
-        const className = String(sheetName).trim();
-        if (!className) return;
-        const json = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1,defval:null});
-        parseSheet(json, className);
-      });
-      sortSubjects();
-      initUIAfterLoad();
-      hideLoading();
-    })
-    .catch(() => { hideLoading(); });
+  // 不自动加载任何数据，完全由用户上传
 });
 
 const colorPool = [

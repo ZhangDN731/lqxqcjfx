@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>404 · 档案失联 — 时间管理局</title>
+<style>
+:root{
+  --cyan:#22d3ee;
+  --violet:#8b5cf6;
+  --pink:#f472b6;
+  --text:#dbeafe;
+  --muted:#7c8db5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:radial-gradient(ellipse at 50% 0%, #0d1230 0%, #05060f 55%, #01020a 100%);
+  color:var(--text);
+  min-height:100vh;
+  min-height:100dvh;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+#stars{position:fixed;inset:0;z-index:0}
+
+/* 扫描线 */
+body::after{
+  content:'';
+  position:fixed;inset:0;z-index:5;pointer-events:none;
+  background:repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,.025) 0px,
+    rgba(255,255,255,.025) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode:overlay;
+}
+
+/* 光晕 */
+.glow{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(110px);
+  z-index:0;
+  pointer-events:none;
+}
+.glow.a{top:-18%;left:-12%;width:55vw;height:55vw;max-width:680px;max-height:680px;background:#2563eb;opacity:.26}
+.glow.b{bottom:-22%;right:-14%;width:55vw;height:55vw;max-width:680px;max-height:680px;background:#7c3aed;opacity:.2}
+.glow.c{top:38%;left:52%;width:44vw;height:44vw;max-width:520px;max-height:520px;background:#0891b2;opacity:.14}
+
+/* ===== 主容器：弹性纵向布局，一屏装下 ===== */
+.stage{
+  position:relative;
+  z-index:10;
+  height:100vh;
+  height:100dvh;
+  width:100%;
+  padding:clamp(20px,3.5vh,40px) clamp(18px,4vw,32px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(10px,1.8vh,20px);
+  overflow:hidden;
+}
+.content{
+  width:100%;
+  max-width:720px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:clamp(10px,1.8vh,20px);
+}
+
+/* 机构标识 */
+.brand{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding:5px 15px 5px 11px;
+  border:1px solid rgba(34,211,238,.28);
+  border-radius:99px;
+  background:rgba(34,211,238,.06);
+  font-size:clamp(.62rem,.85vw,.74rem);
+  letter-spacing:2.5px;
+  color:var(--cyan);
+  font-weight:600;
+  backdrop-filter:blur(6px);
+  white-space:nowrap;
+}
+.brand .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 9px var(--cyan);
+  animation:pulse 1.8s ease-in-out infinite;
+  flex:0 0 auto;
+}
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.35;transform:scale(.7)}
+}
+
+/* 404 大字 */
+.code{
+  position:relative;
+  font-size:clamp(5.2rem, 17vw, 10rem);
+  font-weight:900;
+  line-height:.88;
+  letter-spacing:-.045em;
+  background:linear-gradient(180deg,#ffffff 0%,#a5c8ff 42%,#4c6ef5 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 0 30px rgba(76,110,245,.5));
+  user-select:none;
+  white-space:nowrap;
+}
+.code::before,
+.code::after{
+  content:'404';
+  position:absolute;
+  inset:0;
+  background:inherit;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  pointer-events:none;
+}
+.code::before{
+  animation:glitchTop 3.4s infinite linear alternate-reverse;
+  text-shadow:-3px 0 var(--pink);
+}
+.code::after{
+  animation:glitchBot 2.6s infinite linear alternate-reverse;
+  text-shadow:3px 0 var(--cyan);
+}
+@keyframes glitchTop{
+  0%,86%,100%{clip-path:inset(0 0 100% 0);transform:translate(0)}
+  88%{clip-path:inset(0 0 62% 0);transform:translate(-4px,-2px)}
+  92%{clip-path:inset(12% 0 55% 0);transform:translate(5px,1px)}
+  96%{clip-path:inset(4% 0 78% 0);transform:translate(-2px,2px)}
+}
+@keyframes glitchBot{
+  0%,80%,100%{clip-path:inset(100% 0 0 0);transform:translate(0)}
+  84%{clip-path:inset(62% 0 8% 0);transform:translate(4px,2px)}
+  90%{clip-path:inset(48% 0 22% 0);transform:translate(-5px,-1px)}
+  94%{clip-path:inset(74% 0 4% 0);transform:translate(3px,-2px)}
+}
+
+/* 分隔线 */
+.sep{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  width:100%;
+  max-width:400px;
+}
+.sep i{
+  flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,.5),transparent);
+}
+.sep span{
+  font-size:clamp(.58rem,.78vw,.68rem);
+  letter-spacing:3.5px;color:var(--muted);font-weight:600;
+  white-space:nowrap;
+}
+
+/* 文案 */
+h1{
+  font-size:clamp(1.02rem,2.9vw,1.4rem);
+  font-weight:800;
+  letter-spacing:.4px;
+  color:#eaf2ff;
+  line-height:1.35;
+}
+.desc{
+  font-size:clamp(.78rem,1.05vw,.9rem);
+  line-height:1.85;
+  color:var(--muted);
+  max-width:520px;
+}
+.desc b{color:var(--cyan);font-weight:700}
+.desc em{font-style:normal;color:var(--violet);font-weight:700}
+
+/* 档案面板 */
+.panel{
+  width:100%;
+  max-width:440px;
+  padding:clamp(10px,1.5vh,15px) clamp(14px,2vw,19px);
+  border:1px solid rgba(124,141,181,.2);
+  border-radius:11px;
+  background:rgba(12,18,42,.6);
+  backdrop-filter:blur(10px);
+  text-align:left;
+  font-size:clamp(.68rem,.9vw,.78rem);
+  line-height:clamp(1.7,2.4vh,2.05);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:#8fa6cc;
+}
+.panel .row{display:flex;justify-content:space-between;gap:12px}
+.panel .k{color:#5a6d94;flex:0 0 auto;white-space:nowrap}
+.panel .v{color:#a8c4f0;font-weight:600;text-align:right;word-break:break-all;min-width:0}
+.panel .v.err{color:var(--pink)}
+.panel .v.ok{color:#4ade80}
+.cursor{
+  display:inline-block;width:7px;height:12px;
+  background:var(--cyan);
+  vertical-align:-2px;
+  margin-left:2px;
+  animation:blink 1s steps(1) infinite;
+}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* 按钮 */
+.actions{display:flex;gap:11px;justify-content:center;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:clamp(8px,1.2vh,11px) clamp(20px,3vw,26px);
+  border-radius:10px;
+  font-size:clamp(.76rem,.95vw,.86rem);
+  font-weight:700;
+  letter-spacing:.4px;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .22s cubic-bezier(.4,0,.2,1);
+  font-family:inherit;
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+.btn-primary{
+  color:#02121a;
+  background:linear-gradient(135deg,#67e8f9,#22d3ee 45%,#0ea5e9);
+  box-shadow:0 6px 22px rgba(34,211,238,.32);
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 30px rgba(34,211,238,.5);
+}
+.btn-ghost{
+  color:#a8c4f0;
+  border-color:rgba(124,141,181,.32);
+  background:rgba(124,141,181,.07);
+}
+.btn-ghost:hover{
+  color:#eaf2ff;
+  border-color:rgba(34,211,238,.6);
+  background:rgba(34,211,238,.1);
+  transform:translateY(-2px);
+}
+
+/* 底部标语：正常文档流，不固定，永不重叠 */
+.foot{
+  font-size:clamp(.54rem,.72vw,.64rem);
+  letter-spacing:1.4px;
+  color:#3d4d70;
+  text-align:center;
+  pointer-events:none;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100%;
+}
+
+/* 极窄屏 / 矮屏：进一步压缩间距 */
+@media (max-width:600px){
+  .brand{letter-spacing:2px}
+  .sep span{letter-spacing:2.5px}
+  .panel .k,.panel .v{font-size:.68rem}
+}
+@media (max-height:640px){
+  .stage{gap:8px}
+  .content{gap:8px}
+  .code{font-size:clamp(4rem,14vw,7rem)}
+  .desc{line-height:1.7}
+  .panel{line-height:1.7}
+}
+@media (max-height:520px){
+  .brand{margin-bottom:0}
+  .sep{display:none}
+  .code{font-size:clamp(3.2rem,12vw,5.5rem)}
+  .desc{display:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div class="glow a"></div>
+<div class="glow b"></div>
+<div class="glow c"></div>
+
+<div class="stage">
+  <div class="content">
+
+    <div class="brand">
+      <span class="dot"></span>
+      时间管理局 · 档案检索终端
+    </div>
+
+    <div class="code">404</div>
+
+    <div class="sep">
+      <i></i>
+      <span>ARCHIVE NOT FOUND</span>
+      <i></i>
+    </div>
+
+    <h1>该档案已在时间线上失联</h1>
+
+    <p class="desc">
+      你请求访问的编号不存在、已被<b>时间湍流</b>抹除，
+      或从未在<em>当前纪元</em>被归档。
+      请确认坐标后重试，或联系当值管理员。
+    </p>
+
+    <div class="panel">
+      <div class="row"><span class="k">请求编号</span><span class="v" id="reqId">—</span></div>
+      <div class="row"><span class="k">时间戳</span><span class="v" id="ts">—</span></div>
+      <div class="row"><span class="k">纪元坐标</span><span class="v" id="era">—</span></div>
+      <div class="row"><span class="k">检索状态</span><span class="v err">FAILED</span></div>
+      <div class="row"><span class="k">建议操作</span><span class="v ok">返回原点<span class="cursor"></span></span></div>
+    </div>
+
+    <div class="actions">
+      <a href="https://zhangdn731.github.io/lqxqcjfx/" class="btn btn-primary">返回原点</a>
+      <a href="javascript:history.back()" class="btn btn-ghost">回退一步</a>
+    </div>
+
+  </div>
+
+  <div class="foot">TIME BUREAU · ARCHIVE SYSTEM v4.04 · ALL TIMELINES MONITORED</div>
+</div>
+
+<script>
+/* ===== 星空背景 ===== */
+(function(){
+  const cv = document.getElementById('stars');
+  const ctx = cv.getContext('2d');
+  let stars = [], w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function build(){
+    w = cv.width = innerWidth * dpr;
+    h = cv.height = innerHeight * dpr;
+    cv.style.width = innerWidth + 'px';
+    cv.style.height = innerHeight + 'px';
+    const count = Math.min(Math.floor((innerWidth * innerHeight) / 8000), 170);
+    stars = [];
+    for (let i = 0; i < count; i++){
+      stars.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: (Math.random() * 1.4 + 0.35) * dpr,
+        a: Math.random() * 0.7 + 0.15,
+        sp: Math.random() * 0.2 + 0.04,
+        hue: Math.random() < 0.78 ? 210 : (Math.random() < 0.5 ? 185 : 270),
+        ph: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, w, h);
+    for (const s of stars){
+      s.ph += 0.014;
+      const tw = s.a * (0.6 + Math.sin(s.ph) * 0.4);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'hsla(' + s.hue + ',85%,78%,' + tw + ')';
+      ctx.fill();
+      s.y += s.sp * dpr;
+      if (s.y > h + 4) { s.y = -4; s.x = Math.random() * w; }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  let t = null;
+  addEventListener('resize', () => {
+    clearTimeout(t);
+    t = setTimeout(build, 180);
+  });
+
+  build();
+  draw();
+})();
+
+/* ===== 档案信息填充 ===== */
+(function(){
+  const hex = '0123456789ABCDEF';
+  function seg(n){ let s = ''; for (let i=0;i<n;i++) s += hex[Math.floor(Math.random()*16)]; return s; }
+
+  document.getElementById('reqId').textContent =
+    'TL-' + seg(4) + '-' + seg(4) + '-' + seg(4);
+
+  const p = n => String(n).padStart(2, '0');
+  function tick(){
+    const d = new Date();
+    document.getElementById('ts').textContent =
+      d.getFullYear() + '.' + p(d.getMonth()+1) + '.' + p(d.getDate()) +
+      ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+
+  const eras = ['Δ-7','Δ-3','Δ-1','Ω-0','Ω+2','Ψ-9','Σ-4'];
+  const tilt = ['±0.000','±0.014','±0.062','±0.331'];
+  document.getElementById('era').textContent =
+    eras[Math.floor(Math.random()*eras.length)] + ' ' + tilt[Math.floor(Math.random()*tilt.length)];
+
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
