@@ -62,21 +62,51 @@ body{
 
 .container{position:relative;z-index:1;max-width:1800px;margin:0 auto;padding:18px 24px 40px}
 
-.status-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:#ffffff;border:1px solid var(--card-border);border-radius:var(--radius);padding:10px 18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(59,130,246,.06)}
-.status-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.status-label{font-weight:600;font-size:.85rem;color:var(--text-sub)}
-.class-tags{display:flex;gap:6px;flex-wrap:wrap}
-.class-tag{padding:3px 12px;border-radius:99px;font-size:.8rem;font-weight:600;background:#dbeafe;color:var(--primary-darker);border:1px solid rgba(59,130,246,.25)}
-.status-select{padding:6px 12px;border:1px solid rgba(59,130,246,.25);border-radius:9px;background:#fff;font-size:.85rem;color:var(--text-main);cursor:pointer;font-family:inherit}
-.status-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.status-bar{
+  display:flex;flex-direction:column;gap:10px;
+  background:#ffffff;border:1px solid var(--card-border);border-radius:var(--radius);
+  padding:12px 18px;margin-bottom:14px;box-shadow:0 2px 12px rgba(59,130,246,.06);
+}
+.global-select-block{display:flex;gap:10px;align-items:flex-start;width:100%}
+.global-select-label{
+  flex:0 0 auto;font-weight:800;font-size:.82rem;color:var(--primary-dark);
+  white-space:nowrap;padding-top:7px;letter-spacing:.5px;
+}
+.global-checkbox-group{
+  flex:1 1 auto;min-width:0;
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.global-select-block .group-actions{flex:0 0 auto;display:flex;gap:6px;padding-top:1px}
 
-.main-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:6px;margin-bottom:16px;background:#ffffff;border:1px solid var(--card-border);border-radius:14px;box-shadow:0 2px 12px rgba(59,130,246,.06)}
-.main-tab{padding:8px 18px;border:none;border-radius:9px;background:transparent;color:var(--text-sub);font-size:.87rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
+.tabs-row{
+  display:flex;gap:10px;align-items:stretch;
+  padding:6px;margin-bottom:16px;
+  background:#ffffff;border:1px solid var(--card-border);border-radius:14px;
+  box-shadow:0 2px 12px rgba(59,130,246,.06);
+}
+.main-tabs{display:flex;gap:6px;flex:0 0 auto}
+.main-tab{
+  padding:8px 22px;border:none;border-radius:9px;background:transparent;
+  color:var(--text-sub);font-size:.9rem;font-weight:700;cursor:pointer;
+  transition:all .2s;white-space:nowrap;font-family:inherit;
+}
 .main-tab:hover{background:#eff6ff;color:var(--primary-dark)}
 .main-tab.active{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,.3)}
 
-.sub-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:5px;margin-bottom:14px;background:#f8fbff;border:1px solid var(--card-border);border-radius:12px;width:fit-content}
-.sub-tab{padding:6px 14px;border:none;border-radius:7px;background:transparent;color:var(--text-sub);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
+.sub-tabs{
+  display:flex;gap:6px;padding:5px;
+  background:#f8fbff;border:1px solid var(--card-border);border-radius:12px;
+  flex:1 1 auto;min-width:0;
+  flex-wrap:nowrap;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.sub-tabs::-webkit-scrollbar{height:4px}
+.sub-tabs::-webkit-scrollbar-thumb{background:rgba(59,130,246,.3);border-radius:2px}
+.sub-tab{
+  padding:6px 16px;border:none;border-radius:7px;background:transparent;
+  color:var(--text-sub);font-size:.83rem;font-weight:600;cursor:pointer;
+  transition:all .2s;white-space:nowrap;font-family:inherit;flex:0 0 auto;
+}
 .sub-tab:hover{background:#dbeafe;color:var(--primary-dark)}
 .sub-tab.active{background:var(--primary);color:#fff;box-shadow:0 3px 10px rgba(59,130,246,.3)}
 
@@ -132,28 +162,28 @@ body{
 
 .filter-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid rgba(59,130,246,.12)}
 .filter-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.filter-group{display:flex;align-items:center;gap:8px}
+.filter-group{display:flex;align-items:center;gap:8px;flex:0 0 auto}
 .filter-group>label{font-size:.85rem;font-weight:600;color:var(--text-sub);white-space:nowrap}
-.filter-group select,.filter-group input{padding:6px 12px;border:1px solid rgba(59,130,246,.25);border-radius:9px;background:#fff;font-size:.85rem;color:var(--text-main);cursor:pointer;font-family:inherit;min-width:110px}
+.filter-group select,.filter-group input{padding:6px 12px;border:1px solid rgba(59,130,246,.25);border-radius:9px;background:#fff;font-size:.85rem;color:var(--text-main);cursor:pointer;font-family:inherit;min-width:130px}
 .filter-group select:focus,.filter-group input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
 
 .filter-block{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(59,130,246,.14)}
 .filter-block:last-child{border-bottom:none}
 .filter-block-label{flex:0 0 auto;font-size:.85rem;font-weight:700;color:var(--text-sub);padding-top:5px;white-space:nowrap;min-width:44px}
 .filter-block-body{flex:1 1 auto;min-width:0;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
-.checkbox-group{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 auto;min-width:0}
-.checkbox-item{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;border:1.5px solid rgba(59,130,246,.28);background:#fff;color:var(--text-sub);font-size:.81rem;font-weight:600;cursor:pointer;transition:all .18s;user-select:none;white-space:nowrap}
+
+.checkbox-group{
+  display:flex;flex-wrap:wrap;gap:8px;
+  flex:1 1 auto;min-width:0;
+}
+.checkbox-item{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;border:1.5px solid rgba(59,130,246,.28);background:#fff;color:var(--text-sub);font-size:.81rem;font-weight:600;cursor:pointer;transition:all .18s;user-select:none;white-space:nowrap;flex:0 0 auto}
 .checkbox-item:hover{border-color:var(--primary);background:#eff6ff}
 .checkbox-item.checked{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(59,130,246,.3)}
 .checkbox-item input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
 .checkbox-item::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.3;flex:0 0 auto}
 .checkbox-item.checked::before{opacity:1;background:#fff}
-.group-actions{display:flex;gap:6px;flex:0 0 auto;padding-top:1px}
+.group-actions{display:flex;gap:6px;flex:0 0 auto;align-self:flex-start;padding-top:1px}
 
-/* ============================================================
- *  ★★★ 表格：原生 table + table-layout:fixed ★★★
- *  ★★★ 纵向不分页：容器高度由内容撑开，页面整体滚动 ★★★
- * ============================================================ */
 .grid-table-scroll{
   overflow-x:auto;
   overflow-y:visible;
@@ -284,7 +314,7 @@ table.data-table td.grid-empty{
 .stu-row-header{font-weight:800;font-size:1rem;color:var(--primary-darker);margin-bottom:12px;padding-left:10px;border-left:4px solid var(--primary);line-height:1.2}
 
 .empty-hint{text-align:center;padding:60px 10px;color:#94a3b8;font-size:.9rem}
-.info-text{font-size:.8rem;color:var(--text-muted)}
+.info-text{font-size:.8rem;color:var(--text-muted);white-space:nowrap;flex:0 0 auto}
 .hidden{display:none!important}
 .page-title{font-size:1.02rem;font-weight:800;color:var(--primary-darker);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .page-title::before{content:'';display:inline-block;width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,#3b82f6,#1d4ed8)}
@@ -332,7 +362,7 @@ table.data-table td.grid-empty{
   .line-setting input{width:42px;font-size:.78rem}
   .line-setting .setting-label{font-size:.72rem}
   .container{padding:12px 14px 30px}
-  .main-tab{padding:6px 12px;font-size:.8rem}
+  .main-tab{padding:6px 14px;font-size:.83rem}
   .card{padding:14px}
   .big-chart-wrap{height:clamp(480px,70vh,720px);padding:14px}
   .analysis-panel{padding:16px 14px}
@@ -346,14 +376,11 @@ table.data-table td.grid-empty{
   .chart-grid-5,.chart-grid-2{grid-template-columns:1fr}
   .chart-box{height:clamp(220px,34vh,320px)}
   .chart-grid-5 .chart-box{height:clamp(200px,30vh,260px)}
-  .main-tabs{padding:4px;gap:4px}
-  .main-tab{padding:6px 9px;font-size:.76rem}
-  .sub-tab{padding:5px 10px;font-size:.76rem}
+  .main-tab{padding:6px 10px;font-size:.78rem}
+  .sub-tab{padding:5px 11px;font-size:.76rem}
   .btn{padding:6px 11px;font-size:.8rem}
   .big-chart-wrap{height:clamp(420px,64vh,600px);padding:10px}
   .triple-chart-card .chart-box{height:clamp(260px,38vh,380px)}
-  .filter-group{flex:1 1 100%}
-  .filter-group select,.filter-group input{width:100%}
   .analysis-grid{grid-template-columns:repeat(2,1fr);gap:8px}
   .analysis-panel{padding:14px 12px}
   .topbar-actions{width:100%;justify-content:center}
@@ -416,23 +443,30 @@ table.data-table td.grid-empty{
 
 <div class="container">
   <div class="status-bar" id="statusBar" style="display:none">
-    <div class="status-left">
-      <span class="status-label">已加载班级：</span>
-      <div id="classTagWrap" class="class-tags"></div>
+    <div class="global-select-block">
+      <span class="global-select-label">已加载班级：</span>
+      <div id="globalClassWrap" class="global-checkbox-group"></div>
+      <div class="group-actions">
+        <button class="btn-mini" onclick="setAllCheckboxes('globalClassWrap',true)">全选</button>
+        <button class="btn-mini" onclick="setAllCheckboxes('globalClassWrap',false)">清空</button>
+      </div>
     </div>
-    <div class="status-left">
-      <label class="status-label" for="classSelect">当前班级：</label>
-      <select id="classSelect" class="status-select"></select>
+    <div class="global-select-block">
+      <span class="global-select-label">已加载科目：</span>
+      <div id="globalSubjectWrap" class="global-checkbox-group"></div>
+      <div class="group-actions">
+        <button class="btn-mini" onclick="setAllCheckboxes('globalSubjectWrap',true)">全选</button>
+        <button class="btn-mini" onclick="setAllCheckboxes('globalSubjectWrap',false)">清空</button>
+      </div>
     </div>
   </div>
 
-  <div class="main-tabs" id="mainTabs">
-    <button class="main-tab" data-page="f1">学生个人分析</button>
-    <button class="main-tab" data-page="f2">班级趋势对比</button>
-    <button class="main-tab" data-page="f3">全班成绩明细</button>
-    <button class="main-tab" data-page="f4">全班图表</button>
-    <button class="main-tab" data-page="f5">数据明细表</button>
-    <button class="main-tab" data-page="f6">达标率</button>
+  <div class="tabs-row">
+    <div class="main-tabs" id="mainTabs">
+      <button class="main-tab active" data-top="overall">整体分析</button>
+      <button class="main-tab" data-top="class">班级对比</button>
+    </div>
+    <div class="sub-tabs" id="subTabs"></div>
   </div>
 
   <div id="contentArea"></div>
@@ -440,26 +474,58 @@ table.data-table td.grid-empty{
 
 <script>
 /* =====================================================================
- *  睿智校区成绩分析系统 v2.3.0
- *  · 表格使用原生 table + table-layout:fixed，彻底解决错位
- *  · 表格纵向不分页：容器高度由内容撑开，整页滚动
- *  · 班级 / 科目 默认均不选中，需用户自行勾选
- *  · 科目变化自动勾选有该科目数据的班级；班级变化自动勾选有该班级数据的科目
- *  · 导出 PDF 文件名智能拼装
+ *  睿智校区成绩分析系统 v3.3.0
+ *  · 整体分析 / 班级对比 双主标签同行显示
+ *  · 顶部「已加载班级」「已加载科目」默认不选，勾选后自动预选对方
+ *  · 成绩稳定性分析 / 全班成绩 加科目下拉（默认不选）
+ *  · 所有下拉列表默认不选
  * ===================================================================== */
+
+const TOP_TABS = [
+  {
+    id: 'overall',
+    label: '整体分析',
+    pages: [
+      { id: 'f6',  label: '达标率' },
+      { id: 'f5',  label: '数据明细表' },
+      { id: 'f4b', label: '分数段分布' },
+      { id: 'f2b', label: '三分对比图' }
+    ]
+  },
+  {
+    id: 'class',
+    label: '班级对比',
+    pages: [
+      { id: 'f1a', label: '个人趋势' },
+      { id: 'f1c', label: '个人稳定性分析' },
+      { id: 'f1b', label: '名次变化' },
+      { id: 'f2a', label: '班级整体' },
+      { id: 'f3a', label: '全班成绩' },
+      { id: 'f3b', label: '单科进步榜' },
+      { id: 'f4a', label: '全班图表' }
+    ]
+  }
+];
+
+const PAGE_NAMES = {
+  f1a: '个人趋势', f1b: '名次变化', f1c: '个人稳定性分析',
+  f2a: '班级整体', f2b: '三分对比图',
+  f3a: '全班成绩', f3b: '单科进步榜',
+  f4a: '全班图表', f4b: '分数段分布',
+  f5: '数据明细表', f6: '达标率'
+};
 
 const state = {
   classList: [], examList: [], subjectList: [], classes: {},
-  currentClass: '',
-  currentPage: '',
-  currentSub: { f1:'f1a', f2:'f2a', f3:'f3a', f4:'f4a' }
+  topTab: 'overall',
+  currentPage: 'f6'
 };
 let chartInstances = [];
 const statCache = new Map();
-let filterTimer = null;
 let p4Observer = null;
 let _uid = 0;
 const classSubCache = new Map();
+let isAutoSelecting = false;
 
 const sortState = {
   classTable:{col:-1,asc:true}, rank:{col:-1,asc:true}, stability:{col:-1,asc:true},
@@ -510,7 +576,6 @@ const getClassSubjectMark = (cls, exam, baseKey) => {
 };
 const getSubjectFullMark = b => { const s = subjectFullMarks.get(b); return s && s.size ? Math.max(...s) : null; };
 const getSubjectFullMarkList = b => { const s = subjectFullMarks.get(b); return s ? [...s].sort((a,b)=>a-b) : []; };
-const getSubjectOriginalNames = b => { const s = subjectOriginals.get(b); return s ? [...s] : []; };
 
 const toNum = v => { if (v === null || v === undefined || v === '') return null; const n = parseFloat(v); return Number.isNaN(n) ? null : n; };
 const readLine = id => { const v = parseFloat($(id).value); return Number.isNaN(v) ? null : v; };
@@ -525,6 +590,11 @@ const updateRateTips = () => {
   if (mn) mn.textContent = Math.round(getRateMin()*100);
   if (st) st.textContent = Math.round(getRateStd()*100);
 };
+
+const getChecked = wrapId => Array.from(document.querySelectorAll('#' + wrapId + ' input[type="checkbox"]:checked')).map(i => i.value);
+const getGlobalClasses = () => getChecked('globalClassWrap');
+const getGlobalSubjects = () => getChecked('globalSubjectWrap');
+const getPrimaryClass = () => getGlobalClasses()[0] || '';
 
 /* ============ 悬浮提示 ============ */
 function attachHover(el, title, items) {
@@ -567,9 +637,7 @@ function bindHoverTips() {
 }
 
 /* ============================================================
- *  ★★★ 自动联动核心 ★★★
- *  科目变化 → 自动勾选有该科目数据的班级
- *  班级变化 → 自动勾选有该班级数据的科目
+ *  预选联动
  * ============================================================ */
 function classHasSubjectData(cls, sub, exam) {
   const students = state.classes[cls]?.students;
@@ -618,7 +686,7 @@ function autoSelectByClasses(classWrapId, subjectWrapId, exam) {
 }
 
 /* ============================================================
- *  ★★★ 表格：原生 table + colgroup 固定列宽 ★★★
+ *  表格渲染
  * ============================================================ */
 function renderGridTable(cols, rows, sortKey, wrapEl, onSort) {
   const st = sortState[sortKey] || (sortState[sortKey] = { col: -1, asc: true });
@@ -847,7 +915,6 @@ function getStatStudents(cls, exam, sub, mode) {
   if (mode === 'min') { const mn = Math.min(...arr.map(x=>x.score)); return arr.filter(x=>x.score===mn).map(x=>({name:x.name,value:x.score+' 分',tone:'bad'})); }
   return arr.map(x=>({name:x.name,value:x.score+' 分'}));
 }
-const getChecked = wrapId => Array.from(document.querySelectorAll('#' + wrapId + ' input[type="checkbox"]:checked')).map(i => i.value);
 function computeRanks(values) {
   const sorted = values.filter(v=>v!==null&&!Number.isNaN(v)).sort((a,b)=>b-a);
   return values.map(v=>(v===null||Number.isNaN(v))?null:sorted.indexOf(v)+1);
@@ -1075,64 +1142,51 @@ function renderAbsentBlock(info) {
   html += '</div>';
   return html;
 }
-const hasData = () => state.classList.length > 0 && state.classes[state.currentClass];
+const hasData = () => state.classList.length > 0;
 const emptyTip = msg => '<div class="card"><div class="empty-hint">' + msg + '</div></div>';
 
 /* ============================================================
- *  F1 学生个人分析
+ *  F1a 学生个人趋势（学生下拉默认不选）
  * ============================================================ */
-function renderF1(root) {
-  if (!hasData()) { root.innerHTML = emptyTip('请先上传成绩文件'); return; }
-  const sub = state.currentSub.f1;
-  root.innerHTML =
-    '<div class="sub-tabs" data-group="f1">' +
-      '<button class="sub-tab' + (sub==='f1a'?' active':'') + '" data-sub="f1a">个人趋势</button>' +
-      '<button class="sub-tab' + (sub==='f1b'?' active':'') + '" data-sub="f1b">名次变化</button>' +
-      '<button class="sub-tab' + (sub==='f1c'?' active':'') + '" data-sub="f1c">稳定性分析</button>' +
-    '</div><div id="f1Body"></div>';
-  bindSubTabs('f1');
-  const body = $('f1Body');
-  if (sub === 'f1a') renderF1a(body);
-  else if (sub === 'f1b') renderF1b(body);
-  else if (sub === 'f1c') renderF1c(body);
-}
 function renderF1a(root) {
-  const cls = state.currentClass;
+  const cls = getPrimaryClass();
+  if (!cls || !state.classes[cls]) {
+    root.innerHTML = emptyTip('请先在顶部选择至少一个班级');
+    return;
+  }
   const students = Object.keys(state.classes[cls].students).sort((a,b)=>a.localeCompare(b,'zh'));
-  const classSubs = getClassSubjects(cls);
   root.innerHTML =
     '<div class="card"><div class="filter-row">' +
       '<div class="filter-group"><label>学生</label><select id="studentSelect">' +
-        (students.length ? students.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('') : '<option value="">无学生</option>') +
+        '<option value="">请选择学生</option>' +
+        students.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('') +
       '</select></div>' +
-      '<div class="filter-group"><label>科目</label><select id="subjectSelect">' +
-        '<option value="all">所有科目</option>' +
-        classSubs.map(s=>'<option value="'+esc(s)+'">'+esc(subjectLabel(s))+'</option>').join('') +
-      '</select></div>' +
-      '<span class="info-text">「总分」图表中会叠加显示各分数线</span>' +
+      '<span class="info-text">当前班级：' + esc(cls) + '；科目使用顶部已加载科目</span>' +
     '</div></div>' +
     '<div id="p1Summary"></div>' +
     '<div id="p1Charts" class="chart-grid-5"></div>';
   $('studentSelect').addEventListener('change', drawF1a);
-  $('subjectSelect').addEventListener('change', drawF1a);
   drawF1a();
 }
 function drawF1a() {
-  const cls = state.currentClass;
+  const cls = getPrimaryClass();
+  if (!cls) return;
   const exams = state.examList;
-  const studentName = $('studentSelect').value;
-  const selSub = $('subjectSelect').value;
+  const stuEl = $('studentSelect');
+  if (!stuEl) return;
+  const studentName = stuEl.value;
   const summaryWrap = $('p1Summary');
   const container = $('p1Charts');
   summaryWrap.innerHTML = '';
   container.innerHTML = '';
-  if (!studentName) { container.innerHTML = '<div class="empty-hint">请选择学生</div>'; return; }
+  if (!studentName) {
+    container.innerHTML = '<div class="empty-hint">请先选择学生</div>';
+    return;
+  }
   const stu = state.classes[cls].students[studentName];
-  const classSubs = getClassSubjects(cls);
-  let subs;
-  if (selSub === 'all') subs = classSubs;
-  else if (classSubs.includes(selSub)) subs = [selSub];
-  else subs = [];
+  const enabledSubs = getGlobalSubjects();
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
+  const subs = classSubs;
   const last = exams[exams.length - 1];
   const totLast = getStudentTotal(stu, last);
   const absence = getStudentAbsence(stu, exams);
@@ -1191,7 +1245,7 @@ function drawF1a() {
       absence.absent.length ? {title:'缺考记录',extra:absentHtml} : null
     ]);
   }
-  if (!subs.length) { container.innerHTML = '<div class="empty-hint">当前班级暂无有效成绩科目</div>'; return; }
+  if (!subs.length) { container.innerHTML = '<div class="empty-hint">当前班级暂无有效成绩科目，请在顶部勾选科目</div>'; return; }
   subs.forEach(sub => {
     const card = document.createElement('div');
     card.className = 'chart-card';
@@ -1211,22 +1265,33 @@ function drawF1a() {
   });
   setTimeout(bindHoverTips, 10);
 }
+
+/* ============================================================
+ *  F1b 名次变化（下拉默认不选）
+ * ============================================================ */
 function renderF1b(root) {
-  const cls = state.currentClass;
-  const classSubs = getClassSubjects(cls);
+  const cls = getPrimaryClass();
+  if (!cls || !state.classes[cls]) {
+    root.innerHTML = emptyTip('请先在顶部选择至少一个班级');
+    return;
+  }
+  const enabledSubs = getGlobalSubjects();
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML =
     '<div id="rankSummary"></div>' +
     '<div class="card">' +
       '<div class="page-title">名次变化追踪</div>' +
       '<div class="filter-row">' +
         '<div class="filter-group"><label>科目</label><select id="rankSubject">' +
+          '<option value="">请选择科目</option>' +
           classSubs.map(s=>'<option value="'+esc(s)+'">'+esc(subjectLabel(s))+'</option>').join('') +
         '</select></div>' +
         '<div class="filter-group"><label>对比</label><select id="rankCompare">' +
+          '<option value="">请选择对比</option>' +
           '<option value="last">最新 vs 上次</option>' +
           '<option value="first">最新 vs 首次</option>' +
         '</select></div>' +
-        '<span class="info-text">点击表头可排序</span>' +
+        '<span class="info-text">当前班级：' + esc(cls) + '；点击表头可排序</span>' +
       '</div>' +
       '<div id="rankTable"></div>' +
     '</div>';
@@ -1235,15 +1300,20 @@ function renderF1b(root) {
   drawF1b();
 }
 function drawF1b() {
-  const cls = state.currentClass;
+  const cls = getPrimaryClass();
+  if (!cls) return;
   const sub = $('rankSubject').value;
   const compareMode = $('rankCompare').value;
   const summaryWrap = $('rankSummary');
   const tableWrap = $('rankTable');
   summaryWrap.innerHTML = '';
   tableWrap.innerHTML = '';
+  if (!sub || !compareMode) {
+    tableWrap.innerHTML = '<div class="empty-hint">请先选择科目和对比方式</div>';
+    return;
+  }
   const exams = state.examList;
-  if (!sub || exams.length < 2) { tableWrap.innerHTML = '<div class="empty-hint">数据不足，至少需要 2 次考试</div>'; return; }
+  if (exams.length < 2) { tableWrap.innerHTML = '<div class="empty-hint">数据不足，至少需要 2 次考试</div>'; return; }
   const last = exams[exams.length-1], first = exams[0], prev = exams[exams.length-2];
   const examA = compareMode === 'first' ? first : prev;
   const examB = last;
@@ -1303,18 +1373,28 @@ function drawF1b() {
   ];
   renderGridTable(cols, rows, 'rank', tableWrap, drawF1b);
 }
+
+/* ============================================================
+ *  F1c 个人稳定性分析（加科目下拉，默认不选）
+ * ============================================================ */
 function renderF1c(root) {
-  const cls = state.currentClass;
-  const classSubs = getClassSubjects(cls);
+  const cls = getPrimaryClass();
+  if (!cls || !state.classes[cls]) {
+    root.innerHTML = emptyTip('请先在顶部选择至少一个班级');
+    return;
+  }
+  const enabledSubs = getGlobalSubjects();
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML =
     '<div id="stabilitySummary"></div>' +
     '<div class="card">' +
       '<div class="page-title">成绩稳定性分析</div>' +
       '<div class="filter-row">' +
         '<div class="filter-group"><label>科目</label><select id="stabilitySubject">' +
+          '<option value="">请选择科目</option>' +
           classSubs.map(s=>'<option value="'+esc(s)+'">'+esc(subjectLabel(s))+'</option>').join('') +
         '</select></div>' +
-        '<span class="info-text">标准差越小越稳定；点击表头可排序</span>' +
+        '<span class="info-text">当前班级：' + esc(cls) + '；标准差越小越稳定</span>' +
       '</div>' +
       '<div id="stabilityTable"></div>' +
     '</div>';
@@ -1322,14 +1402,19 @@ function renderF1c(root) {
   drawF1c();
 }
 function drawF1c() {
-  const cls = state.currentClass;
+  const cls = getPrimaryClass();
+  if (!cls) return;
   const sub = $('stabilitySubject').value;
   const summaryWrap = $('stabilitySummary');
   const tableWrap = $('stabilityTable');
   summaryWrap.innerHTML = '';
   tableWrap.innerHTML = '';
+  if (!sub) {
+    tableWrap.innerHTML = '<div class="empty-hint">请先选择科目</div>';
+    return;
+  }
   const exams = state.examList;
-  if (!sub || exams.length < 2) { tableWrap.innerHTML = '<div class="empty-hint">数据不足，至少需要 2 次考试</div>'; return; }
+  if (exams.length < 2) { tableWrap.innerHTML = '<div class="empty-hint">数据不足，至少需要 2 次考试</div>'; return; }
   const students = state.classes[cls].students;
   const rows = [];
   for (const name in students) {
@@ -1344,7 +1429,7 @@ function drawF1c() {
     const std = Math.round(Math.sqrt(variance)*10)/10;
     rows.push({name,scores,count:scores.length,avg:Math.round(avg*10)/10,std,range:Math.max(...scores)-Math.min(...scores)});
   }
-  if (!rows.length) { tableWrap.innerHTML = '<div class="empty-hint">数据不足</div>'; return; }
+  if (!rows.length) { tableWrap.innerHTML = '<div class="empty-hint">该科目数据不足</div>'; return; }
   const stabCls = s => s<=5?'stability-good':s<=12?'stability-mid':'stability-poor';
   const stabLabel = s => s<=5?'非常稳定':s<=12?'较稳定':'波动较大';
   const avgStd = rows.reduce((a,r)=>a+r.std,0)/rows.length;
@@ -1377,30 +1462,20 @@ function drawF1c() {
 }
 
 /* ============================================================
- *  F2 班级趋势对比
+ *  F2a 班级整体
  * ============================================================ */
-function renderF2(root) {
-  if (!hasData()) { root.innerHTML = emptyTip('请先上传成绩文件'); return; }
-  const sub = state.currentSub.f2;
-  root.innerHTML =
-    '<div class="sub-tabs" data-group="f2">' +
-      '<button class="sub-tab' + (sub==='f2a'?' active':'') + '" data-sub="f2a">班级整体</button>' +
-      '<button class="sub-tab' + (sub==='f2b'?' active':'') + '" data-sub="f2b">三分对比图</button>' +
-      '<button class="sub-tab' + (sub==='f2c'?' active':'') + '" data-sub="f2c">单科成绩</button>' +
-    '</div><div id="f2Body"></div>';
-  bindSubTabs('f2');
-  const body = $('f2Body');
-  if (sub === 'f2a') renderF2a(body);
-  else if (sub === 'f2b') renderF2b(body);
-  else if (sub === 'f2c') renderF2c(body);
-}
 function renderF2a(root) {
-  const cls = state.currentClass;
+  const cls = getPrimaryClass();
+  if (!cls || !state.classes[cls]) {
+    root.innerHTML = emptyTip('请先在顶部选择至少一个班级');
+    return;
+  }
   const exams = state.examList;
-  const subs = getClassSubjects(cls).filter(s=>!isTotal(s));
+  const enabledSubs = getGlobalSubjects();
+  const subs = getClassSubjects(cls).filter(s=>!isTotal(s) && enabledSubs.includes(s));
   const students = Object.keys(state.classes[cls].students);
   root.innerHTML = '<div id="classSummary"></div>' +
-    '<div class="card"><h3>各科目班级统计趋势</h3><div id="subjectChartWrap" class="chart-grid"></div></div>';
+    '<div class="card"><h3>各科目班级统计趋势（' + esc(cls) + '）</h3><div id="subjectChartWrap" class="chart-grid"></div></div>';
   const items = [
     {label:'当前班级',value:esc(cls)},
     {label:'考试次数',value:exams.length+' 次'},
@@ -1453,51 +1528,51 @@ function renderF2a(root) {
   });
   setTimeout(bindHoverTips, 10);
 }
+
+/* ============================================================
+ *  F2b 三分对比图（整体分析，统计类型下拉默认不选）
+ * ============================================================ */
 function renderF2b(root) {
-  const classes = state.classList.slice();
   root.innerHTML =
     '<div id="tripleSummary"></div>' +
     '<div class="card">' +
       '<div class="page-title">三分对比图</div>' +
       '<div class="filter-row">' +
         '<div class="filter-group"><label>统计类型</label><select id="tripleMode">' +
+          '<option value="">请选择统计类型</option>' +
           '<option value="avg">平均分</option><option value="max">最高分</option><option value="min">最低分</option>' +
         '</select></div>' +
+        '<span class="info-text">使用顶部已加载班级与已加载科目</span>' +
       '</div>' +
-      '<div class="filter-block">' +
-        '<div class="filter-block-label">班级</div>' +
-        '<div class="filter-block-body">' +
-          '<div id="tripleClassWrap" class="checkbox-group">' +
-            /* ★ 默认不选中 ★ */
-            classes.map(c=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(c)+'"><span>'+esc(c)+'</span></label>').join('') +
-          '</div>' +
-          '<div class="group-actions">' +
-            '<button class="btn-mini" onclick="setAllCheckboxes(\'tripleClassWrap\',true)">全选</button>' +
-            '<button class="btn-mini" onclick="setAllCheckboxes(\'tripleClassWrap\',false)">清空</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div id="tripleSubjectWrap" class="chart-grid" style="margin-top:16px"></div>' +
+      '<div id="tripleChartWrap" class="chart-grid" style="margin-top:16px"></div>' +
     '</div>';
-  bindAllCheckboxes('tripleClassWrap');
   $('tripleMode').addEventListener('change', drawF2b);
   drawF2b();
 }
 function drawF2b() {
-  const wrap = $('tripleSubjectWrap');
+  const wrap = $('tripleChartWrap');
   const summaryWrap = $('tripleSummary');
+  if (!wrap || !summaryWrap) return;
   wrap.innerHTML = '';
   summaryWrap.innerHTML = '';
   const mode = $('tripleMode').value;
-  const classes = getChecked('tripleClassWrap');
+  const classes = getGlobalClasses();
+  const subs = getGlobalSubjects();
   const exams = state.examList;
-  if (!classes.length) { wrap.innerHTML = '<div class="empty-hint">请选择至少一个班级</div>'; return; }
-  const subs = state.subjectList.filter(sub => classes.some(c=>exams.some(e=>getStat(c,e,sub,mode)!=null)));
-  if (!subs.length) { wrap.innerHTML = '<div class="empty-hint">暂无数据</div>'; return; }
+  if (!mode) { summaryWrap.innerHTML = '<div class="card"><div class="empty-hint">请先选择统计类型</div></div>'; return; }
+  if (!classes.length || !subs.length) {
+    summaryWrap.innerHTML = '<div class="card"><div class="empty-hint">请先在顶部选择班级和科目</div></div>';
+    return;
+  }
+  const validSubs = subs.filter(sub => classes.some(c => exams.some(e => getStat(c, e, sub, mode) != null)));
+  if (!validSubs.length) {
+    summaryWrap.innerHTML = '<div class="card"><div class="empty-hint">所选条件下暂无数据</div></div>';
+    return;
+  }
   const last = exams[exams.length-1];
   const classScores = {};
   classes.forEach(cls => classScores[cls] = {total:0,count:0});
-  subs.forEach(sub => classes.forEach(cls => {
+  validSubs.forEach(sub => classes.forEach(cls => {
     const v = getStat(cls, last, sub, mode);
     if (v != null) { classScores[cls].total += v; classScores[cls].count++; }
   }));
@@ -1505,12 +1580,12 @@ function drawF2b() {
     .map(([cls,v])=>({cls,avg:v.total/v.count})).sort((a,b)=>b.avg-a.avg);
   const items = [
     {label:'参与班级',value:classes.length+' 个'},
-    {label:'科目数',value:subs.length+' 科'},
+    {label:'科目数',value:validSubs.length+' 科'},
     {label:'统计维度',value:modeLabel(mode)}
   ];
   if (ranking.length) {
     items.push({label:'领先班级',value:esc(ranking[0].cls),cls:'font-up'});
-    items.push({label:'末位班级',value:esc(ranking[ranking.length-1].cls),cls:'font-down'});
+    if (ranking.length > 1) items.push({label:'末位班级',value:esc(ranking[ranking.length-1].cls),cls:'font-down'});
   }
   const paras = [];
   if (ranking.length >= 2) {
@@ -1518,7 +1593,17 @@ function drawF2b() {
     paras.push('<b class="hl">' + esc(ranking[0].cls) + '</b> 领先，<b class="hl">' + esc(ranking[ranking.length-1].cls) + '</b> 落后，差距约 <b>' + gap + '</b> 分。');
   }
   summaryWrap.innerHTML = analysisPanel([{title:'多班级综合对比',items,paras}]);
-  subs.forEach(sub => {
+
+  validSubs.forEach(sub => {
+    const datasets = [];
+    let colorIdx = 0;
+    classes.forEach(cls => {
+      const data = exams.map(e => getStat(cls, e, sub, mode));
+      if (data.every(v => v == null)) return;
+      const c = colorPool[colorIdx++ % colorPool.length];
+      datasets.push({label:cls, data, borderColor:c.border, backgroundColor:c.bg, tension:.4, fill:false, pointRadius:3, borderWidth:2});
+    });
+    if (!datasets.length) return;
     const card = document.createElement('div');
     card.className = 'chart-card triple-chart-card';
     const id = uid();
@@ -1549,156 +1634,30 @@ function drawF2b() {
       (fmList.length ? '<div>科目满分：' + fmList.join(' / ') + '</div>' : '') +
       '</div>';
     wrap.appendChild(card);
-    const datasets = classes.map((cls,i) => {
-      const c = colorPool[i % colorPool.length];
-      return {label:cls,data:exams.map(e=>getStat(cls,e,sub,mode)),borderColor:c.border,backgroundColor:c.bg,tension:.4,fill:false,pointRadius:3,borderWidth:2};
-    });
     addChart(makeLineChart(id, exams, datasets, isTotal(sub)));
   });
 }
-function renderF2c(root) {
-  const subs = state.subjectList.slice();
-  root.innerHTML =
-    '<div id="subjectSummary"></div>' +
-    '<div class="card">' +
-      '<div class="page-title">单科成绩（选中班级 × 选中科目）</div>' +
-      '<div class="filter-row">' +
-        '<div class="filter-group"><label>科目</label><select id="subSub">' +
-          subs.map(s=>'<option value="'+esc(s)+'">'+esc(subjectLabel(s))+'</option>').join('') +
-        '</select></div>' +
-        '<div class="filter-group"><label>维度</label><select id="subMode">' +
-          '<option value="avg">平均分</option><option value="max">最高分</option><option value="min">最低分</option>' +
-        '</select></div>' +
-        '<span class="info-text">切换科目会自动勾选有该科目数据的班级</span>' +
-      '</div>' +
-      '<div class="filter-block">' +
-        '<div class="filter-block-label">班级</div>' +
-        '<div class="filter-block-body">' +
-          '<div id="subClassWrap" class="checkbox-group"></div>' +
-          '<div class="group-actions">' +
-            '<button class="btn-mini" onclick="setAllCheckboxes(\'subClassWrap\',true)">全选</button>' +
-            '<button class="btn-mini" onclick="setAllCheckboxes(\'subClassWrap\',false)">清空</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="big-chart-wrap">' +
-        '<canvas id="subjectChartCanvas"></canvas>' +
-        '<div id="subjectChartEmpty" class="chart-empty-overlay hidden">请选择科目和班级</div>' +
-      '</div>' +
-    '</div>';
-  const initSub = subs[0] || '';
-  renderSubClassCheckboxes(initSub, false); /* 初始不自动勾选 */
-  $('subSub').addEventListener('change', e => {
-    renderSubClassCheckboxes(e.target.value, true); /* 科目变化时自动勾选 */
-    drawF2c();
-  });
-  $('subMode').addEventListener('change', drawF2c);
-  drawF2c();
-}
-function renderSubClassCheckboxes(sub, autoSelect) {
-  const wrap = $('subClassWrap');
-  const classes = state.classList.slice();
-  wrap.innerHTML = classes.map(c => {
-    const has = autoSelect && state.examList.some(ex => getStat(c, ex, sub, 'avg') != null);
-    return '<label class="checkbox-item'+(has?' checked':'')+'">' +
-      '<input type="checkbox" value="'+esc(c)+'"'+(has?' checked':'')+'>' +
-      '<span>'+esc(c)+'</span></label>';
-  }).join('');
-  bindAllCheckboxes('subClassWrap');
-}
-function drawF2c() {
-  const canvas = $('subjectChartCanvas');
-  const emptyEl = $('subjectChartEmpty');
-  const summaryWrap = $('subjectSummary');
-  const mode = $('subMode').value;
-  const sub = $('subSub').value;
-  const classes = getChecked('subClassWrap');
-  const exams = state.examList;
-  const old = Chart.getChart(canvas);
-  if (old) { try{old.destroy();}catch(e){} chartInstances = chartInstances.filter(c=>c!==old); }
-  summaryWrap.innerHTML = '';
-  if (!sub) { canvas.style.display='none'; emptyEl.textContent='请先选择科目'; emptyEl.classList.remove('hidden'); return; }
-  if (!classes.length) { canvas.style.display='none'; emptyEl.textContent='请至少选择一个班级'; emptyEl.classList.remove('hidden'); return; }
-  if (!exams.length) { canvas.style.display='none'; emptyEl.textContent='暂无考试数据'; emptyEl.classList.remove('hidden'); return; }
-  const datasets = [];
-  let colorIdx = 0;
-  classes.forEach(cls => {
-    const data = exams.map(e=>getStat(cls,e,sub,mode));
-    if (data.every(v=>v==null)) return;
-    const c = colorPool[colorIdx++ % colorPool.length];
-    datasets.push({label:cls,data,borderColor:c.border,backgroundColor:c.bg,tension:.4,fill:false,pointRadius:4,borderWidth:2.6});
-  });
-  if (!datasets.length) { canvas.style.display='none'; emptyEl.textContent='所选科目在选中班级中暂无数据'; emptyEl.classList.remove('hidden'); return; }
-  canvas.style.display='block';
-  emptyEl.classList.add('hidden');
-  addChart(new Chart(canvas.getContext('2d'), {
-    type:'line',
-    data:{labels:exams,datasets},
-    options:{
-      responsive:true,maintainAspectRatio:false,animation:{duration:400},
-      interaction:{mode:'index',intersect:false},
-      layout:{padding:{top:18,right:28,bottom:10,left:12}},
-      plugins:{
-        legend:{position:'top',labels:{boxWidth:24,boxHeight:13,font:{size:13,weight:'600'},padding:18,usePointStyle:true,pointStyle:'line'}},
-        tooltip:{mode:'index',intersect:false,titleFont:{size:13.5,weight:'700'},bodyFont:{size:13},padding:14,backgroundColor:'#1e3a5f',cornerRadius:8},
-        title:{display:true,text:subjectLabel(sub)+'｜'+modeLabel(mode)+'对比',font:{size:17,weight:'700'},color:'#1d4ed8',padding:{top:4,bottom:20}}
-      },
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:12.5},maxRotation:45,autoSkip:true,maxTicksLimit:18}},
-        y:{beginAtZero:false,grace:'12%',ticks:{font:{size:12.5}}}
-      }
-    },
-    plugins: isTotal(sub) ? [createScoreLinePlugin()] : []
-  }));
-  const last = exams[exams.length-1];
-  const prev = exams.length >= 2 ? exams[exams.length-2] : null;
-  const list = classes.map(cls => {
-    const s = getStat(cls, last, sub, mode);
-    const p = prev ? getStat(cls, prev, sub, mode) : null;
-    return {cls,s,delta:(s!=null&&p!=null)?Math.round((s-p)*10)/10:null};
-  });
-  const valid = list.filter(x=>x.s!=null).sort((a,b)=>b.s-a.s);
-  if (valid.length) {
-    const fmList = getSubjectFullMarkList(sub);
-    const items = [
-      {label:'科目',value:esc(sub)},
-      {label:'统计维度',value:modeLabel(mode)},
-      {label:'有效班级',value:valid.length+' 个'},
-      {label:'领先班级',value:esc(valid[0].cls),cls:'font-up'},
-      {label:'末位班级',value:esc(valid[valid.length-1].cls),cls:'font-down'}
-    ];
-    if (fmList.length) items.push({label:'科目满分',value:fmList.join('/')});
-    summaryWrap.innerHTML = analysisPanel([{title:'单科综合对比',items,paras:[]}]);
-  }
-}
 
 /* ============================================================
- *  F3 全班成绩明细
+ *  F3a 全班成绩（加科目下拉，默认不选）
  * ============================================================ */
-function renderF3(root) {
-  if (!hasData()) { root.innerHTML = emptyTip('请先上传成绩文件'); return; }
-  const sub = state.currentSub.f3;
-  root.innerHTML =
-    '<div class="sub-tabs" data-group="f3">' +
-      '<button class="sub-tab' + (sub==='f3a'?' active':'') + '" data-sub="f3a">全班成绩</button>' +
-      '<button class="sub-tab' + (sub==='f3b'?' active':'') + '" data-sub="f3b">单科进步榜</button>' +
-    '</div><div id="f3Body"></div>';
-  bindSubTabs('f3');
-  const body = $('f3Body');
-  if (sub === 'f3a') renderF3a(body);
-  else if (sub === 'f3b') renderF3b(body);
-}
 function renderF3a(root) {
-  const cls = state.currentClass;
-  const classSubs = getClassSubjects(cls);
+  const cls = getPrimaryClass();
+  if (!cls || !state.classes[cls]) {
+    root.innerHTML = emptyTip('请先在顶部选择至少一个班级');
+    return;
+  }
+  const enabledSubs = getGlobalSubjects();
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML =
     '<div id="singleClassSummary"></div>' +
     '<div class="card">' +
       '<div class="filter-row">' +
         '<div class="filter-group"><label>科目</label><select id="clsSub">' +
+          '<option value="">请选择科目</option>' +
           classSubs.map(s=>'<option value="'+esc(s)+'">'+esc(subjectLabel(s))+'</option>').join('') +
         '</select></div>' +
-        '<span class="info-text">点击考试列表头可排序</span>' +
+        '<span class="info-text">当前班级：' + esc(cls) + '；点击考试列表头可排序</span>' +
       '</div>' +
       '<div id="classTable"></div>' +
     '</div>';
@@ -1706,13 +1665,17 @@ function renderF3a(root) {
   drawF3a();
 }
 function drawF3a() {
-  const cls = state.currentClass;
+  const cls = getPrimaryClass();
+  if (!cls) return;
   const sub = $('clsSub').value;
   const summaryWrap = $('singleClassSummary');
   const tableWrap = $('classTable');
   summaryWrap.innerHTML = '';
   tableWrap.innerHTML = '';
-  if (!sub) return;
+  if (!sub) {
+    tableWrap.innerHTML = '<div class="empty-hint">请先选择科目</div>';
+    return;
+  }
   const students = state.classes[cls].students;
   const exams = state.examList;
   const last = exams[exams.length-1];
@@ -1809,22 +1772,34 @@ function drawF3a() {
   });
   renderGridTable(cols, rows, 'classTable', tableWrap, drawF3a);
 }
+
+/* ============================================================
+ *  F3b 单科进步榜（下拉默认不选）
+ * ============================================================ */
 function renderF3b(root) {
-  const cls = state.currentClass;
-  const classSubs = getClassSubjects(cls);
+  const cls = getPrimaryClass();
+  if (!cls || !state.classes[cls]) {
+    root.innerHTML = emptyTip('请先在顶部选择至少一个班级');
+    return;
+  }
+  const enabledSubs = getGlobalSubjects();
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML =
     '<div id="progressSummary"></div>' +
     '<div class="card">' +
       '<div class="page-title">单科进步榜 / 退步榜</div>' +
       '<div class="filter-row">' +
         '<div class="filter-group"><label>科目</label><select id="progressSub">' +
+          '<option value="">请选择科目</option>' +
           classSubs.map(s=>'<option value="'+esc(s)+'">'+esc(subjectLabel(s))+'</option>').join('') +
         '</select></div>' +
         '<div class="filter-group"><label>对比</label><select id="progressCompare">' +
+          '<option value="">请选择对比</option>' +
           '<option value="last">最新 vs 上次</option><option value="first">最新 vs 首次</option>' +
         '</select></div>' +
         '<div class="filter-group"><label>展示</label><select id="progressLimit">' +
-          '<option value="10">前 10</option><option value="20" selected>前 20</option><option value="50">前 50</option>' +
+          '<option value="">请选择展示数量</option>' +
+          '<option value="10">前 10</option><option value="20">前 20</option><option value="50">前 50</option>' +
         '</select></div>' +
       '</div>' +
       '<div class="chart-grid-2" style="margin-bottom:16px">' +
@@ -1839,16 +1814,25 @@ function renderF3b(root) {
   drawF3b();
 }
 function drawF3b() {
-  const cls = state.currentClass;
+  const cls = getPrimaryClass();
+  if (!cls) return;
   const sub = $('progressSub').value;
   const compareMode = $('progressCompare').value;
-  const limit = parseInt($('progressLimit').value, 10) || 20;
+  const limitStr = $('progressLimit').value;
+  const limit = parseInt(limitStr, 10) || 20;
   const summaryWrap = $('progressSummary');
   const tableWrap = $('progressTable');
   summaryWrap.innerHTML = '';
   tableWrap.innerHTML = '';
+  const upCanvas = $('progressUpCanvas'), downCanvas = $('progressDownCanvas');
+  if (upCanvas) { const oU = Chart.getChart(upCanvas); if (oU) { try{oU.destroy();}catch(e){} } }
+  if (downCanvas) { const oD = Chart.getChart(downCanvas); if (oD) { try{oD.destroy();}catch(e){} } }
+  if (!sub || !compareMode || !limitStr) {
+    tableWrap.innerHTML = '<div class="empty-hint">请先选择科目、对比方式和展示数量</div>';
+    return;
+  }
   const exams = state.examList;
-  if (!sub || exams.length < 2) { tableWrap.innerHTML = '<div class="empty-hint">数据不足，至少需要 2 次考试</div>'; return; }
+  if (exams.length < 2) { tableWrap.innerHTML = '<div class="empty-hint">数据不足，至少需要 2 次考试</div>'; return; }
   const last = exams[exams.length-1], first = exams[0], prev = exams[exams.length-2];
   const examA = compareMode === 'first' ? first : prev;
   const examB = last;
@@ -1872,9 +1856,6 @@ function drawF3b() {
   if (upList.length) paras.push('进步状元：<b class="hl">' + esc(upList[0].name) + '</b>，<b class="font-up">+' + upList[0].delta + '</b> 分。');
   if (downList.length) paras.push('重点关注：<b class="warn">' + esc(downList[0].name) + '</b>，<b class="font-down">' + downList[0].delta + '</b> 分。');
   summaryWrap.innerHTML = analysisPanel([{title:'单科进步榜综合统计',items,paras}]);
-  const upCanvas = $('progressUpCanvas'), downCanvas = $('progressDownCanvas');
-  const oU = Chart.getChart(upCanvas); if (oU) { try{oU.destroy();}catch(e){} }
-  const oD = Chart.getChart(downCanvas); if (oD) { try{oD.destroy();}catch(e){} }
   if (upList.length) addChart(makeBarChart(upCanvas.id, upList.map(x=>x.name), [{label:'进步分',data:upList.map(x=>x.delta),backgroundColor:'rgba(34,197,94,.75)',borderColor:'#16a34a',borderWidth:1}], {horizontal:true}));
   if (downList.length) addChart(makeBarChart(downCanvas.id, downList.map(x=>x.name), [{label:'退步分',data:downList.map(x=>x.delta),backgroundColor:'rgba(239,68,68,.75)',borderColor:'#dc2626',borderWidth:1}], {horizontal:true}));
   const merged = [];
@@ -1893,27 +1874,19 @@ function drawF3b() {
 }
 
 /* ============================================================
- *  F4 全班图表
+ *  F4a 全班图表
  * ============================================================ */
-function renderF4(root) {
-  if (!hasData()) { root.innerHTML = emptyTip('请先上传成绩文件'); return; }
-  const sub = state.currentSub.f4;
-  root.innerHTML =
-    '<div class="sub-tabs" data-group="f4">' +
-      '<button class="sub-tab' + (sub==='f4a'?' active':'') + '" data-sub="f4a">全班图表</button>' +
-      '<button class="sub-tab' + (sub==='f4b'?' active':'') + '" data-sub="f4b">分数段分布</button>' +
-    '</div><div id="f4Body"></div>';
-  bindSubTabs('f4');
-  const body = $('f4Body');
-  if (sub === 'f4a') renderF4a(body);
-  else if (sub === 'f4b') renderF4b(body);
-}
 function renderF4a(root) {
-  const cls = state.currentClass;
+  const cls = getPrimaryClass();
+  if (!cls || !state.classes[cls]) {
+    root.innerHTML = emptyTip('请先在顶部选择至少一个班级');
+    return;
+  }
   const students = Object.keys(state.classes[cls].students).sort((a,b)=>a.localeCompare(b,'zh'));
-  const classSubs = getClassSubjects(cls);
+  const enabledSubs = getGlobalSubjects();
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML = '<div id="allClassSummary"></div>' +
-    '<div class="card"><h3>全班学生全部科目成绩变化图</h3><p class="info-text">每个学生一张卡片，每行 5 个</p></div>' +
+    '<div class="card"><h3>全班学生全部科目成绩变化图（' + esc(cls) + '）</h3><p class="info-text">每个学生一张卡片，每行 5 个</p></div>' +
     '<div id="page4Container"></div>';
   const exams = state.examList;
   const items = [
@@ -1941,14 +1914,15 @@ function renderF4a(root) {
 }
 function renderStudentCharts(card) {
   const name = card.dataset.name;
-  const cls = state.currentClass;
+  const cls = getPrimaryClass();
   const grid = card.querySelector('.chart-grid-5');
   if (!grid || grid.dataset.rendered) return;
   grid.dataset.rendered = '1';
   const stu = state.classes[cls]?.students?.[name];
   if (!stu) return;
   const exams = state.examList;
-  const classSubs = getClassSubjects(cls);
+  const enabledSubs = getGlobalSubjects();
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   classSubs.forEach(sub => {
     const data = exams.map(ex => {
       const v = stu[ex]?.[sub];
@@ -1963,6 +1937,10 @@ function renderStudentCharts(card) {
     addChart(makeLineChart(id, exams, [{label:sub,data,borderColor:'#4f46e5',backgroundColor:'rgba(79,70,229,.12)',tension:.4,fill:false,pointRadius:2,borderWidth:2,spanGaps:true}], isTotal(sub)));
   });
 }
+
+/* ============================================================
+ *  F4b 分数段分布（下拉默认不选）
+ * ============================================================ */
 const SEG_LEVELS = [
   {key:'s',label:'卓越',min:0.90,cls:'seg-s'},
   {key:'a',label:'优秀',min:0.80,cls:'seg-a'},
@@ -1982,56 +1960,20 @@ function renderF4b(root) {
     '<div class="card">' +
       '<div class="page-title">分数段分布</div>' +
       '<div class="filter-row">' +
-        '<div class="filter-group"><label>考试</label><select id="segExam"></select></div>' +
+        '<div class="filter-group"><label>考试</label><select id="segExam">' +
+          '<option value="">请选择考试</option>' +
+          state.examList.map((ex,i)=>'<option value="'+i+'">'+esc(ex)+'</option>').join('') +
+        '</select></div>' +
         '<div class="filter-group"><label>统计方式</label><select id="segMode">' +
+          '<option value="">请选择统计方式</option>' +
           '<option value="count">人数</option><option value="ratio">占比</option>' +
         '</select></div>' +
-        '<span class="info-text">分数段：卓越(≥90%)、优秀(80~90%)、良好(70~80%)、及格(60~70%)、待提高(&lt;60%)</span>' +
-      '</div>' +
-      '<div class="filter-block">' +
-        '<div class="filter-block-label">科目</div>' +
-        '<div class="filter-block-body">' +
-          '<div id="segSubjectWrap" class="checkbox-group"></div>' +
-          '<div class="group-actions"><button class="btn-mini" onclick="setAllCheckboxes(\'segSubjectWrap\',true)">全选</button><button class="btn-mini" onclick="setAllCheckboxes(\'segSubjectWrap\',false)">清空</button></div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="filter-block">' +
-        '<div class="filter-block-label">班级</div>' +
-        '<div class="filter-block-body">' +
-          '<div id="segClassWrap" class="checkbox-group"></div>' +
-          '<div class="group-actions"><button class="btn-mini" onclick="setAllCheckboxes(\'segClassWrap\',true)">全选</button><button class="btn-mini" onclick="setAllCheckboxes(\'segClassWrap\',false)">清空</button></div>' +
-        '</div>' +
+        '<span class="info-text">使用顶部已加载班级与已加载科目</span>' +
       '</div>' +
       '<div id="segChartWrap" class="chart-grid" style="margin-top:14px"></div>' +
       '<div id="segTable"></div>' +
     '</div>';
-  const sel = $('segExam');
-  sel.innerHTML = state.examList.map((ex,i)=>'<option value="'+i+'"'+(i===state.examList.length-1?' selected':'')+'>'+esc(ex)+'</option>').join('');
-  const subs = state.subjectList.slice();
-  /* ★ 默认都不选中 ★ */
-  $('segSubjectWrap').innerHTML = subs.map(s=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(s)+'"><span>'+esc(subjectLabel(s))+'</span></label>').join('');
-  $('segClassWrap').innerHTML = state.classList.map(c=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(c)+'"><span>'+esc(c)+'</span></label>').join('');
-  bindAllCheckboxes('segSubjectWrap');
-  bindAllCheckboxes('segClassWrap');
-
-  /* ★ 科目变化 → 自动勾选相关班级 ★ */
-  $('segSubjectWrap').addEventListener('change', () => {
-    const exam = state.examList[parseInt($('segExam').value, 10)];
-    autoSelectBySubjects('segSubjectWrap', 'segClassWrap', exam);
-    drawF4b();
-  });
-  /* ★ 班级变化 → 自动勾选相关科目 ★ */
-  $('segClassWrap').addEventListener('change', () => {
-    const exam = state.examList[parseInt($('segExam').value, 10)];
-    autoSelectByClasses('segClassWrap', 'segSubjectWrap', exam);
-    drawF4b();
-  });
-  /* 考试变化 → 按当前科目重新计算班级 */
-  $('segExam').addEventListener('change', () => {
-    const exam = state.examList[parseInt($('segExam').value, 10)];
-    autoSelectBySubjects('segSubjectWrap', 'segClassWrap', exam);
-    drawF4b();
-  });
+  $('segExam').addEventListener('change', drawF4b);
   $('segMode').addEventListener('change', drawF4b);
   drawF4b();
 }
@@ -2039,17 +1981,20 @@ function drawF4b() {
   const summaryWrap = $('segSummary');
   const tableWrap = $('segTable');
   const chartWrap = $('segChartWrap');
+  if (!summaryWrap) return;
   summaryWrap.innerHTML = '';
   tableWrap.innerHTML = '';
   chartWrap.innerHTML = '';
-  const examIdx = parseInt($('segExam').value, 10);
-  const classes = getChecked('segClassWrap');
-  const subs = getChecked('segSubjectWrap');
-  const exams = state.examList;
+  const examVal = $('segExam').value;
   const mode = $('segMode').value;
+  if (!examVal || !mode) { tableWrap.innerHTML = '<div class="empty-hint">请先选择考试和统计方式</div>'; return; }
+  const examIdx = parseInt(examVal, 10);
+  const classes = getGlobalClasses();
+  const subs = getGlobalSubjects();
+  const exams = state.examList;
   if (!exams.length || Number.isNaN(examIdx)) { tableWrap.innerHTML = '<div class="empty-hint">暂无考试数据</div>'; return; }
   const exam = exams[examIdx];
-  if (!classes.length || !subs.length) { tableWrap.innerHTML = '<div class="empty-hint">请先勾选科目和班级</div>'; return; }
+  if (!classes.length || !subs.length) { tableWrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级和科目</div>'; return; }
   const rows = [];
   subs.forEach(sub => {
     classes.forEach(cls => {
@@ -2164,54 +2109,22 @@ function drawF4b() {
 }
 
 /* ============================================================
- *  F5 数据明细表
+ *  F5 数据明细表（维度下拉默认不选）
  * ============================================================ */
 function renderF5(root) {
-  if (!hasData()) { root.innerHTML = emptyTip('请先上传成绩文件'); return; }
   root.innerHTML =
     '<div id="dataTableSummary"></div>' +
     '<div class="card">' +
       '<div class="page-title">各科目成绩明细对比表</div>' +
       '<div class="filter-row">' +
         '<div class="filter-group"><label>维度</label><select id="tableMode">' +
+          '<option value="">请选择维度</option>' +
           '<option value="avg">平均分</option><option value="max">最高分</option><option value="min">最低分</option>' +
         '</select></div>' +
-        '<span class="info-text">点击表头可排序</span>' +
-      '</div>' +
-      '<div class="filter-block">' +
-        '<div class="filter-block-label">科目</div>' +
-        '<div class="filter-block-body">' +
-          '<div id="tableSubjectWrap" class="checkbox-group"></div>' +
-          '<div class="group-actions"><button class="btn-mini" onclick="setAllCheckboxes(\'tableSubjectWrap\',true)">全选</button><button class="btn-mini" onclick="setAllCheckboxes(\'tableSubjectWrap\',false)">清空</button></div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="filter-block">' +
-        '<div class="filter-block-label">班级</div>' +
-        '<div class="filter-block-body">' +
-          '<div id="tableClassWrap" class="checkbox-group"></div>' +
-          '<div class="group-actions"><button class="btn-mini" onclick="setAllCheckboxes(\'tableClassWrap\',true)">全选</button><button class="btn-mini" onclick="setAllCheckboxes(\'tableClassWrap\',false)">清空</button></div>' +
-        '</div>' +
+        '<span class="info-text">使用顶部已加载班级与已加载科目；点击表头可排序</span>' +
       '</div>' +
       '<div id="dataTable"></div>' +
     '</div>';
-  const subs = state.subjectList.slice();
-  const classes = state.classList.slice();
-  /* ★ 默认都不选中 ★ */
-  $('tableSubjectWrap').innerHTML = subs.map(s=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(s)+'"><span>'+esc(subjectLabel(s))+'</span></label>').join('');
-  $('tableClassWrap').innerHTML = classes.map(c=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(c)+'"><span>'+esc(c)+'</span></label>').join('');
-  bindAllCheckboxes('tableSubjectWrap');
-  bindAllCheckboxes('tableClassWrap');
-
-  /* ★ 科目变化 → 自动勾选相关班级 ★ */
-  $('tableSubjectWrap').addEventListener('change', () => {
-    autoSelectBySubjects('tableSubjectWrap', 'tableClassWrap', null);
-    drawF5();
-  });
-  /* ★ 班级变化 → 自动勾选相关科目 ★ */
-  $('tableClassWrap').addEventListener('change', () => {
-    autoSelectByClasses('tableClassWrap', 'tableSubjectWrap', null);
-    drawF5();
-  });
   $('tableMode').addEventListener('change', drawF5);
   drawF5();
 }
@@ -2219,11 +2132,12 @@ function drawF5() {
   const wrap = $('dataTable');
   const summaryWrap = $('dataTableSummary');
   const mode = $('tableMode').value;
-  const classes = getChecked('tableClassWrap');
-  const subs = getChecked('tableSubjectWrap');
+  const classes = getGlobalClasses();
+  const subs = getGlobalSubjects();
   const exams = state.examList;
   summaryWrap.innerHTML = '';
-  if (!classes.length || !subs.length || !exams.length) { wrap.innerHTML = '<div class="empty-hint">请勾选至少一个班级和至少一个科目</div>'; return; }
+  if (!mode) { wrap.innerHTML = '<div class="empty-hint">请先选择统计维度</div>'; return; }
+  if (!classes.length || !subs.length || !exams.length) { wrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级和科目</div>'; return; }
   const rows = [];
   subs.forEach(sub => {
     classes.forEach(cls => {
@@ -2293,74 +2207,38 @@ function drawF5() {
 }
 
 /* ============================================================
- *  F6 达标率
+ *  F6 达标率（考试下拉默认不选）
  * ============================================================ */
 function renderF6(root) {
-  if (!hasData()) { root.innerHTML = emptyTip('请先上传成绩文件'); return; }
   root.innerHTML =
     '<div id="rateSummary"></div>' +
     '<div class="card">' +
       '<div class="page-title">成绩达标率统计</div>' +
       '<div class="filter-row">' +
-        '<div class="filter-group"><label>考试</label><select id="rateExam"></select></div>' +
+        '<div class="filter-group"><label>考试</label><select id="rateExam">' +
+          '<option value="">请选择考试</option>' +
+          state.examList.map((ex,i)=>'<option value="'+i+'">'+esc(ex)+'</option>').join('') +
+        '</select></div>' +
         '<span class="info-text">最低线 = 满分 × <b id="rateMinTip">60</b>%；标准线 = 满分 × <b id="rateStdTip">80</b>%。点击表头可排序</span>' +
-      '</div>' +
-      '<div class="filter-block">' +
-        '<div class="filter-block-label">科目</div>' +
-        '<div class="filter-block-body">' +
-          '<div id="rateSubjectWrap" class="checkbox-group"></div>' +
-          '<div class="group-actions"><button class="btn-mini" onclick="setAllCheckboxes(\'rateSubjectWrap\',true)">全选</button><button class="btn-mini" onclick="setAllCheckboxes(\'rateSubjectWrap\',false)">清空</button></div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="filter-block">' +
-        '<div class="filter-block-label">班级</div>' +
-        '<div class="filter-block-body">' +
-          '<div id="rateClassWrap" class="checkbox-group"></div>' +
-          '<div class="group-actions"><button class="btn-mini" onclick="setAllCheckboxes(\'rateClassWrap\',true)">全选</button><button class="btn-mini" onclick="setAllCheckboxes(\'rateClassWrap\',false)">清空</button></div>' +
-        '</div>' +
       '</div>' +
       '<div id="rateTable"></div>' +
     '</div>';
-  const subs = state.subjectList.slice();
-  /* ★ 默认都不选中 ★ */
-  $('rateSubjectWrap').innerHTML = subs.map(s=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(s)+'"><span>'+esc(subjectLabel(s))+'</span></label>').join('');
-  const classes = state.classList.slice();
-  $('rateClassWrap').innerHTML = classes.map(c=>'<label class="checkbox-item"><input type="checkbox" value="'+esc(c)+'"><span>'+esc(c)+'</span></label>').join('');
-  const sel = $('rateExam');
-  sel.innerHTML = state.examList.map((ex,i)=>'<option value="'+i+'"'+(i===state.examList.length-1?' selected':'')+'>'+esc(ex)+'</option>').join('');
-  bindAllCheckboxes('rateSubjectWrap');
-  bindAllCheckboxes('rateClassWrap');
-
-  /* ★ 科目变化 → 自动勾选相关班级 ★ */
-  $('rateSubjectWrap').addEventListener('change', () => {
-    const exam = state.examList[parseInt($('rateExam').value, 10)];
-    autoSelectBySubjects('rateSubjectWrap', 'rateClassWrap', exam);
-    drawF6();
-  });
-  /* ★ 班级变化 → 自动勾选相关科目 ★ */
-  $('rateClassWrap').addEventListener('change', () => {
-    const exam = state.examList[parseInt($('rateExam').value, 10)];
-    autoSelectByClasses('rateClassWrap', 'rateSubjectWrap', exam);
-    drawF6();
-  });
-  /* 考试变化 → 按当前科目重新计算班级 */
-  $('rateExam').addEventListener('change', () => {
-    const exam = state.examList[parseInt($('rateExam').value, 10)];
-    autoSelectBySubjects('rateSubjectWrap', 'rateClassWrap', exam);
-    drawF6();
-  });
+  $('rateExam').addEventListener('change', drawF6);
   updateRateTips();
   drawF6();
 }
 function drawF6() {
   const wrap = $('rateTable');
   const summaryWrap = $('rateSummary');
-  const classes = getChecked('rateClassWrap');
-  const subs = getChecked('rateSubjectWrap');
+  if (!wrap) return;
+  const classes = getGlobalClasses();
+  const subs = getGlobalSubjects();
   const exams = state.examList;
   summaryWrap.innerHTML = '';
-  if (!classes.length || !subs.length || !exams.length) { wrap.innerHTML = '<div class="empty-hint">请先勾选科目和班级</div>'; return; }
-  const examIdx = parseInt($('rateExam').value, 10);
+  const examVal = $('rateExam').value;
+  if (!examVal) { wrap.innerHTML = '<div class="empty-hint">请先选择考试</div>'; return; }
+  if (!classes.length || !subs.length || !exams.length) { wrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级和科目</div>'; return; }
+  const examIdx = parseInt(examVal, 10);
   if (Number.isNaN(examIdx)) { wrap.innerHTML = '<div class="empty-hint">暂无可选考试</div>'; return; }
   const curExam = exams[examIdx];
   const prevExam = examIdx > 0 ? exams[examIdx-1] : null;
@@ -2459,12 +2337,13 @@ function drawF6() {
 }
 
 /* ============ 通用工具 ============ */
-function bindAllCheckboxes(wrapId) {
+function bindAllCheckboxes(wrapId, onchange) {
   const wrap = $(wrapId);
   if (!wrap) return;
   wrap.querySelectorAll('input[type="checkbox"]').forEach(inp => {
     inp.addEventListener('change', () => {
       inp.closest('.checkbox-item').classList.toggle('checked', inp.checked);
+      if (typeof onchange === 'function') onchange();
     });
   });
 }
@@ -2475,30 +2354,24 @@ function setAllCheckboxes(wrapId, checked) {
     inp.checked = checked;
     inp.closest('.checkbox-item').classList.toggle('checked', checked);
   });
-  /* ★ 全选/清空时也触发联动 ★ */
-  if (state.currentPage === 'f4' && state.currentSub.f4 === 'f4b') {
-    const exam = state.examList[parseInt($('segExam').value, 10)];
-    if (wrapId === 'segSubjectWrap') autoSelectBySubjects('segSubjectWrap', 'segClassWrap', exam);
-    else if (wrapId === 'segClassWrap') autoSelectByClasses('segClassWrap', 'segSubjectWrap', exam);
-  } else if (state.currentPage === 'f5') {
-    if (wrapId === 'tableSubjectWrap') autoSelectBySubjects('tableSubjectWrap', 'tableClassWrap', null);
-    else if (wrapId === 'tableClassWrap') autoSelectByClasses('tableClassWrap', 'tableSubjectWrap', null);
-  } else if (state.currentPage === 'f6') {
-    const exam = state.examList[parseInt($('rateExam').value, 10)];
-    if (wrapId === 'rateSubjectWrap') autoSelectBySubjects('rateSubjectWrap', 'rateClassWrap', exam);
-    else if (wrapId === 'rateClassWrap') autoSelectByClasses('rateClassWrap', 'rateSubjectWrap', exam);
-  }
-  /* 重绘 */
-  if (state.currentPage === 'f6') drawF6();
-  else if (state.currentPage === 'f4' && state.currentSub.f4 === 'f4b') drawF4b();
-  else if (state.currentPage === 'f5') drawF5();
-  else if (state.currentPage === 'f2' && state.currentSub.f2 === 'f2b') drawF2b();
-  else if (state.currentPage === 'f2' && state.currentSub.f2 === 'f2c') drawF2c();
+  if (state.currentPage) renderCurrentPage();
 }
-function bindSubTabs(group) {
-  document.querySelectorAll(`.sub-tabs[data-group="${group}"] .sub-tab`).forEach(btn => {
+
+/* ============ 标签页渲染 ============ */
+function renderTabs() {
+  document.querySelectorAll('.main-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.top === state.topTab);
+  });
+  const group = TOP_TABS.find(g => g.id === state.topTab);
+  const subTabsEl = $('subTabs');
+  if (!group) { subTabsEl.innerHTML = ''; return; }
+  subTabsEl.innerHTML = group.pages.map(p =>
+    '<button class="sub-tab' + (state.currentPage === p.id ? ' active' : '') + '" data-page="' + p.id + '">' + esc(p.label) + '</button>'
+  ).join('');
+  subTabsEl.querySelectorAll('.sub-tab').forEach(btn => {
     btn.addEventListener('click', () => {
-      state.currentSub[group] = btn.dataset.sub;
+      state.currentPage = btn.dataset.page;
+      renderTabs();
       renderCurrentPage();
     });
   });
@@ -2511,19 +2384,19 @@ function renderCurrentPage() {
   const root = $('contentArea');
   if (!state.currentPage) { root.innerHTML = ''; return; }
   if (!hasData()) { root.innerHTML = emptyTip('请先上传成绩文件'); return; }
-  if (state.currentPage === 'f1') renderF1(root);
-  else if (state.currentPage === 'f2') renderF2(root);
-  else if (state.currentPage === 'f3') renderF3(root);
-  else if (state.currentPage === 'f4') renderF4(root);
-  else if (state.currentPage === 'f5') renderF5(root);
-  else if (state.currentPage === 'f6') renderF6(root);
+  const page = state.currentPage;
+  if (page === 'f1a') renderF1a(root);
+  else if (page === 'f1b') renderF1b(root);
+  else if (page === 'f1c') renderF1c(root);
+  else if (page === 'f2a') renderF2a(root);
+  else if (page === 'f2b') renderF2b(root);
+  else if (page === 'f3a') renderF3a(root);
+  else if (page === 'f3b') renderF3b(root);
+  else if (page === 'f4a') renderF4a(root);
+  else if (page === 'f4b') renderF4b(root);
+  else if (page === 'f5') renderF5(root);
+  else if (page === 'f6') renderF6(root);
   setTimeout(bindHoverTips, 30);
-}
-function switchPage(page) {
-  if (state.currentPage === page) return;
-  state.currentPage = page;
-  document.querySelectorAll('.main-tab').forEach(b => b.classList.toggle('active', b.dataset.page === page));
-  renderCurrentPage();
 }
 
 /* ============ 文件上传 ============ */
@@ -2583,20 +2456,51 @@ function resetAll() {
   subjectOriginals.clear();
   classExamSubjectMark.clear();
   state.classList = []; state.examList = []; state.subjectList = []; state.classes = {};
-  state.currentClass = ''; state.currentPage = ''; _uid = 0;
+  state.topTab = 'overall'; state.currentPage = 'f6'; _uid = 0;
   $('contentArea').innerHTML = '';
+  $('subTabs').innerHTML = '';
+  $('globalClassWrap').innerHTML = '';
+  $('globalSubjectWrap').innerHTML = '';
   $('statusBar').style.display = 'none';
-  document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
 }
+
+function renderGlobalSelectors() {
+  const cw = $('globalClassWrap');
+  cw.innerHTML = state.classList.map(c =>
+    '<label class="checkbox-item"><input type="checkbox" value="' + esc(c) + '"><span>' + esc(c) + '</span></label>'
+  ).join('');
+  bindAllCheckboxes('globalClassWrap', () => {
+    if (isAutoSelecting) return;
+    isAutoSelecting = true;
+    autoSelectByClasses('globalClassWrap', 'globalSubjectWrap', null);
+    isAutoSelecting = false;
+    autoSetScoreLines();
+    if (state.currentPage) renderCurrentPage();
+  });
+
+  const sw = $('globalSubjectWrap');
+  sw.innerHTML = state.subjectList.map(s =>
+    '<label class="checkbox-item"><input type="checkbox" value="' + esc(s) + '"><span>' + esc(subjectLabel(s)) + '</span></label>'
+  ).join('');
+  bindAllCheckboxes('globalSubjectWrap', () => {
+    if (isAutoSelecting) return;
+    isAutoSelecting = true;
+    autoSelectBySubjects('globalSubjectWrap', 'globalClassWrap', null);
+    isAutoSelecting = false;
+    autoSetScoreLines();
+    if (state.currentPage) renderCurrentPage();
+  });
+}
+
 function initUIAfterLoad() {
   $('statusBar').style.display = 'flex';
-  $('classTagWrap').innerHTML = state.classList.map(c=>'<span class="class-tag">'+esc(c)+'</span>').join('');
-  $('classSelect').innerHTML = state.classList.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('');
-  state.currentClass = state.classList[0] || '';
-  $('classSelect').value = state.currentClass;
+  renderGlobalSelectors();
   autoSetScoreLines();
   $('exportBtn').disabled = false;
-  $('contentArea').innerHTML = '';
+  state.topTab = 'overall';
+  state.currentPage = 'f6';
+  renderTabs();
+  renderCurrentPage();
 }
 
 function downloadTemplate() {
@@ -2618,7 +2522,7 @@ function downloadTemplate() {
 }
 
 /* ============================================================
- *  导出 PDF —— 文件名智能拼装
+ *  导出 PDF —— 睿智校区-功能-科目-班级-姓名-考试-时间.pdf
  * ============================================================ */
 function sanitizeFileName(s) {
   return String(s == null ? '' : s)
@@ -2629,32 +2533,24 @@ function sanitizeFileName(s) {
     .slice(0, 80);
 }
 function buildExportFileName() {
-  const pageNames = {
-    f1:'学生个人分析', f2:'班级趋势对比', f3:'全班成绩明细',
-    f4:'全班图表',     f5:'数据明细表',   f6:'达标率'
-  };
-  const subNames = {
-    f1a:'个人趋势', f1b:'名次变化', f1c:'稳定性分析',
-    f2a:'班级整体', f2b:'三分对比', f2c:'单科成绩',
-    f3a:'全班成绩', f3b:'单科进步榜',
-    f4a:'全班图表', f4b:'分数段分布'
-  };
   const page = state.currentPage;
   const parts = ['睿智校区'];
+  if (PAGE_NAMES[page]) parts.push(PAGE_NAMES[page]);
 
-  const collectChecked = wrapId => {
-    const el = $(wrapId);
-    if (!el) return [];
-    return Array.from(el.querySelectorAll('input[type="checkbox"]:checked')).map(i => i.value);
-  };
-  let clsList = [];
-  if (page === 'f2' && state.currentSub.f2 === 'f2b') clsList = collectChecked('tripleClassWrap');
-  else if (page === 'f2' && state.currentSub.f2 === 'f2c') clsList = collectChecked('subClassWrap');
-  else if (page === 'f4' && state.currentSub.f4 === 'f4b') clsList = collectChecked('segClassWrap');
-  else if (page === 'f5') clsList = collectChecked('tableClassWrap');
-  else if (page === 'f6') clsList = collectChecked('rateClassWrap');
-  else if (state.currentClass) clsList = [state.currentClass];
+  // 科目
+  let subPart = '';
+  const subSel = $('stabilitySubject') || $('clsSub') || $('rankSubject') || $('progressSub');
+  if (subSel && subSel.value) subPart = normalizeSubjectKey(subSel.value);
+  if (!subPart) {
+    const subs = getGlobalSubjects();
+    if (subs.length > 0) {
+      subPart = subs.length <= 2 ? subs.map(s=>normalizeSubjectKey(s)).join('+') : ('共' + subs.length + '个科目');
+    }
+  }
+  if (subPart) parts.push(subPart);
 
+  // 班级
+  const clsList = getGlobalClasses();
   if (clsList.length === 0) {
     parts.push('未选班级');
   } else if (clsList.length <= 2) {
@@ -2663,30 +2559,24 @@ function buildExportFileName() {
     parts.push('共' + clsList.length + '个班级');
   }
 
-  if (pageNames[page]) parts.push(pageNames[page]);
+  // 姓名
+  const stuEl = $('studentSelect');
+  if (stuEl && stuEl.value) parts.push(stuEl.value);
 
-  const subKey = state.currentSub[page];
-  if (subKey && subNames[subKey] && subNames[subKey] !== pageNames[page]) {
-    parts.push(subNames[subKey]);
-  }
-
+  // 考试
   const exams = state.examList;
-  if (exams.length === 1) {
-    parts.push(exams[0]);
-  } else if (exams.length > 1) {
+  if (exams.length === 1) parts.push(exams[0]);
+  else if (exams.length > 1) {
     if (exams.length <= 2) parts.push(exams.join('+'));
     else parts.push(exams[exams.length - 1] + '等' + exams.length + '次');
   }
 
   const now = new Date();
   const p2 = n => String(n).padStart(2, '0');
-  parts.push(
-    now.getFullYear() + p2(now.getMonth() + 1) + p2(now.getDate()) +
-    '_' + p2(now.getHours()) + p2(now.getMinutes())
-  );
+  parts.push(now.getFullYear() + p2(now.getMonth() + 1) + p2(now.getDate()) + '_' + p2(now.getHours()) + p2(now.getMinutes()));
 
-  const name = parts.filter(Boolean).map(sanitizeFileName).filter(Boolean).join('_');
-  return (name || '睿智校区_成绩分析') + '.pdf';
+  const name = parts.filter(Boolean).map(sanitizeFileName).filter(Boolean).join('-');
+  return (name || '睿智校区-成绩分析') + '.pdf';
 }
 
 async function exportReport() {
@@ -2743,7 +2633,7 @@ function getClassType(className) {
 }
 function autoSetScoreLines() {
   if (!state.classList.length) return;
-  const activeClass = state.currentClass || state.classList[0];
+  const activeClass = getPrimaryClass() || state.classList[0];
   const type = getClassType(activeClass);
   if (type && CLASS_LINE_MAP[type]) {
     const l = CLASS_LINE_MAP[type];
@@ -2756,14 +2646,19 @@ function autoSetScoreLines() {
 
 function bindEvents() {
   document.querySelectorAll('.main-tab').forEach(btn => {
-    btn.addEventListener('click', () => switchPage(btn.dataset.page));
+    btn.addEventListener('click', () => {
+      state.topTab = btn.dataset.top;
+      const group = TOP_TABS.find(g => g.id === state.topTab);
+      if (group && group.pages.length) {
+        if (!group.pages.some(p => p.id === state.currentPage)) {
+          state.currentPage = group.pages[0].id;
+        }
+      }
+      renderTabs();
+      renderCurrentPage();
+    });
   });
   $('fileInput').addEventListener('change', handleFileUpload);
-  $('classSelect').addEventListener('change', e => {
-    state.currentClass = e.target.value;
-    autoSetScoreLines();
-    if (state.currentPage) renderCurrentPage();
-  });
   ['lineControl','linePublic','linePrivate','lineEstimate','rateMin','rateStd'].forEach(id => {
     const el = $(id);
     if (!el) return;
@@ -2816,7 +2711,6 @@ const colorPool = [
 </script>
 
 <script>
-/* ===== 光子粒子背景动画 ===== */
 (function () {
   const canvas = document.getElementById('particleCanvas');
   if (!canvas) return;
