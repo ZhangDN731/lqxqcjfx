@@ -152,10 +152,11 @@ body{
 
 /* ============================================================
  *  ★★★ 表格：原生 table + table-layout:fixed ★★★
+ *  ★★★ 纵向不分页：容器高度由内容撑开，页面整体滚动 ★★★
  * ============================================================ */
 .grid-table-scroll{
-  overflow:auto;
-  max-height:75vh;
+  overflow-x:auto;
+  overflow-y:visible;
   margin-top:4px;
   border-radius:12px;
   border:1px solid var(--card-border);
@@ -192,8 +193,7 @@ table.data-table th:last-child,
 table.data-table td:last-child{border-right:none}
 
 table.data-table thead th{
-  position:sticky;
-  top:0;
+  position:relative;
   z-index:3;
   height:46px;
   padding:2px 8px;
@@ -337,7 +337,6 @@ table.data-table td.grid-empty{
   .big-chart-wrap{height:clamp(480px,70vh,720px);padding:14px}
   .analysis-panel{padding:16px 14px}
   .analysis-grid{grid-template-columns:repeat(2,1fr)}
-  .grid-table-scroll{max-height:65vh}
   table.data-table th,
   table.data-table td{height:38px;font-size:.8rem;padding:2px 6px}
   table.data-table thead th{height:42px}
@@ -359,7 +358,6 @@ table.data-table td.grid-empty{
   .analysis-panel{padding:14px 12px}
   .topbar-actions{width:100%;justify-content:center}
   .topbar-main h1{width:100%;justify-content:center}
-  .grid-table-scroll{max-height:60vh}
   .hover-tip{max-width:280px;font-size:.75rem}
 }
 @media (max-width:420px){
@@ -444,6 +442,7 @@ table.data-table td.grid-empty{
 /* =====================================================================
  *  龙泉校区成绩分析系统 v2.3.0
  *  · 表格使用原生 table + table-layout:fixed，彻底解决错位
+ *  · 表格纵向不分页：容器高度由内容撑开，整页滚动
  *  · 班级 / 科目 默认均不选中，需用户自行勾选
  *  · 科目变化自动勾选有该科目数据的班级；班级变化自动勾选有该班级数据的科目
  *  · 导出 PDF 文件名智能拼装
