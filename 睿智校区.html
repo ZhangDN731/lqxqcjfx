@@ -3614,16 +3614,10 @@ function autoLoadData() {
   const tryNext = async () => {
     if (i >= cands.length) {
       hideLoading();
-      const netHint = isOnline() ? '' : '<br><span style="color:#dc2626;font-weight:700">⚠ 当前处于离线状态，请检查网络连接</span>';
-      const mobileHint = isMobile ? '<br>手机网络不稳定时，建议切换到流量或稍后重试' : '';
-      setLoadStatus('自动加载失败，请手动上传成绩文件', false);
+      setLoadStatus('数据加载失败，正在跳转…', false);
       $('alignStatus').textContent = '';
-      renderTabs();
-      $('contentArea').innerHTML = emptyTip(
-        '未能自动加载成绩文件。' +
-        '<br>已尝试本地文件和 CDN 镜像共 ' + cands.length + ' 个数据源，均失败。' +
-        netHint + mobileHint +
-        '<br><br>请点击右上角「上传 Excel」手动选择文件，或刷新页面重试。');
+      /* 所有数据源均失败，跳转 404 页面 */
+      setTimeout(() => { window.location.href = 'index-404.html'; }, 800);
       return;
     }
     const url = cands[i++];
