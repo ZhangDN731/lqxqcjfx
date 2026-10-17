@@ -818,7 +818,14 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
 const CAMPUS_CONFIG = {
   name: '星耀校区',
   dataFile: '27届星耀周测成绩.xlsx',
-  dataCandidates: ['27届星耀周测成绩.xlsx','27届星耀周测成绩.xls','星耀周测成绩.xlsx','data/27届星耀周测成绩.xlsx']
+  dataCandidates: [
+    '27届星耀周测成绩.xlsx',
+    '27届星耀周测成绩.xls',
+    '星耀周测成绩.xlsx',
+    'data/27届星耀周测成绩.xlsx',
+    'https://cdn.jsdelivr.net/gh/zhangdn731/lqxqcjfx@main/27届星耀周测成绩.xlsx',
+    'https://fastly.jsdelivr.net/gh/zhangdn731/lqxqcjfx@main/27届星耀周测成绩.xlsx'
+  ]
 };
 
 /* 核心分析：保留的 5 个高频功能 */
@@ -3562,8 +3569,12 @@ function finishLoad(label) {
 function autoLoadData() {
   const cands = (CAMPUS_CONFIG.dataCandidates && CAMPUS_CONFIG.dataCandidates.length)
     ? CAMPUS_CONFIG.dataCandidates : [CAMPUS_CONFIG.dataFile];
-  const MAX_RETRY = 3;
-  const FETCH_TIMEOUT = 20000;
+  const MAX_RETRY = 5;
+  const FETCH_TIMEOUT = 30000;
+
+  /* 检测网络状态 */
+  const isOnline = () => (navigator.onLine !== false);
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
   /* 等待 XLSX 库就绪（CDN 加载慢时兜底） */
   function waitForXLSX(timeout) {
@@ -3581,17 +3592,18 @@ function autoLoadData() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
     try {
-      const res = await fetch(url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now(), {
-        cache: 'no-store', signal: controller.signal
-      });
+      /* CDN 地址不加时间戳（jsDelivr 有自己的缓存策略），本地文件加时间戳防缓存 */
+      const isCDN = /cdn\.jsdelivr\.net|fastly\.jsdelivr\.net/.test(url);
+      const finalUrl = isCDN ? url : url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+      const res = await fetch(finalUrl, { cache: isCDN ? 'default' : 'no-store', signal: controller.signal });
       clearTimeout(timeoutId);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return await res.arrayBuffer();
     } catch (e) {
       clearTimeout(timeoutId);
       if (attempt < MAX_RETRY) {
-        setLoadStatus('加载失败，第 ' + (attempt + 1) + ' 次重试…', true);
-        await new Promise(r => setTimeout(r, 800 * attempt));
+        setLoadStatus('加载较慢，第 ' + (attempt + 1) + '/' + MAX_RETRY + ' 次重试…', true);
+        await new Promise(r => setTimeout(r, 600 + attempt * 400));
         return fetchWithRetry(url, attempt + 1);
       }
       throw e;
@@ -3602,28 +3614,34 @@ function autoLoadData() {
   const tryNext = async () => {
     if (i >= cands.length) {
       hideLoading();
-      setLoadStatus('自动加载失败，请点击右上角「上传 Excel」手动导入', false);
+      const netHint = isOnline() ? '' : '<br><span style="color:#dc2626;font-weight:700">⚠ 当前处于离线状态，请检查网络连接</span>';
+      const mobileHint = isMobile ? '<br>手机网络不稳定时，建议切换到流量或稍后重试' : '';
+      setLoadStatus('自动加载失败，请手动上传成绩文件', false);
       $('alignStatus').textContent = '';
       renderTabs();
       $('contentArea').innerHTML = emptyTip(
-        '未能自动加载成绩文件。可能原因：网络不稳定、CDN 加载慢或文件未部署。<br>' +
-        '请点击右上角「上传 Excel」手动选择文件，或刷新页面重试。');
+        '未能自动加载成绩文件。' +
+        '<br>已尝试本地文件和 CDN 镜像共 ' + cands.length + ' 个数据源，均失败。' +
+        netHint + mobileHint +
+        '<br><br>请点击右上角「上传 Excel」手动选择文件，或刷新页面重试。');
       return;
     }
     const url = cands[i++];
-    setLoadStatus('正在加载 ' + url.split('/').pop() + '…', true);
+    const sourceLabel = /cdn\.jsdelivr\.net/.test(url) ? 'CDN 镜像' :
+                       /fastly\.jsdelivr\.net/.test(url) ? 'Fastly CDN' : '本地文件';
+    setLoadStatus('正在从[' + sourceLabel + ']加载 ' + url.split('/').pop() + '…', true);
     try {
-      await waitForXLSX(10000);
+      await waitForXLSX(15000);
       const buf = await fetchWithRetry(url, 0);
       showLoading('正在解析成绩数据…');
-      await new Promise(r => setTimeout(r, 30)); /* 让 loading 动画先渲染 */
+      await new Promise(r => setTimeout(r, 30));
       const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
       resetAll();
       ingestWorkbook(wb);
       hideLoading();
       finishLoad(url.split('/').pop());
     } catch (e) {
-      console.warn('加载失败:', url, e.message);
+      console.warn('加载失败[' + sourceLabel + ']:', url, e.message);
       hideLoading();
       tryNext();
     }
