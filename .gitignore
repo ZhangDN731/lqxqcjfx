@@ -1,0 +1,15 @@
+# 构建与测试用依赖，不需要发布到站点
+tools/node_modules/
+tools/package-lock.json
+tools/*.log
+tools/shot-*.jpg
+tools/sync.bat
+tools/sync_to_github.py
+
+# 历史备份
+hist.zip
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+desktop.ini
