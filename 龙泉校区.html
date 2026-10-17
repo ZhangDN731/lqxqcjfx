@@ -556,6 +556,7 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
   padding:7px 12px 4px;font-size:.68rem;font-weight:800;letter-spacing:.8px;
   color:var(--text-muted);text-transform:uppercase;
 }
+.export-menu .menu-divider{height:1px;background:rgba(15,23,42,.1);margin:5px 8px}
 
 /* ===== 响应式 ===== */
 @media (max-width:1500px){.chart-grid-5{grid-template-columns:repeat(4,minmax(0,1fr))}}
@@ -719,6 +720,14 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
             <div class="menu-hint">导出当前功能</div>
             <button onclick="exportReport()">&#128196; 导出 PDF</button>
             <button onclick="exportExcel()">&#128202; 导出 Excel 表格</button>
+            <div class="menu-divider"></div>
+            <div class="menu-hint">批量导出达标率</div>
+            <button onclick="exportRateBatch('subject')">&#128218; 按学科逐个导出 PDF</button>
+            <button onclick="exportRateBatch('class')">&#127979; 按班级逐个导出 PDF</button>
+            <div class="menu-divider"></div>
+            <div class="menu-hint">批量导出数据明细表</div>
+            <button onclick="exportDetailBatch('subject')">&#128218; 按学科逐个导出 PDF</button>
+            <button onclick="exportDetailBatch('class')">&#127979; 按班级逐个导出 PDF</button>
           </div>
         </div>
       </div>
@@ -3028,7 +3037,7 @@ function exportHeaderHtml() {
     ' ｜ ' + (state.alignEnabled ? '分值已对齐最高满分' : '原始分（未对齐）') + '</div>';
 }
 
-async function exportReport() {
+async function exportReport(customFileName) {
   closeExportMenu();
   if (!hasData()) { alert('暂无数据'); return; }
   const btn = $('exportBtn');
@@ -3173,7 +3182,7 @@ async function exportReport() {
       placeImage(shot.data, shot.h);
     }
 
-    pdf.save(buildExportFileName('pdf'));
+    pdf.save(customFileName || buildExportFileName('pdf'));
   } catch (e) {
     console.error(e);
     alert('PDF 导出失败，可使用浏览器打印另存为 PDF');
@@ -3188,6 +3197,81 @@ async function exportReport() {
     btn.textContent = oldText;
   }
 }
+
+/* ============ 批量导出 ============ */
+function setCheckboxSelection(wrapId, values) {
+  const set = new Set(values);
+  document.querySelectorAll('#' + wrapId + ' input[type="checkbox"]').forEach(cb => {
+    cb.checked = set.has(cb.value);
+    cb.closest('.checkbox-item')?.classList.toggle('checked', cb.checked);
+  });
+}
+
+async function exportBatch(pageId, mode, labelPrefix) {
+  closeExportMenu();
+  if (!hasData()) { alert('暂无数据'); return; }
+
+  /* 保存当前状态 */
+  const savedPage = state.currentPage;
+  const savedClasses = getGlobalClasses();
+  const savedSubjects = getGlobalSubjects();
+
+  /* 获取所有可用的班级和科目 */
+  const allClasses = Array.from(document.querySelectorAll('#globalClassWrap input[type="checkbox"]')).map(i => i.value);
+  const allSubjects = Array.from(document.querySelectorAll('#globalSubjectWrap input[type="checkbox"]')).map(i => i.value);
+  const items = (mode === 'class') ? allClasses : allSubjects;
+
+  if (!items.length) { alert('没有可导出的' + (mode === 'class' ? '班级' : '学科')); return; }
+
+  const btn = $('exportBtn');
+  const oldText = btn.textContent;
+  btn.disabled = true;
+
+  try {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      btn.textContent = '导出中 ' + (i + 1) + '/' + items.length + '：' + item;
+
+      /* 设置筛选：按学科导出时只选该学科、班级全选；按班级导出时只选该班级、科目全选 */
+      if (mode === 'subject') {
+        setCheckboxSelection('globalSubjectWrap', [item]);
+        setCheckboxSelection('globalClassWrap', allClasses);
+      } else {
+        setCheckboxSelection('globalClassWrap', [item]);
+        setCheckboxSelection('globalSubjectWrap', allSubjects);
+      }
+
+      /* 切换到目标页面并渲染 */
+      state.currentPage = pageId;
+      renderTabs();
+      renderCurrentPage();
+      await new Promise(r => setTimeout(r, 250));
+
+      /* 导出 PDF，文件名：功能-学科/班级.pdf */
+      const fileName = sanitizeFileName(labelPrefix + '-' + item) + '.pdf';
+      await exportReport(fileName);
+      await new Promise(r => setTimeout(r, 600)); /* 给浏览器下载留时间 */
+    }
+
+    btn.textContent = '批量导出完成 ✓';
+    setTimeout(() => { btn.textContent = oldText; btn.disabled = false; }, 2500);
+  } catch (e) {
+    console.error(e);
+    alert('批量导出失败：' + e.message);
+    btn.textContent = oldText;
+    btn.disabled = false;
+  } finally {
+    /* 恢复原始状态 */
+    setCheckboxSelection('globalClassWrap', savedClasses);
+    setCheckboxSelection('globalSubjectWrap', savedSubjects);
+    state.currentPage = savedPage;
+    renderTabs();
+    renderCurrentPage();
+  }
+}
+
+function exportRateBatch(mode) { exportBatch('f6', mode, '达标率'); }
+function exportDetailBatch(mode) { exportBatch('f5', mode, '数据明细表'); }
 
 const CLASS_LINE_MAP = {
   '1类':{control:330,public:376,private:330,estimate:380},
@@ -3478,33 +3562,73 @@ function finishLoad(label) {
 function autoLoadData() {
   const cands = (CAMPUS_CONFIG.dataCandidates && CAMPUS_CONFIG.dataCandidates.length)
     ? CAMPUS_CONFIG.dataCandidates : [CAMPUS_CONFIG.dataFile];
+  const MAX_RETRY = 3;
+  const FETCH_TIMEOUT = 20000;
+
+  /* 等待 XLSX 库就绪（CDN 加载慢时兜底） */
+  function waitForXLSX(timeout) {
+    return new Promise((resolve, reject) => {
+      if (window.XLSX) return resolve();
+      const start = Date.now();
+      const timer = setInterval(() => {
+        if (window.XLSX) { clearInterval(timer); resolve(); }
+        else if (Date.now() - start > timeout) { clearInterval(timer); reject(new Error('XLSX 库加载超时')); }
+      }, 200);
+    });
+  }
+
+  async function fetchWithRetry(url, attempt) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+    try {
+      const res = await fetch(url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now(), {
+        cache: 'no-store', signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.arrayBuffer();
+    } catch (e) {
+      clearTimeout(timeoutId);
+      if (attempt < MAX_RETRY) {
+        setLoadStatus('加载失败，第 ' + (attempt + 1) + ' 次重试…', true);
+        await new Promise(r => setTimeout(r, 800 * attempt));
+        return fetchWithRetry(url, attempt + 1);
+      }
+      throw e;
+    }
+  }
+
   let i = 0;
-  const tryNext = () => {
+  const tryNext = async () => {
     if (i >= cands.length) {
       hideLoading();
-      setLoadStatus('未找到「' + CAMPUS_CONFIG.dataFile + '」，请手动上传', false);
+      setLoadStatus('自动加载失败，请点击右上角「上传 Excel」手动导入', false);
       $('alignStatus').textContent = '';
-      /* 数据未就绪时也先渲染页签骨架，避免顶部出现空白长条 */
       renderTabs();
       $('contentArea').innerHTML = emptyTip(
-        '未能在站点目录找到成绩文件 ' + esc(CAMPUS_CONFIG.dataFile) +
-        '。<br>请点击右上角「上传 Excel」手动选择文件，或确认该文件已随仓库一起部署。');
+        '未能自动加载成绩文件。可能原因：网络不稳定、CDN 加载慢或文件未部署。<br>' +
+        '请点击右上角「上传 Excel」手动选择文件，或刷新页面重试。');
       return;
     }
     const url = cands[i++];
-    fetch(url, { cache: 'no-store' })
-      .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.arrayBuffer(); })
-      .then(buf => {
-        showLoading('正在自动加载成绩数据...');
-        const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
-        resetAll();
-        ingestWorkbook(wb);
-        hideLoading();
-        finishLoad(url.split('/').pop());
-      })
-      .catch(() => { hideLoading(); tryNext(); });
+    setLoadStatus('正在加载 ' + url.split('/').pop() + '…', true);
+    try {
+      await waitForXLSX(10000);
+      const buf = await fetchWithRetry(url, 0);
+      showLoading('正在解析成绩数据…');
+      await new Promise(r => setTimeout(r, 30)); /* 让 loading 动画先渲染 */
+      const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
+      resetAll();
+      ingestWorkbook(wb);
+      hideLoading();
+      finishLoad(url.split('/').pop());
+    } catch (e) {
+      console.warn('加载失败:', url, e.message);
+      hideLoading();
+      tryNext();
+    }
   };
-  setLoadStatus('正在尝试自动加载…');
+  setLoadStatus('正在自动加载成绩…');
   tryNext();
 }
 
