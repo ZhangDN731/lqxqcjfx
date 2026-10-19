@@ -1457,10 +1457,8 @@ function analysisPanel(sections) {
   return html;
 }
 function subjectLabel(baseKey) {
-  const fms = getSubjectFullMarkList(baseKey);
-  if (!fms.length) return baseKey;
-  if (fms.length === 1) return baseKey + '（' + fms[0] + '）';
-  return baseKey + '（' + fms.join('/') + '）';
+  /* 不显示括号内的满分，满分由独立列（如"本次满分"）展示 */
+  return baseKey;
 }
 function renderAbsentBlock(info) {
   if (!info) return '';
