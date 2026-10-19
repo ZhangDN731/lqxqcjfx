@@ -1,8 +1,7 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>龙泉校区成绩分析</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -342,27 +341,6 @@ body.exporting .analysis-panel,body.exporting .stu-row-card{
   background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
   box-shadow:none!important;border-color:#e2e8f0!important;
 }
-/* ===== 导出专用紧凑样式 ===== */
-body.exporting .filter-row{display:none!important}
-body.exporting .sort-icon,body.exporting .sort-hint{display:none!important}
-body.exporting .card{padding:10px 14px!important;margin-bottom:8px!important}
-body.exporting .analysis-panel{padding:8px 14px!important;margin-bottom:8px!important}
-body.exporting .analysis-panel .ap-title{font-size:.9rem!important;margin-bottom:4px!important}
-body.exporting .analysis-panel .ap-stats{gap:12px!important}
-body.exporting .analysis-panel .ap-stat .k{font-size:.7rem!important}
-body.exporting .analysis-panel .ap-stat .v{font-size:1.05rem!important}
-body.exporting .analysis-panel .ap-notes{font-size:.75rem!important;line-height:1.6!important;margin-top:4px!important}
-body.exporting .page-title{font-size:.95rem!important;margin-bottom:6px!important;padding-bottom:4px!important}
-body.exporting .grid-table-scroll{overflow:visible!important;border:none!important}
-body.exporting table.data-table{width:100%!important;table-layout:fixed!important}
-body.exporting table.data-table th.sticky-col,body.exporting table.data-table td.sticky-col{position:static!important;left:auto!important;box-shadow:none!important}
-body.exporting table.data-table th{padding:5px 6px!important;font-size:.72rem!important;line-height:1.25!important}
-body.exporting table.data-table td{padding:4px 6px!important;font-size:.75rem!important;line-height:1.3!important}
-body.exporting table.data-table tbody tr{height:auto!important}
-body.exporting .empty-hint{display:none!important}
-body.exporting .sub-tab-bar{display:none!important}
-body.exporting .chart-card{padding:8px 14px!important}
-body.exporting .chart-card .chart-title{font-size:.88rem!important;margin-bottom:4px!important}
 .align-status{font-weight:700}
 
 .absent-list{
@@ -557,7 +535,6 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
   padding:7px 12px 4px;font-size:.68rem;font-weight:800;letter-spacing:.8px;
   color:var(--text-muted);text-transform:uppercase;
 }
-.export-menu .menu-divider{height:1px;background:rgba(15,23,42,.1);margin:5px 8px}
 
 /* ===== 响应式 ===== */
 @media (max-width:1500px){.chart-grid-5{grid-template-columns:repeat(4,minmax(0,1fr))}}
@@ -670,18 +647,6 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
 ::-webkit-scrollbar-track{background:rgba(15,23,42,.04)}
 ::-webkit-scrollbar-thumb{background:rgba(79,70,229,.30);border-radius:5px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(79,70,229,.52)}
-
-/* ===== 横屏提示：手机/平板竖屏时顶部弹出，5秒自动关闭 ===== */
-.landscape-hint{
-  position:fixed;top:0;left:0;right:0;z-index:10000;
-  background:linear-gradient(135deg,#1e3a5f,#2d5a87);
-  color:#fff;padding:12px 16px;text-align:center;font-size:14px;font-weight:500;
-  box-shadow:0 2px 12px rgba(0,0,0,.25);
-  transform:translateY(-100%);transition:transform .3s ease;
-  pointer-events:none;letter-spacing:.5px;
-}
-.landscape-hint.show{transform:translateY(0)}
-.landscape-hint .lh-icon{margin-right:6px}
 
 /* ===== 打印 / 导出：去背景特效，保证 PDF 干净 ===== */
 @media print{
@@ -819,14 +784,7 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
 const CAMPUS_CONFIG = {
   name: '睿智校区',
   dataFile: '27届睿智周测成绩.xlsx',
-  dataCandidates: [
-    '27届睿智周测成绩.xlsx',
-    '27届睿智周测成绩.xls',
-    '睿智周测成绩.xlsx',
-    'data/27届睿智周测成绩.xlsx',
-    'https://cdn.jsdelivr.net/gh/zhangdn731/lqxqcjfx@main/27届睿智周测成绩.xlsx',
-    'https://fastly.jsdelivr.net/gh/zhangdn731/lqxqcjfx@main/27届睿智周测成绩.xlsx'
-  ]
+  dataCandidates: ['27届睿智周测成绩.xlsx','27届睿智周测成绩.xls','睿智周测成绩.xlsx','data/27届睿智周测成绩.xlsx']
 };
 
 /* 核心分析：保留的 5 个高频功能 */
@@ -964,7 +922,7 @@ const updateRateTips = () => {
 
 const getChecked = wrapId => Array.from(document.querySelectorAll('#' + wrapId + ' input[type="checkbox"]:checked')).map(i => i.value);
 const getGlobalClasses = () => getChecked('globalClassWrap');
-const getGlobalSubjects = () => getChecked('globalSubjectWrap').filter(s => !isTotal(s));
+const getGlobalSubjects = () => getChecked('globalSubjectWrap');
 const getPrimaryClass = () => getGlobalClasses()[0] || '';
 
 /* ============ 悬浮提示 ============ */
@@ -1436,12 +1394,15 @@ function makeBarChart(canvasId, labels, datasets, opts) {
   if (!canvas) return null;
   opts = opts || {};
   const multi = datasets.length > 1;
-  const isH = !!opts.horizontal;
-  /* 横向条形图：固定每条高度，容器高度随数据量自适应，确保不同数据量的图表条高一致 */
-  if (isH && canvas.parentElement) {
-    const rowH = 26;
-    const minH = Math.max(labels.length * rowH + 40, 120);
-    canvas.parentElement.style.minHeight = minH + 'px';
+  /* 横向条形图：条厚与间距固定，条目多时自动加高画布，
+     保证每根条的高度始终一致，不会被压得粗细不一 */
+  const BAR_PX = 15, GAP_PX = 9, TOP_PX = 14, BOTTOM_PX = 26;
+  if (opts.horizontal) {
+    const n = Math.max(labels ? labels.length : 0, 1);
+    const hCss = TOP_PX + n * (BAR_PX + GAP_PX) + BOTTOM_PX;
+    canvas.style.height = hCss + 'px';
+    const holder = canvas.parentNode;
+    if (holder && holder.classList.contains('chart-box')) holder.style.height = hCss + 'px';
   }
   return new Chart(canvas.getContext('2d'), {
     type:'bar',
@@ -1457,8 +1418,8 @@ function makeBarChart(canvasId, labels, datasets, opts) {
         x:{grid:{display:false},ticks:{font:{size:10},maxRotation:45,autoSkip:false}},
         y:{beginAtZero:true,grace:'5%',ticks:{font:{size:10}}}
       },
-      indexAxis: isH ? 'y' : 'x',
-      ...(isH ? { barThickness: 14, categoryPercentage: 0.7, barPercentage: 0.9 } : {})
+      datasets: opts.horizontal ? { bar: { barThickness: BAR_PX, categoryPercentage: 0.9, barPercentage: 1 } } : {},
+      indexAxis: opts.horizontal ? 'y' : 'x'
     }
   });
 }
@@ -1496,10 +1457,8 @@ function analysisPanel(sections) {
   return html;
 }
 function subjectLabel(baseKey) {
-  const fms = getSubjectFullMarkList(baseKey);
-  if (!fms.length) return baseKey;
-  if (fms.length === 1) return baseKey + '（' + fms[0] + '）';
-  return baseKey + '（' + fms.join('/') + '）';
+  /* 不显示括号内的满分，满分由独立列（如"本次满分"）展示 */
+  return baseKey;
 }
 function renderAbsentBlock(info) {
   if (!info) return '';
@@ -1854,7 +1813,7 @@ function renderF2a(root) {
   }
   const exams = state.examList;
   const enabledSubs = getGlobalSubjects();
-  const subs = getClassSubjects(cls).filter(s=>!isTotal(s) && enabledSubs.includes(s));
+  const subs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   const students = Object.keys(state.classes[cls].students);
   root.innerHTML = '<div id="classSummary"></div>' +
     '<div class="card"><h3>各科目班级统计趋势（' + esc(cls) + '）</h3><div id="subjectChartWrap" class="chart-grid"></div></div>';
@@ -2237,12 +2196,6 @@ function drawF3b() {
   summaryWrap.innerHTML = analysisPanel([{title:'单科进步榜综合统计',items,paras}]);
   if (upList.length) addChart(makeBarChart(upCanvas.id, upList.map(x=>x.name), [{label:'进步分',data:upList.map(x=>x.delta),backgroundColor:'rgba(34,197,94,.75)',borderColor:'#16a34a',borderWidth:1}], {horizontal:true}));
   if (downList.length) addChart(makeBarChart(downCanvas.id, downList.map(x=>x.name), [{label:'退步分',data:downList.map(x=>x.delta),backgroundColor:'rgba(239,68,68,.75)',borderColor:'#dc2626',borderWidth:1}], {horizontal:true}));
-  /* 统一进步榜/退步榜容器高度，取较大值，确保两图条高一致且视觉对齐 */
-  const upBox = upCanvas.closest('.chart-box'), downBox = downCanvas.closest('.chart-box');
-  if (upBox && downBox) {
-    const maxH = Math.max(parseInt(upBox.style.minHeight)||0, parseInt(downBox.style.minHeight)||0);
-    if (maxH > 0) { upBox.style.minHeight = maxH + 'px'; downBox.style.minHeight = maxH + 'px'; }
-  }
   const merged = [];
   const maxLen = Math.max(upList.length, downList.length);
   for (let i = 0; i < maxLen; i++) merged.push({up:upList[i]||null, down:downList[i]||null});
@@ -2472,7 +2425,7 @@ function drawF4b() {
   const isRatio = mode === 'ratio';
   const cols = [
     {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
-    {label:'科目',width:96,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
+    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectLabel(r.sub))+'">'+esc(subjectLabel(r.sub))+'</td>'},
     {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'},
     {label:'满分',width:80,sortable:true,getValue:r=>r.fullMark,render:r=>'<td>'+r.fullMark+'</td>'},
     {label:'参考人数',width:100,sortable:true,getValue:r=>r.total,render:r=>'<td><span class="count-cell" data-tip-title="参考学生名单" data-tip-items=\''+JSON.stringify(SEG_LEVELS.flatMap(lv=>r.listByLevel[lv.key])).replace(/'/g,"&#39;")+'\'>'+r.total+'</span></td>'}
@@ -2559,7 +2512,7 @@ function drawF5() {
   const rankValsByCol = exams.map((_, i) => rows.map(rr => rr.scores[i]).filter(v => v != null).sort((a,b)=>b-a));
   const cols = [
     {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
-    {label:'科目',width:96,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
+    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectLabel(r.sub))+'">'+esc(subjectLabel(r.sub))+'</td>'},
     {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'}
   ];
   exams.forEach((ex,i) => {
@@ -2700,8 +2653,9 @@ function drawF6() {
   const minPctText = Math.round(minPct*100) + '%';
   const stdPctText = Math.round(stdPct*100) + '%';
   const cols = [
+    {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
+    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectLabel(r.sub))+'">'+esc(subjectLabel(r.sub))+'</td>'},
     {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'},
-    {label:'科目',width:96,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
     {label:'参考人数',width:90,sortable:true,getValue:r=>r.total,render:r=>'<td>'+r.total+'</td>'},
     {label:'本次满分',width:110,sortable:true,getValue:r=>r.fullMark,render:r=>'<td>'+fmLabelHtml(r.fullMark,r.prevFullMark)+'</td>'},
     {label:'最低线('+minPctText+')',width:120,sortable:true,getValue:r=>r.minLine,render:r=>'<td>'+r.minLine+'</td>'},
@@ -2872,6 +2826,64 @@ function drawF7() {
   renderGridTable(leadingCols.concat(buildLineCols(false)), rows, 'f7line', baseWrap, drawF7);
   if (plusWrap) renderGridTable(leadingCols.concat(buildLineCols(true)), rows, 'f7linePlus', plusWrap, drawF7);
 }
+
+/* ============ 批量导出：按学科 / 按班级逐个导出 PDF ============ */
+function setCheckboxSelection(wrapId, values) {
+  const set = new Set(values);
+  document.querySelectorAll('#' + wrapId + ' input[type="checkbox"]').forEach(cb => {
+    cb.checked = set.has(cb.value);
+    cb.closest('.checkbox-item')?.classList.toggle('checked', cb.checked);
+  });
+}
+async function exportBatch(pageId, mode, labelPrefix) {
+  closeExportMenu();
+  if (!hasData()) { alert('暂无数据'); return; }
+  const savedPage = state.currentPage;
+  const savedClasses = getGlobalClasses();
+  const savedSubjects = getGlobalSubjects();
+  const allClasses = Array.from(document.querySelectorAll('#globalClassWrap input[type="checkbox"]')).map(i => i.value);
+  const allSubjects = Array.from(document.querySelectorAll('#globalSubjectWrap input[type="checkbox"]')).map(i => i.value);
+  const items = (mode === 'class') ? allClasses : allSubjects;
+  if (!items.length) { alert('没有可导出的' + (mode === 'class' ? '班级' : '学科')); return; }
+  const btn = $('exportBtn');
+  const oldText = btn.textContent;
+  btn.disabled = true;
+  try {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      btn.textContent = '导出中 ' + (i + 1) + '/' + items.length + '：' + item;
+      if (mode === 'subject') {
+        setCheckboxSelection('globalSubjectWrap', [item]);
+        setCheckboxSelection('globalClassWrap', allClasses);
+      } else {
+        setCheckboxSelection('globalClassWrap', [item]);
+        setCheckboxSelection('globalSubjectWrap', allSubjects);
+      }
+      state.currentPage = pageId;
+      renderTabs();
+      renderCurrentPage();
+      await new Promise(r => setTimeout(r, 250));
+      const fileName = sanitizeFileName(labelPrefix + '-' + item) + '.pdf';
+      await exportReport(fileName);
+      await new Promise(r => setTimeout(r, 600));
+    }
+    btn.textContent = '批量导出完成 ✓';
+    setTimeout(() => { btn.textContent = oldText; btn.disabled = false; }, 2500);
+  } catch (e) {
+    console.error(e);
+    alert('批量导出失败：' + e.message);
+    btn.textContent = oldText;
+    btn.disabled = false;
+  } finally {
+    setCheckboxSelection('globalClassWrap', savedClasses);
+    setCheckboxSelection('globalSubjectWrap', savedSubjects);
+    state.currentPage = savedPage;
+    renderTabs();
+    renderCurrentPage();
+  }
+}
+function exportRateBatch(mode) { exportBatch('f6', mode, '达标率'); }
+function exportDetailBatch(mode) { exportBatch('f5', mode, '数据明细表'); }
 
 /* ============ 通用工具 ============ */
 function bindAllCheckboxes(wrapId, onchange) {
@@ -3045,11 +3057,11 @@ function renderGlobalSelectors() {
   });
 
   const sw = $('globalSubjectWrap');
-  /* 科目默认勾选第一个非总分科目，页面开箱即用；总分不显示在选择器中 */
-  const visSubs = state.subjectList.filter(s => !isTotal(s));
-  sw.innerHTML = visSubs.map((s, i) =>
-    '<label class="checkbox-item' + (i === 0 ? ' checked' : '') + '"><input type="checkbox" value="' + esc(s) + '"' +
-    (i === 0 ? ' checked' : '') + '><span>' + esc(subjectLabel(s)) + '</span></label>'
+  /* 科目默认只勾选总分：绝大多数视图以总分为准，避免一次铺满所有科目；
+     需要看单科时点「全选」或单独勾选即可 */
+  sw.innerHTML = state.subjectList.map(s =>
+    '<label class="checkbox-item' + (isTotal(s) ? ' checked' : '') + '"><input type="checkbox" value="' + esc(s) + '"' +
+    (isTotal(s) ? ' checked' : '') + '><span>' + esc(subjectLabel(s)) + '</span></label>'
   ).join('');
   bindAllCheckboxes('globalSubjectWrap', () => {
     if (isAutoSelecting) return;
@@ -3061,23 +3073,8 @@ function renderGlobalSelectors() {
   });
 }
 
-/* 手机/平板竖屏时顶部弹出横屏提示，5秒自动关闭 */
-function showLandscapeHint() {
-  if (window.innerWidth >= 768) return;
-  if (window.innerWidth >= window.innerHeight) return;
-  const hint = document.createElement('div');
-  hint.className = 'landscape-hint';
-  hint.innerHTML = '<span class="lh-icon">📱</span>建议横屏使用，获得更好的数据查看体验';
-  document.body.appendChild(hint);
-  requestAnimationFrame(() => hint.classList.add('show'));
-  setTimeout(() => {
-    hint.classList.remove('show');
-    setTimeout(() => { if (hint.parentNode) hint.remove(); }, 350);
-  }, 5000);
-}
 function initUIAfterLoad() {
   $('statusBar').style.display = 'flex';
-  computeClassPhases();
   renderGlobalSelectors();
   autoSetScoreLines();
   $('exportBtn').disabled = false;
@@ -3085,7 +3082,6 @@ function initUIAfterLoad() {
   state.currentPage = 'f6';
   renderTabs();
   renderCurrentPage();
-  showLandscapeHint();
 }
 
 function downloadTemplate() {
@@ -3461,44 +3457,8 @@ function autoSetScoreLines() {
   }
 }
 
-/* ============ 龙泉专属：班级一期/二期标注 ============ */
-const classPhaseMap = new Map();
-function computeClassPhases() {
-  classPhaseMap.clear();
-  if (CAMPUS_CONFIG.name !== '龙泉校区') return;
-  const byType = {};
-  state.classList.forEach(cls => {
-    const type = getClassType(cls);
-    if (!type) return;
-    if (!byType[type]) byType[type] = [];
-    const m = cls.match(/(\d+)\s*$/);
-    const num = m ? parseInt(m[1], 10) : null;
-    byType[type].push({ cls, num });
-  });
-  Object.keys(byType).forEach(type => {
-    const list = byType[type];
-    const numbered = list.filter(x => x.num != null).sort((a, b) => a.num - b.num);
-    const n = numbered.length;
-    const threshold = n > 0 ? Math.ceil(n / 2) : 0;
-    list.forEach(x => {
-      if (x.num == null) classPhaseMap.set(x.cls, '二期班');
-      else classPhaseMap.set(x.cls, x.num <= threshold ? '一期班' : '二期班');
-    });
-  });
-}
 function classLabel(cls) {
-  /* 一期/二期不再显示在班级名之后，改由 subjectPhaseLabel 在「数学」科目列上体现 */
   return cls;
-}
-/* 数学科目按班级期数标注：一期班显示 数学（一期班），二期班显示 数学（二期班）
-   仅龙泉校区生效（classPhaseMap 有值）；其他校区或非数学科目原样返回。 */
-function subjectPhaseLabel(sub, cls) {
-  if (!cls) return subjectLabel(sub);
-  const phase = classPhaseMap.get(cls);
-  if (!phase) return subjectLabel(sub);
-  if (normalizeSubjectKey(sub) !== '数学') return subjectLabel(sub);
-  /* 数学科目列按班级期数直接标注为 数学（一期班）/ 数学（二期班） */
-  return normalizeSubjectKey(sub) + '（' + phase + '）';
 }
 
 function bindEvents() {
@@ -3759,78 +3719,33 @@ function finishLoad(label) {
 function autoLoadData() {
   const cands = (CAMPUS_CONFIG.dataCandidates && CAMPUS_CONFIG.dataCandidates.length)
     ? CAMPUS_CONFIG.dataCandidates : [CAMPUS_CONFIG.dataFile];
-  const MAX_RETRY = 5;
-  const FETCH_TIMEOUT = 30000;
-
-  /* 检测网络状态 */
-  const isOnline = () => (navigator.onLine !== false);
-  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-
-  /* 等待 XLSX 库就绪（CDN 加载慢时兜底） */
-  function waitForXLSX(timeout) {
-    return new Promise((resolve, reject) => {
-      if (window.XLSX) return resolve();
-      const start = Date.now();
-      const timer = setInterval(() => {
-        if (window.XLSX) { clearInterval(timer); resolve(); }
-        else if (Date.now() - start > timeout) { clearInterval(timer); reject(new Error('XLSX 库加载超时')); }
-      }, 200);
-    });
-  }
-
-  async function fetchWithRetry(url, attempt) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
-    try {
-      /* CDN 地址不加时间戳（jsDelivr 有自己的缓存策略），本地文件加时间戳防缓存 */
-      const isCDN = /cdn\.jsdelivr\.net|fastly\.jsdelivr\.net/.test(url);
-      const finalUrl = isCDN ? url : url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
-      const res = await fetch(finalUrl, { cache: isCDN ? 'default' : 'no-store', signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return await res.arrayBuffer();
-    } catch (e) {
-      clearTimeout(timeoutId);
-      if (attempt < MAX_RETRY) {
-        setLoadStatus('加载较慢，第 ' + (attempt + 1) + '/' + MAX_RETRY + ' 次重试…', true);
-        await new Promise(r => setTimeout(r, 600 + attempt * 400));
-        return fetchWithRetry(url, attempt + 1);
-      }
-      throw e;
-    }
-  }
-
   let i = 0;
-  const tryNext = async () => {
+  const tryNext = () => {
     if (i >= cands.length) {
       hideLoading();
-      setLoadStatus('数据加载失败，正在跳转…', false);
+      setLoadStatus('未找到「' + CAMPUS_CONFIG.dataFile + '」，请手动上传', false);
       $('alignStatus').textContent = '';
-      /* 所有数据源均失败，跳转 404 页面 */
-      setTimeout(() => { window.location.href = 'index-404.html'; }, 800);
+      /* 数据未就绪时也先渲染页签骨架，避免顶部出现空白长条 */
+      renderTabs();
+      $('contentArea').innerHTML = emptyTip(
+        '未能在站点目录找到成绩文件 ' + esc(CAMPUS_CONFIG.dataFile) +
+        '。<br>请点击右上角「上传 Excel」手动选择文件，或确认该文件已随仓库一起部署。');
       return;
     }
     const url = cands[i++];
-    const sourceLabel = /cdn\.jsdelivr\.net/.test(url) ? 'CDN 镜像' :
-                       /fastly\.jsdelivr\.net/.test(url) ? 'Fastly CDN' : '本地文件';
-    setLoadStatus('正在从[' + sourceLabel + ']加载 ' + url.split('/').pop() + '…', true);
-    try {
-      await waitForXLSX(15000);
-      const buf = await fetchWithRetry(url, 0);
-      showLoading('正在解析成绩数据…');
-      await new Promise(r => setTimeout(r, 30));
-      const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
-      resetAll();
-      ingestWorkbook(wb);
-      hideLoading();
-      finishLoad(url.split('/').pop());
-    } catch (e) {
-      console.warn('加载失败[' + sourceLabel + ']:', url, e.message);
-      hideLoading();
-      tryNext();
-    }
+    fetch(url, { cache: 'no-store' })
+      .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.arrayBuffer(); })
+      .then(buf => {
+        showLoading('正在自动加载成绩数据...');
+        const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
+        resetAll();
+        ingestWorkbook(wb);
+        hideLoading();
+        finishLoad(url.split('/').pop());
+      })
+      .catch(() => { hideLoading(); tryNext(); });
   };
-  setLoadStatus('正在自动加载成绩…');
+  setLoadStatus('正在尝试自动加载…');
   tryNext();
 }
 
