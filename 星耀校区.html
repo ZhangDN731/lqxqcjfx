@@ -997,7 +997,7 @@ function autoSelectBySubjects(subjectWrapId, classWrapId, exam) {
     const inp = item.querySelector('input[type="checkbox"]');
     if (!inp || inp.checked) return;
     const cls = inp.value;
-    if (selSubs.some(sub => classHasSubjectData(cls, realSubjectOf(sub), exam))) {
+    if (selSubs.some(sub => classHasSubjectData(cls, sub, exam))) {
       inp.checked = true;
       item.classList.add('checked');
     }
@@ -1011,7 +1011,7 @@ function autoSelectByClasses(classWrapId, subjectWrapId, exam) {
     const inp = item.querySelector('input[type="checkbox"]');
     if (!inp || inp.checked) return;
     const sub = inp.value;
-    if (selClasses.some(cls => classHasSubjectData(cls, realSubjectOf(sub), exam))) {
+    if (selClasses.some(cls => classHasSubjectData(cls, sub, exam))) {
       inp.checked = true;
       item.classList.add('checked');
     }
@@ -1529,7 +1529,7 @@ function drawF1a() {
   }
   const stu = state.classes[cls].students[studentName];
   const enabledSubs = getGlobalSubjects();
-  const classSubs = getClassSubjects(cls).filter(s => isSubjectActive(s, cls));
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   const subs = classSubs;
   const last = exams[exams.length - 1];
   const totLast = getStudentTotal(stu, last);
@@ -1620,7 +1620,7 @@ function renderF1b(root) {
     return;
   }
   const enabledSubs = getGlobalSubjects();
-  const classSubs = getClassSubjects(cls).filter(s => isSubjectActive(s, cls));
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML =
     '<div id="rankSummary"></div>' +
     '<div class="card">' +
@@ -1727,7 +1727,7 @@ function renderF1c(root) {
     return;
   }
   const enabledSubs = getGlobalSubjects();
-  const classSubs = getClassSubjects(cls).filter(s => isSubjectActive(s, cls));
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML =
     '<div id="stabilitySummary"></div>' +
     '<div class="card">' +
@@ -1815,7 +1815,7 @@ function renderF2a(root) {
   }
   const exams = state.examList;
   const enabledSubs = getGlobalSubjects();
-  const subs = getClassSubjects(cls).filter(s=>!isTotal(s) && isSubjectActive(s, cls));
+  const subs = getClassSubjects(cls).filter(s=>!isTotal(s) && enabledSubs.includes(s));
   const students = Object.keys(state.classes[cls].students);
   root.innerHTML = '<div id="classSummary"></div>' +
     '<div class="card"><h3>各科目班级统计趋势（' + esc(cls) + '）</h3><div id="subjectChartWrap" class="chart-grid"></div></div>';
@@ -1899,30 +1899,30 @@ function drawF2b() {
   summaryWrap.innerHTML = '';
   const mode = $('tripleMode').value;
   const classes = getGlobalClasses();
-  const active = expandActiveSubjects();
+  const subs = getGlobalSubjects();
   const exams = state.examList;
   if (!mode) { summaryWrap.innerHTML = '<div class="card"><div class="empty-hint">请先选择统计类型</div></div>'; return; }
-  if (!classes.length || !active.length) {
+  if (!classes.length || !subs.length) {
     summaryWrap.innerHTML = '<div class="card"><div class="empty-hint">请先在顶部选择班级和科目</div></div>';
     return;
   }
-  const validItems = active.filter(item => item.classes.some(c => exams.some(e => getStat(c, e, item.sub, mode) != null)));
-  if (!validItems.length) {
+  const validSubs = subs.filter(sub => classes.some(c => exams.some(e => getStat(c, e, sub, mode) != null)));
+  if (!validSubs.length) {
     summaryWrap.innerHTML = '<div class="card"><div class="empty-hint">所选条件下暂无数据</div></div>';
     return;
   }
   const last = exams[exams.length-1];
   const classScores = {};
   classes.forEach(cls => classScores[cls] = {total:0,count:0});
-  validItems.forEach(item => item.classes.forEach(cls => {
-    const v = getStat(cls, last, item.sub, mode);
+  validSubs.forEach(sub => classes.forEach(cls => {
+    const v = getStat(cls, last, sub, mode);
     if (v != null) { classScores[cls].total += v; classScores[cls].count++; }
   }));
   const ranking = Object.entries(classScores).filter(([_,v])=>v.count>0)
     .map(([cls,v])=>({cls,avg:v.total/v.count})).sort((a,b)=>b.avg-a.avg);
   const items = [
     {label:'参与班级',value:classes.length+' 个'},
-    {label:'科目数',value:validItems.length+' 科'},
+    {label:'科目数',value:validSubs.length+' 科'},
     {label:'统计维度',value:modeLabel(mode)}
   ];
   if (ranking.length) {
@@ -1936,13 +1936,10 @@ function drawF2b() {
   }
   summaryWrap.innerHTML = analysisPanel([{title:'多班级综合对比',items,paras}]);
 
-  validItems.forEach(item => {
-    const sub = item.sub;
-    const clsList = item.classes;
-    const displayLabel = item.label;
+  validSubs.forEach(sub => {
     const datasets = [];
     let colorIdx = 0;
-    clsList.forEach(cls => {
+    classes.forEach(cls => {
       const data = exams.map(e => getStat(cls, e, sub, mode));
       if (data.every(v => v == null)) return;
       const c = colorPool[colorIdx++ % colorPool.length];
@@ -1953,7 +1950,7 @@ function drawF2b() {
     card.className = 'chart-card triple-chart-card';
     const id = uid();
     const prevExam = exams.length >= 2 ? exams[exams.length-2] : null;
-    const list = clsList.map(cls => {
+    const list = classes.map(cls => {
       const s = getStat(cls, last, sub, mode);
       const p = prevExam ? getStat(cls, prevExam, sub, mode) : null;
       return {cls,s,delta:(s!=null&&p!=null)?Math.round((s-p)*10)/10:null};
@@ -1970,10 +1967,10 @@ function drawF2b() {
       worstDown = '<span class="text-red">' + esc(b.cls) + ' ↓' + b.delta + '</span>';
     }
     const fmList = getSubjectFullMarkList(sub);
-    card.innerHTML = '<h4 title="' + esc(displayLabel) + '">' + esc(displayLabel) + '｜' + modeLabel(mode) + '对比</h4>' +
+    card.innerHTML = '<h4 title="' + esc(subjectLabel(sub)) + '">' + esc(sub) + '｜' + modeLabel(mode) + '对比</h4>' +
       '<div class="chart-box"><canvas id="' + id + '"></canvas></div>' +
       '<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:#f8fbff;border:1px dashed rgba(59,130,246,.25);font-size:.78rem;line-height:1.75">' +
-      '<div style="font-weight:800;color:var(--primary-darker);margin-bottom:4px">' + esc(displayLabel) + '｜' + modeLabel(mode) + '【' + esc(last) + '】</div>' +
+      '<div style="font-weight:800;color:var(--primary-darker);margin-bottom:4px">' + esc(sub) + '｜' + modeLabel(mode) + '【' + esc(last) + '】</div>' +
       '<div>最优：' + esc(best) + ' &nbsp;|&nbsp; 最差：' + esc(worst) + '</div>' +
       '<div>进步最大：' + bestUp + ' &nbsp;|&nbsp; 退步最大：' + worstDown + '</div>' +
       (fmList.length ? '<div>科目满分：' + fmList.join(' / ') + '</div>' : '') +
@@ -1993,7 +1990,7 @@ function renderF3a(root) {
     return;
   }
   const enabledSubs = getGlobalSubjects();
-  const classSubs = getClassSubjects(cls).filter(s => isSubjectActive(s, cls));
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML =
     '<div id="singleClassSummary"></div>' +
     '<div class="card">' +
@@ -2128,7 +2125,7 @@ function renderF3b(root) {
     return;
   }
   const enabledSubs = getGlobalSubjects();
-  const classSubs = getClassSubjects(cls).filter(s => isSubjectActive(s, cls));
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML =
     '<div id="progressSummary"></div>' +
     '<div class="card">' +
@@ -2227,7 +2224,7 @@ function renderF4a(root) {
   }
   const students = Object.keys(state.classes[cls].students).sort((a,b)=>a.localeCompare(b,'zh'));
   const enabledSubs = getGlobalSubjects();
-  const classSubs = getClassSubjects(cls).filter(s => isSubjectActive(s, cls));
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   root.innerHTML = '<div id="allClassSummary"></div>' +
     '<div class="card"><h3>全班学生全部科目成绩变化图（' + esc(cls) + '）</h3><p class="info-text">每个学生一张卡片，每行 5 个</p></div>' +
     '<div id="page4Container"></div>';
@@ -2265,7 +2262,7 @@ function renderStudentCharts(card) {
   if (!stu) return;
   const exams = state.examList;
   const enabledSubs = getGlobalSubjects();
-  const classSubs = getClassSubjects(cls).filter(s => isSubjectActive(s, cls));
+  const classSubs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   classSubs.forEach(sub => {
     const data = exams.map(ex => {
       const v = stu[ex]?.[sub];
@@ -2331,15 +2328,14 @@ function drawF4b() {
   if (!examVal || !mode) { tableWrap.innerHTML = '<div class="empty-hint">请先选择考试和统计方式</div>'; return; }
   const examIdx = parseInt(examVal, 10);
   const classes = getGlobalClasses();
-  const active = expandActiveSubjects();
+  const subs = getGlobalSubjects();
   const exams = state.examList;
   if (!exams.length || Number.isNaN(examIdx)) { tableWrap.innerHTML = '<div class="empty-hint">暂无考试数据</div>'; return; }
   const exam = exams[examIdx];
-  if (!classes.length || !active.length) { tableWrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级和科目</div>'; return; }
+  if (!classes.length || !subs.length) { tableWrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级和科目</div>'; return; }
   const rows = [];
-  active.forEach(item => {
-    item.classes.forEach(cls => {
-      const sub = item.sub;
+  subs.forEach(sub => {
+    classes.forEach(cls => {
       const fullMark = getClassSubjectMark(cls, exam, sub) || getSubjectFullMark(sub);
       const students = state.classes[cls]?.students || {};
       const listByLevel = {};
@@ -2431,7 +2427,7 @@ function drawF4b() {
   const isRatio = mode === 'ratio';
   const cols = [
     {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
-    {label:'科目',width:96,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
+    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectPhaseLabel(r.sub, r.cls))+'">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
     {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'},
     {label:'满分',width:80,sortable:true,getValue:r=>r.fullMark,render:r=>'<td>'+r.fullMark+'</td>'},
     {label:'参考人数',width:100,sortable:true,getValue:r=>r.total,render:r=>'<td><span class="count-cell" data-tip-title="参考学生名单" data-tip-items=\''+JSON.stringify(SEG_LEVELS.flatMap(lv=>r.listByLevel[lv.key])).replace(/'/g,"&#39;")+'\'>'+r.total+'</span></td>'}
@@ -2474,15 +2470,14 @@ function drawF5() {
   const summaryWrap = $('dataTableSummary');
   const mode = $('tableMode').value;
   const classes = getGlobalClasses();
-  const active = expandActiveSubjects();
+  const subs = getGlobalSubjects();
   const exams = state.examList;
   summaryWrap.innerHTML = '';
   if (!mode) { wrap.innerHTML = '<div class="empty-hint">请先选择统计维度</div>'; return; }
-  if (!classes.length || !active.length || !exams.length) { wrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级和科目</div>'; return; }
+  if (!classes.length || !subs.length || !exams.length) { wrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级和科目</div>'; return; }
   const rows = [];
-  active.forEach(item => {
-    item.classes.forEach(cls => {
-      const sub = item.sub;
+  subs.forEach(sub => {
+    classes.forEach(cls => {
       const scores = exams.map(e=>getStat(cls,e,sub,mode));
       if (scores.every(s=>s===null)) return;
       rows.push({sub,cls,scores});
@@ -2492,8 +2487,7 @@ function drawF5() {
   const last = exams[exams.length-1];
   const prev = exams.length >= 2 ? exams[exams.length-2] : null;
   const cells = [];
-  active.forEach(item => item.classes.forEach(cls => {
-    const sub = item.sub;
+  subs.forEach(sub => classes.forEach(cls => {
     const lv = getStat(cls, last, sub, mode);
     if (lv == null) return;
     const pv = prev ? getStat(cls, prev, sub, mode) : null;
@@ -2520,7 +2514,7 @@ function drawF5() {
   const rankValsByCol = exams.map((_, i) => rows.map(rr => rr.scores[i]).filter(v => v != null).sort((a,b)=>b-a));
   const cols = [
     {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
-    {label:'科目',width:96,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
+    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectPhaseLabel(r.sub, r.cls))+'">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
     {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'}
   ];
   exams.forEach((ex,i) => {
@@ -2574,21 +2568,20 @@ function drawF6() {
   const summaryWrap = $('rateSummary');
   if (!wrap) return;
   const classes = getGlobalClasses();
-  const active = expandActiveSubjects();
+  const subs = getGlobalSubjects();
   const exams = state.examList;
   summaryWrap.innerHTML = '';
   const examVal = $('rateExam').value;
   if (!examVal) { wrap.innerHTML = '<div class="empty-hint">请先选择考试</div>'; return; }
-  if (!classes.length || !active.length || !exams.length) { wrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级和科目</div>'; return; }
+  if (!classes.length || !subs.length || !exams.length) { wrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级和科目</div>'; return; }
   const examIdx = parseInt(examVal, 10);
   if (Number.isNaN(examIdx)) { wrap.innerHTML = '<div class="empty-hint">暂无可选考试</div>'; return; }
   const curExam = exams[examIdx];
   const prevExam = examIdx > 0 ? exams[examIdx-1] : null;
   const minPct = getRateMin(), stdPct = getRateStd();
   const rows = [];
-  active.forEach(item => {
-    item.classes.forEach(cls => {
-      const sub = item.sub;
+  subs.forEach(sub => {
+    classes.forEach(cls => {
       const students = state.classes[cls]?.students || {};
       const globalFm = getSubjectFullMark(sub);
       const curFm = getClassSubjectMark(cls, curExam, sub) || globalFm;
@@ -2663,7 +2656,7 @@ function drawF6() {
   const stdPctText = Math.round(stdPct*100) + '%';
   const cols = [
     {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
-    {label:'科目',width:96,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
+    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectPhaseLabel(r.sub, r.cls))+'">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
     {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'},
     {label:'参考人数',width:90,sortable:true,getValue:r=>r.total,render:r=>'<td>'+r.total+'</td>'},
     {label:'本次满分',width:110,sortable:true,getValue:r=>r.fullMark,render:r=>'<td>'+fmLabelHtml(r.fullMark,r.prevFullMark)+'</td>'},
@@ -3067,19 +3060,10 @@ function renderGlobalSelectors() {
 
   const sw = $('globalSubjectWrap');
   /* 科目默认只勾选总分：绝大多数视图以总分为准，避免一次铺满所有科目；
-     需要看单科时点「全选」或单独勾选即可。数学按期数拆为两项。 */
-  const subItems = [];
-  state.subjectList.forEach(s => {
-    if (classPhaseMap && classPhaseMap.size && normalizeSubjectKey(s) === '数学') {
-      subItems.push({ value: '数学（一期班）', label: '数学（一期班）' });
-      subItems.push({ value: '数学（二期班）', label: '数学（二期班）' });
-    } else {
-      subItems.push({ value: s, label: subjectLabel(s) });
-    }
-  });
-  sw.innerHTML = subItems.map(it =>
-    '<label class="checkbox-item' + (isTotal(it.value) ? ' checked' : '') + '"><input type="checkbox" value="' + esc(it.value) + '"' +
-    (isTotal(it.value) ? ' checked' : '') + '><span>' + esc(it.label) + '</span></label>'
+     需要看单科时点「全选」或单独勾选即可 */
+  sw.innerHTML = state.subjectList.map(s =>
+    '<label class="checkbox-item' + (isTotal(s) ? ' checked' : '') + '"><input type="checkbox" value="' + esc(s) + '"' +
+    (isTotal(s) ? ' checked' : '') + '><span>' + esc(subjectLabel(s)) + '</span></label>'
   ).join('');
   bindAllCheckboxes('globalSubjectWrap', () => {
     if (isAutoSelecting) return;
@@ -3521,57 +3505,6 @@ function subjectPhaseLabel(sub, cls) {
   if (normalizeSubjectKey(sub) !== '数学') return subjectLabel(sub);
   /* 数学科目列按班级期数直接标注为 数学（一期班）/ 数学（二期班） */
   return normalizeSubjectKey(sub) + '（' + phase + '）';
-}
-
-/* 真实数学科目（如 数学（100）），无则 null */
-function realMathSubject() {
-  return (state.subjectList || []).find(s => normalizeSubjectKey(s) === '数学') || null;
-}
-
-/* 选择器标签 → 真实科目：数学（一期班）→ 数学（100）；其他原样 */
-function realSubjectOf(label) {
-  if (typeof label !== 'string') return label;
-  if (/^数学（(?:一期班|二期班)）$/.test(label)) return realMathSubject() || label;
-  return label;
-}
-
-/* 选择器标签 → 期数（一期班/二期班），无则 null */
-function phaseOfLabel(label) {
-  const m = /^数学（(一期班|二期班)）$/.exec(label || '');
-  return m ? m[1] : null;
-}
-
-/* 某班某科目是否在选择器中被勾选（数学按期数判断） */
-function isSubjectActive(sub, cls) {
-  const checked = getChecked('globalSubjectWrap');
-  return checked.indexOf(subjectPhaseLabel(sub, cls)) >= 0;
-}
-
-/* 把选择器勾选项展开成 [{sub, classes}]，用于表格逐科目逐班级迭代。
-   数学（一期班）→ 真实数学科目 + 一期班班级；数学（二期班）同理；其他科目 → 全部已选班级。 */
-function expandActiveSubjects() {
-  const checked = getChecked('globalSubjectWrap');
-  const allClasses = getGlobalClasses();
-  const result = [];
-  const seen = new Set();
-  checked.forEach(label => {
-    const phase = phaseOfLabel(label);
-    if (phase) {
-      const sub = realMathSubject();
-      if (!sub) return;
-      const phaseClasses = classPhaseMap ? Array.from(classPhaseMap.keys()).filter(c => classPhaseMap.get(c) === phase) : [];
-      const clsList = phaseClasses.filter(c => allClasses.indexOf(c) >= 0);
-      const key = sub + '|' + phase;
-      if (seen.has(key) || !clsList.length) return;
-      seen.add(key);
-      result.push({ sub: sub, label: label, classes: clsList });
-    } else {
-      if (seen.has(label)) return;
-      seen.add(label);
-      result.push({ sub: label, label: label, classes: allClasses });
-    }
-  });
-  return result;
 }
 
 function bindEvents() {
