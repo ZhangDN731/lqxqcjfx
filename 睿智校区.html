@@ -1028,31 +1028,35 @@ function classHasSubjectData(cls, sub, exam) {
   return false;
 }
 
+/* 联动默认选择：只追加勾选，不取消用户已手动选择/取消的项。
+   选科目 → 默认勾上含该科目的全部班级；选班级 → 默认勾上该班的全部科目。
+   用户之后可自由二次调整另一侧，不会被覆盖。 */
 function autoSelectBySubjects(subjectWrapId, classWrapId, exam) {
   const selSubs = getChecked(subjectWrapId);
   const wrap = $(classWrapId);
-  if (!wrap) return;
+  if (!wrap || !selSubs.length) return;
   wrap.querySelectorAll('.checkbox-item').forEach(item => {
     const inp = item.querySelector('input[type="checkbox"]');
-    if (!inp) return;
+    if (!inp || inp.checked) return;
     const cls = inp.value;
-    const has = selSubs.length > 0 && selSubs.some(sub => classHasSubjectData(cls, sub, exam));
-    inp.checked = has;
-    item.classList.toggle('checked', has);
+    if (selSubs.some(sub => classHasSubjectData(cls, sub, exam))) {
+      inp.checked = true;
+      item.classList.add('checked');
+    }
   });
 }
-
 function autoSelectByClasses(classWrapId, subjectWrapId, exam) {
   const selClasses = getChecked(classWrapId);
   const wrap = $(subjectWrapId);
-  if (!wrap) return;
+  if (!wrap || !selClasses.length) return;
   wrap.querySelectorAll('.checkbox-item').forEach(item => {
     const inp = item.querySelector('input[type="checkbox"]');
-    if (!inp) return;
+    if (!inp || inp.checked) return;
     const sub = inp.value;
-    const has = selClasses.length > 0 && selClasses.some(cls => classHasSubjectData(cls, sub, exam));
-    inp.checked = has;
-    item.classList.toggle('checked', has);
+    if (selClasses.some(cls => classHasSubjectData(cls, sub, exam))) {
+      inp.checked = true;
+      item.classList.add('checked');
+    }
   });
 }
 
@@ -2819,12 +2823,12 @@ function drawF7() {
   const withPublic = rows.filter(r => r.publicRate != null);
   if (withPublic.length) {
     const lowest = withPublic.reduce((a, b) => a.publicRate < b.publicRate ? a : b);
-    paras.push('公办线达标率最低的班级：<b>' + esc(lowest.cls) + '</b>（' + pct(lowest.publicRate) + '），建议重点关注。');
+    paras.push('公办线达标率最低的班级：<b>' + esc(classLabel(lowest.cls)) + '</b>（' + pct(lowest.publicRate) + '），建议重点关注。');
   }
   const withCtrl = rows.filter(r => r.controlRate != null);
   if (withCtrl.length) {
     const belowHalf = withCtrl.filter(r => r.controlRate < 0.5);
-    if (belowHalf.length) paras.push('控制线达标率低于 50% 的班级：' + belowHalf.map(r => esc(r.cls)).join('、') + '。');
+    if (belowHalf.length) paras.push('控制线达标率低于 50% 的班级：' + belowHalf.map(r => esc(classLabel(r.cls))).join('、') + '。');
   }
   if (summaryWrap) summaryWrap.innerHTML = analysisPanel([
     { title: '基础信息', items: [
@@ -2859,8 +2863,8 @@ function drawF7() {
   const leadingCols = [
     { label: '大类', width: 70, sticky: true, sortable: true, getValue: r => r.type,
       render: r => '<td class="cell-class" style="font-weight:700">' + esc(r.type) + '</td>' },
-    { label: '班级', width: 90, sticky: true, sortable: true, getValue: r => r.cls,
-      render: r => '<td class="cell-subject">' + esc(r.cls) + '</td>' },
+    { label: '班级', width: 110, sticky: true, sortable: true, getValue: r => r.cls,
+      render: r => '<td class="cell-subject">' + esc(classLabel(r.cls)) + '</td>' },
     { label: '参考人数', width: 86, sortable: true, getValue: r => r.total,
       render: r => '<td>' + r.total + '</td>' }
   ];
@@ -3029,7 +3033,7 @@ function renderGlobalSelectors() {
   const cw = $('globalClassWrap');
   /* 自动加载后默认全选班级，页面开箱即用；用户可随时取消勾选 */
   cw.innerHTML = state.classList.map(c =>
-    '<label class="checkbox-item checked"><input type="checkbox" value="' + esc(c) + '" checked><span>' + esc(c) + '</span></label>'
+    '<label class="checkbox-item checked"><input type="checkbox" value="' + esc(c) + '" checked><span>' + esc(classLabel(c)) + '</span></label>'
   ).join('');
   bindAllCheckboxes('globalClassWrap', () => {
     if (isAutoSelecting) return;
@@ -3073,6 +3077,7 @@ function showLandscapeHint() {
 }
 function initUIAfterLoad() {
   $('statusBar').style.display = 'flex';
+  computeClassPhases();
   renderGlobalSelectors();
   autoSetScoreLines();
   $('exportBtn').disabled = false;
@@ -3190,10 +3195,13 @@ function toggleExportMenu(e) {
 }
 
 /* ============================================================
- *  PDF 导出：A4 横向
- *  · 横向页宽 297mm，比纵向多约 40% 的横向空间，表格与图表更完整
- *  · 导出前临时把内容区放宽到表格真实宽度，横向滚动区不再被裁切
- *  · 顶部插入导出抬头（校区 / 功能 / 时间 / 对齐口径），便于归档辨认
+ *  PDF 导出：A4 横向 + 按内容块安全分页
+ *  · 横向页宽 297mm，比纵向多约 40% 横向空间
+ *  · 以「内容块」（导出抬头 / 分析面板 / 卡片 / 图表卡 / 学生卡 / 表格）
+ *    为最小单位排版：当前页剩余空间放不下时整块移到下一页，
+ *    不再把一张图表或一行表格从中间切断
+ *  · 超过一整页的长表格，再按行边界切成多段，段与段不跨页割裂
+ *  · 每一页顶部自动加标题条（校区 · 功能 · 页码），中文由 canvas 绘制，不乱码
  * ============================================================ */
 function exportHeaderHtml() {
   const now = new Date();
@@ -3203,6 +3211,67 @@ function exportHeaderHtml() {
     ' ' + p2(now.getHours()) + ':' + p2(now.getMinutes()) +
     ' ｜ 成绩文件 ' + esc(state.loadedFile || '-') +
     ' ｜ ' + (state.alignEnabled ? '分值已对齐最高满分' : '原始分（未对齐）') + '</div>';
+}
+
+const EXPORT_BLOCK_SEL = ['.export-header', '.analysis-panel', '.card', '.chart-card', '.stu-row-card', '.grid-table-scroll'];
+
+/* 收集内容块：只保留最外层，避免卡片与其内部图表卡重复计数 */
+function blockRects(area) {
+  const base = area.getBoundingClientRect();
+  const els = [];
+  EXPORT_BLOCK_SEL.forEach(s => area.querySelectorAll(s).forEach(el => els.push(el)));
+  const outer = els.filter(el => !els.some(o => o !== el && o.contains(el)));
+  return outer.map(el => {
+    const r = el.getBoundingClientRect();
+    return { el: el, top: r.top - base.top, height: r.height };
+  }).filter(r => r.height > 0).sort((a, b) => a.top - b.top);
+}
+
+/* 递归把过高的块按子元素边界摊平成「不超过一页」的小段 */
+function flattenRect(rect, usablePx) {
+  if (rect.height <= usablePx) return [rect];
+  const parentTop = rect.top;
+  const kids = Array.from(rect.el.children)
+    .map(el => {
+      const r = el.getBoundingClientRect();
+      const b = rect.el.getBoundingClientRect();
+      return { el: el, top: (r.top - b.top) + parentTop, height: r.height };
+    })
+    .filter(k => k.height > 0);
+  if (!kids.length) return [rect];          // 原子块（如单个画布），无法再切
+  const flat = [];
+  kids.forEach(k => flattenRect(k, usablePx).forEach(u => flat.push(u)));
+  return flat;
+}
+
+/* 纯函数：把摊平后的小段装箱，每箱不超过一页（用于测试） */
+function binUnits(flat, usablePx) {
+  const bins = [];
+  let cur = null, curH = 0;
+  flat.forEach(u => {
+    if (cur && curH + u.height <= usablePx) { cur.push(u); curH += u.height; }
+    else { cur = [u]; curH = u.height; bins.push(cur); }
+  });
+  return bins.map(b => {
+    const top = Math.min.apply(null, b.map(u => u.top));
+    const bottom = Math.max.apply(null, b.map(u => u.top + u.height));
+    return { el: b[0].el, top: top, height: bottom - top, parts: b.length };
+  });
+}
+
+/* 纯函数：把箱顺序排到页上，页内放不下就开新页（用于测试） */
+function pageUnits(bins, usablePx, gapPx) {
+  gapPx = gapPx == null ? 6 : gapPx;
+  const pages = [];
+  let cur = null, curH = 0;
+  bins.forEach(u => {
+    if (cur && curH + u.height + gapPx > usablePx) { pages.push(cur); cur = null; curH = 0; }
+    if (!cur) cur = [];
+    cur.push(u);
+    curH += u.height + gapPx;
+  });
+  if (cur && cur.length) pages.push(cur);
+  return pages;
 }
 
 async function exportReport(customFileName) {
@@ -3245,111 +3314,94 @@ async function exportReport(customFileName) {
       await new Promise(r => setTimeout(r, 380));
     }
 
+    /* 排版：先量尺寸分页，再一次性截图裁切 */
+    const areaRect = area.getBoundingClientRect();
+    const imgW = 297 - 16;                       // A4 横向版心
+    const k0 = 2;                                // 与下方 html2canvas scale 保持一致
+    const bandMm = 9;                            // 页首标题条高度
+    const title = CAMPUS_CONFIG.name + ' · ' + getExportPageName();
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-    const pageW = 297, pageH = 210, margin = 8;
-    const imgW = pageW - margin * 2;
-    const usable = pageH - margin * 2;
-    const gap = 2;
 
-    /* 先截导出页眉，每页复用 */
-    const headCanvas = await html2canvas(head, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-    const headH = headCanvas.height * imgW / headCanvas.width;
-    const headData = headCanvas.toDataURL('image/jpeg', 0.92);
-
-    /* 收集内容区直接子元素（跳过页眉本身、空提示、隐藏元素） */
-    const blocks = [];
-    area.querySelectorAll(':scope > *').forEach(el => {
-      if (el === head) return;
-      if (el.offsetParent === null) return;
-      if (el.classList.contains('empty-hint')) return;
-      if (el.querySelector('.empty-hint') && el.children.length <= 1) return;
-      blocks.push(el);
-    });
-
-    let y = margin;
-    let firstBlock = true;
-
-    /* 将一张截图放入 PDF，自动分页并在新页加页眉 */
-    function placeImage(imgData, blockH) {
-      if (firstBlock) {
-        pdf.addImage(headData, 'JPEG', margin, y, imgW, headH);
-        y += headH + gap;
-        firstBlock = false;
-      } else if (y + blockH > margin + usable) {
-        pdf.addPage();
-        y = margin;
-        pdf.addImage(headData, 'JPEG', margin, y, imgW, headH);
-        y += headH + gap;
-      }
-      pdf.addImage(imgData, 'JPEG', margin, y, imgW, blockH);
-      y += blockH + gap;
+    /* 无布局环境（如部分测试容器）回退为整图等比缩放单页 */
+    if (!(areaRect.width > 0)) {
+      const canvas0 = await html2canvas(area, { scale: k0, backgroundColor: '#ffffff', useCORS: true });
+      const hMm0 = canvas0.height * imgW / canvas0.width;
+      pdf.addImage(canvas0.toDataURL('image/jpeg', 0.92), 'JPEG', 8, 8, imgW, hMm0);
+      pdf.save(buildExportFileName('pdf'));
+      return;
     }
 
-    /* 对单个元素截图 */
-    async function shotEl(el) {
-      const canvas = await html2canvas(el, {
-        scale: 1.5, backgroundColor: '#ffffff', useCORS: true,
-        windowWidth: Math.max(needW, document.documentElement.clientWidth)
-      });
-      return { canvas, h: canvas.height * imgW / canvas.width, data: canvas.toDataURL('image/jpeg', 0.85) };
-    }
+    const mmPerPx = imgW / areaRect.width;
+    const usablePx = (210 - 8 - 8 - bandMm) / mmPerPx;
 
-    for (let i = 0; i < blocks.length; i++) {
-      const el = blocks[i];
-
-      /* 检测是否包含长数据表格，需要按行分页 */
-      const table = el.querySelector('.grid-table-scroll table.data-table');
-      const allRows = table ? table.querySelectorAll('tbody tr') : [];
-      const thead = table ? table.querySelector('thead') : null;
-
-      if (table && allRows.length > 0 && thead) {
-        const PX_PER_MM = 96 / 25.4; /* 3.78 */
-        const rowHmm = (allRows[0].offsetHeight || 24) / PX_PER_MM;
-        const headRowHmm = (thead.offsetHeight || 30) / PX_PER_MM;
-        /* 第一页含分析面板，预留卡片padding；后续页精简只留标题+表头 */
-        const availFirst = usable - headH - 14 - headRowHmm - gap;
-        const availLater = usable - headH - 8 - headRowHmm - gap;
-        const rowsFirstPage = Math.max(1, Math.floor(availFirst / rowHmm));
-        const rowsPerPage = Math.max(1, Math.floor(availLater / rowHmm));
-
-        if (allRows.length > rowsFirstPage) {
-          /* 长表格：克隆元素，每页只保留表头 + 部分行，分别截图 */
-          const elW = el.offsetWidth;
-          let p = 0, start = 0;
-          while (start < allRows.length) {
-            const pageRows = (p === 0) ? rowsFirstPage : rowsPerPage;
-            const end = Math.min(start + pageRows, allRows.length);
-            const clone = el.cloneNode(true);
-            /* 后续页删除分析面板和筛选栏，只保留标题+表格，腾出空间放更多行 */
-            if (p > 0) {
-              clone.querySelectorAll('.analysis-panel, .filter-row').forEach(n => n.remove());
-            }
-            const cloneTbody = clone.querySelector('.grid-table-scroll table.data-table tbody');
-            if (cloneTbody) {
-              const cloneRows = Array.from(cloneTbody.querySelectorAll('tr'));
-              cloneRows.forEach((r, idx) => {
-                if (idx < start || idx >= end) r.remove();
-              });
-            }
-            clone.style.cssText = 'position:absolute;left:-9999px;top:0;width:' + elW + 'px;max-width:none;';
-            document.body.appendChild(clone);
-            await new Promise(r => setTimeout(r, 50));
-            const shot = await shotEl(clone);
-            document.body.removeChild(clone);
-            placeImage(shot.data, shot.h);
-            start = end;
-            p++;
-          }
-          continue;
+    let bins = [];
+    blockRects(area).forEach(r => flattenRect(r, usablePx).forEach(u => bins.push(u)));
+    bins.sort((a, b) => a.top - b.top);
+    /* 去重：摊平后可能出现单元互相包含（如外层卡片与内部表格段），
+       保留较大的单元，删除完全被包含的小单元，避免同一内容被多页重复裁切 */
+    const dedup = [];
+    bins.forEach(u => {
+      const uTop = u.top, uBot = u.top + u.height;
+      const contained = dedup.some(d => d.top - 1 <= uTop && d.top + d.height + 1 >= uBot);
+      if (!contained) {
+        /* 同时移除已收录但被当前单元包含的旧单元 */
+        for (let i = dedup.length - 1; i >= 0; i--) {
+          const d = dedup[i];
+          if (uTop - 1 <= d.top && uBot + 1 >= d.top + d.height) dedup.splice(i, 1);
         }
+        dedup.push(u);
       }
+    });
+    bins = binUnits(dedup, usablePx);
+    const pages = pageUnits(bins, usablePx);
+    if (!pages.length) { alert('当前页面没有可导出的内容。'); return; }
 
-      /* 普通元素（短表格 / 图表 / 分析面板）：直接完整截图 */
-      const shot = await shotEl(el);
-      placeImage(shot.data, shot.h);
-    }
+    const canvas = await html2canvas(area, {
+      scale: k0,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      windowWidth: Math.max(needW, document.documentElement.clientWidth)
+    });
+    const k = canvas.width / areaRect.width;
+    const bandPx = Math.round(bandMm / mmPerPx * k);
+    const titleFont = Math.round(11 * k);
 
+    let prevBottom = 0;  /* 防重叠：上一页裁切底部，当前页顶部不得低于此值 */
+    pages.forEach((pg, i) => {
+      const rawTop = Math.max(0, pg[0].top - 3);
+      const topCss = Math.max(rawTop, prevBottom);  /* 与上一页不重叠 */
+      const last = pg[pg.length - 1];
+      const bottomCss = Math.min(areaRect.height, Math.max(topCss + 1, last.top + last.height + 3));
+      prevBottom = bottomCss;
+      const hCss = Math.max(1, bottomCss - topCss);
+      const sy = Math.round(topCss * k);
+      const sh = Math.max(1, Math.round(hCss * k));
+
+      /* 页首标题条用 canvas 绘制，中文不会乱码 */
+      const tmp = document.createElement('canvas');
+      tmp.width = canvas.width;
+      tmp.height = sh + bandPx;
+      const tctx = tmp.getContext('2d');
+      tctx.fillStyle = '#ffffff';
+      tctx.fillRect(0, 0, tmp.width, tmp.height);
+      tctx.fillStyle = '#312e81';
+      tctx.font = '700 ' + titleFont + 'px "Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif';
+      tctx.textBaseline = 'middle';
+      tctx.fillText(title + (pages.length > 1 ? '　(' + (i + 1) + '/' + pages.length + ')' : ''),
+        Math.round(6 * k), Math.round(bandPx * 0.52));
+      tctx.strokeStyle = 'rgba(79,70,229,.35)';
+      tctx.lineWidth = Math.max(1, k);
+      tctx.beginPath();
+      tctx.moveTo(0, bandPx - Math.max(1, k));
+      tctx.lineTo(tmp.width, bandPx - Math.max(1, k));
+      tctx.stroke();
+      tctx.drawImage(canvas, 0, sy, canvas.width, sh, 0, bandPx, canvas.width, sh);
+
+      if (i > 0) pdf.addPage();
+      const hMm = (hCss + bandPx / k) * mmPerPx;
+      pdf.addImage(tmp.toDataURL('image/jpeg', 0.92), 'JPEG', 8, 8, imgW, hMm);
+    });
     pdf.save(customFileName || buildExportFileName('pdf'));
   } catch (e) {
     console.error(e);
@@ -3365,81 +3417,6 @@ async function exportReport(customFileName) {
     btn.textContent = oldText;
   }
 }
-
-/* ============ 批量导出 ============ */
-function setCheckboxSelection(wrapId, values) {
-  const set = new Set(values);
-  document.querySelectorAll('#' + wrapId + ' input[type="checkbox"]').forEach(cb => {
-    cb.checked = set.has(cb.value);
-    cb.closest('.checkbox-item')?.classList.toggle('checked', cb.checked);
-  });
-}
-
-async function exportBatch(pageId, mode, labelPrefix) {
-  closeExportMenu();
-  if (!hasData()) { alert('暂无数据'); return; }
-
-  /* 保存当前状态 */
-  const savedPage = state.currentPage;
-  const savedClasses = getGlobalClasses();
-  const savedSubjects = getGlobalSubjects();
-
-  /* 获取所有可用的班级和科目 */
-  const allClasses = Array.from(document.querySelectorAll('#globalClassWrap input[type="checkbox"]')).map(i => i.value);
-  const allSubjects = Array.from(document.querySelectorAll('#globalSubjectWrap input[type="checkbox"]')).map(i => i.value);
-  const items = (mode === 'class') ? allClasses : allSubjects;
-
-  if (!items.length) { alert('没有可导出的' + (mode === 'class' ? '班级' : '学科')); return; }
-
-  const btn = $('exportBtn');
-  const oldText = btn.textContent;
-  btn.disabled = true;
-
-  try {
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      btn.textContent = '导出中 ' + (i + 1) + '/' + items.length + '：' + item;
-
-      /* 设置筛选：按学科导出时只选该学科、班级全选；按班级导出时只选该班级、科目全选 */
-      if (mode === 'subject') {
-        setCheckboxSelection('globalSubjectWrap', [item]);
-        setCheckboxSelection('globalClassWrap', allClasses);
-      } else {
-        setCheckboxSelection('globalClassWrap', [item]);
-        setCheckboxSelection('globalSubjectWrap', allSubjects);
-      }
-
-      /* 切换到目标页面并渲染 */
-      state.currentPage = pageId;
-      renderTabs();
-      renderCurrentPage();
-      await new Promise(r => setTimeout(r, 250));
-
-      /* 导出 PDF，文件名：功能-学科/班级.pdf */
-      const fileName = sanitizeFileName(labelPrefix + '-' + item) + '.pdf';
-      await exportReport(fileName);
-      await new Promise(r => setTimeout(r, 600)); /* 给浏览器下载留时间 */
-    }
-
-    btn.textContent = '批量导出完成 ✓';
-    setTimeout(() => { btn.textContent = oldText; btn.disabled = false; }, 2500);
-  } catch (e) {
-    console.error(e);
-    alert('批量导出失败：' + e.message);
-    btn.textContent = oldText;
-    btn.disabled = false;
-  } finally {
-    /* 恢复原始状态 */
-    setCheckboxSelection('globalClassWrap', savedClasses);
-    setCheckboxSelection('globalSubjectWrap', savedSubjects);
-    state.currentPage = savedPage;
-    renderTabs();
-    renderCurrentPage();
-  }
-}
-
-function exportRateBatch(mode) { exportBatch('f6', mode, '达标率'); }
-function exportDetailBatch(mode) { exportBatch('f5', mode, '数据明细表'); }
 
 const CLASS_LINE_MAP = {
   '1类':{control:330,public:376,private:330,estimate:380},
@@ -3470,6 +3447,36 @@ function autoSetScoreLines() {
     $('linePrivate').value = l.private;
     $('lineEstimate').value = l.estimate;
   }
+}
+
+/* ============ 龙泉专属：班级一期/二期标注 ============ */
+const classPhaseMap = new Map();
+function computeClassPhases() {
+  classPhaseMap.clear();
+  if (CAMPUS_CONFIG.name !== '龙泉校区') return;
+  const byType = {};
+  state.classList.forEach(cls => {
+    const type = getClassType(cls);
+    if (!type) return;
+    if (!byType[type]) byType[type] = [];
+    const m = cls.match(/(\d+)\s*$/);
+    const num = m ? parseInt(m[1], 10) : null;
+    byType[type].push({ cls, num });
+  });
+  Object.keys(byType).forEach(type => {
+    const list = byType[type];
+    const numbered = list.filter(x => x.num != null).sort((a, b) => a.num - b.num);
+    const n = numbered.length;
+    const threshold = n > 0 ? Math.ceil(n / 2) : 0;
+    list.forEach(x => {
+      if (x.num == null) classPhaseMap.set(x.cls, '二期班');
+      else classPhaseMap.set(x.cls, x.num <= threshold ? '一期班' : '二期班');
+    });
+  });
+}
+function classLabel(cls) {
+  const phase = classPhaseMap.get(cls);
+  return phase ? cls + '（' + phase + '）' : cls;
 }
 
 function bindEvents() {
