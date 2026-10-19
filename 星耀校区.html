@@ -922,7 +922,7 @@ const updateRateTips = () => {
 
 const getChecked = wrapId => Array.from(document.querySelectorAll('#' + wrapId + ' input[type="checkbox"]:checked')).map(i => i.value);
 const getGlobalClasses = () => getChecked('globalClassWrap');
-const getGlobalSubjects = () => getChecked('globalSubjectWrap').filter(s => !isTotal(s));
+const getGlobalSubjects = () => getChecked('globalSubjectWrap');
 const getPrimaryClass = () => getGlobalClasses()[0] || '';
 
 /* ============ 悬浮提示 ============ */
@@ -1813,7 +1813,7 @@ function renderF2a(root) {
   }
   const exams = state.examList;
   const enabledSubs = getGlobalSubjects();
-  const subs = getClassSubjects(cls).filter(s=>!isTotal(s) && enabledSubs.includes(s));
+  const subs = getClassSubjects(cls).filter(s => enabledSubs.includes(s));
   const students = Object.keys(state.classes[cls].students);
   root.innerHTML = '<div id="classSummary"></div>' +
     '<div class="card"><h3>各科目班级统计趋势（' + esc(cls) + '）</h3><div id="subjectChartWrap" class="chart-grid"></div></div>';
@@ -3057,11 +3057,11 @@ function renderGlobalSelectors() {
   });
 
   const sw = $('globalSubjectWrap');
-  /* 科目默认勾选第一个非总分科目，页面开箱即用；总分不显示在选择器中 */
-  const visSubs = state.subjectList.filter(s => !isTotal(s));
-  sw.innerHTML = visSubs.map((s, i) =>
-    '<label class="checkbox-item' + (i === 0 ? ' checked' : '') + '"><input type="checkbox" value="' + esc(s) + '"' +
-    (i === 0 ? ' checked' : '') + '><span>' + esc(subjectLabel(s)) + '</span></label>'
+  /* 科目默认只勾选总分：绝大多数视图以总分为准，避免一次铺满所有科目；
+     需要看单科时点「全选」或单独勾选即可 */
+  sw.innerHTML = state.subjectList.map(s =>
+    '<label class="checkbox-item' + (isTotal(s) ? ' checked' : '') + '"><input type="checkbox" value="' + esc(s) + '"' +
+    (isTotal(s) ? ' checked' : '') + '><span>' + esc(subjectLabel(s)) + '</span></label>'
   ).join('');
   bindAllCheckboxes('globalSubjectWrap', () => {
     if (isAutoSelecting) return;
