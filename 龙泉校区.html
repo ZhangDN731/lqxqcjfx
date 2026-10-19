@@ -1,8 +1,7 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>龙泉校区成绩分析</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -342,27 +341,6 @@ body.exporting .analysis-panel,body.exporting .stu-row-card{
   background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
   box-shadow:none!important;border-color:#e2e8f0!important;
 }
-/* ===== 导出专用紧凑样式 ===== */
-body.exporting .filter-row{display:none!important}
-body.exporting .sort-icon,body.exporting .sort-hint{display:none!important}
-body.exporting .card{padding:10px 14px!important;margin-bottom:8px!important}
-body.exporting .analysis-panel{padding:8px 14px!important;margin-bottom:8px!important}
-body.exporting .analysis-panel .ap-title{font-size:.9rem!important;margin-bottom:4px!important}
-body.exporting .analysis-panel .ap-stats{gap:12px!important}
-body.exporting .analysis-panel .ap-stat .k{font-size:.7rem!important}
-body.exporting .analysis-panel .ap-stat .v{font-size:1.05rem!important}
-body.exporting .analysis-panel .ap-notes{font-size:.75rem!important;line-height:1.6!important;margin-top:4px!important}
-body.exporting .page-title{font-size:.95rem!important;margin-bottom:6px!important;padding-bottom:4px!important}
-body.exporting .grid-table-scroll{overflow:visible!important;border:none!important}
-body.exporting table.data-table{width:100%!important;table-layout:fixed!important}
-body.exporting table.data-table th.sticky-col,body.exporting table.data-table td.sticky-col{position:static!important;left:auto!important;box-shadow:none!important}
-body.exporting table.data-table th{padding:5px 6px!important;font-size:.72rem!important;line-height:1.25!important}
-body.exporting table.data-table td{padding:4px 6px!important;font-size:.75rem!important;line-height:1.3!important}
-body.exporting table.data-table tbody tr{height:auto!important}
-body.exporting .empty-hint{display:none!important}
-body.exporting .sub-tab-bar{display:none!important}
-body.exporting .chart-card{padding:8px 14px!important}
-body.exporting .chart-card .chart-title{font-size:.88rem!important;margin-bottom:4px!important}
 .align-status{font-weight:700}
 
 .absent-list{
@@ -557,7 +535,6 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
   padding:7px 12px 4px;font-size:.68rem;font-weight:800;letter-spacing:.8px;
   color:var(--text-muted);text-transform:uppercase;
 }
-.export-menu .menu-divider{height:1px;background:rgba(15,23,42,.1);margin:5px 8px}
 
 /* ===== 响应式 ===== */
 @media (max-width:1500px){.chart-grid-5{grid-template-columns:repeat(4,minmax(0,1fr))}}
@@ -671,18 +648,6 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
 ::-webkit-scrollbar-thumb{background:rgba(79,70,229,.30);border-radius:5px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(79,70,229,.52)}
 
-/* ===== 横屏提示：手机/平板竖屏时顶部弹出，5秒自动关闭 ===== */
-.landscape-hint{
-  position:fixed;top:0;left:0;right:0;z-index:10000;
-  background:linear-gradient(135deg,#1e3a5f,#2d5a87);
-  color:#fff;padding:12px 16px;text-align:center;font-size:14px;font-weight:500;
-  box-shadow:0 2px 12px rgba(0,0,0,.25);
-  transform:translateY(-100%);transition:transform .3s ease;
-  pointer-events:none;letter-spacing:.5px;
-}
-.landscape-hint.show{transform:translateY(0)}
-.landscape-hint .lh-icon{margin-right:6px}
-
 /* ===== 打印 / 导出：去背景特效，保证 PDF 干净 ===== */
 @media print{
   body::before,#particleCanvas{display:none!important}
@@ -721,14 +686,6 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
             <div class="menu-hint">导出当前功能</div>
             <button onclick="exportReport()">&#128196; 导出 PDF</button>
             <button onclick="exportExcel()">&#128202; 导出 Excel 表格</button>
-            <div class="menu-divider"></div>
-            <div class="menu-hint">批量导出达标率</div>
-            <button onclick="exportRateBatch('subject')">&#128218; 按学科逐个导出 PDF</button>
-            <button onclick="exportRateBatch('class')">&#127979; 按班级逐个导出 PDF</button>
-            <div class="menu-divider"></div>
-            <div class="menu-hint">批量导出数据明细表</div>
-            <button onclick="exportDetailBatch('subject')">&#128218; 按学科逐个导出 PDF</button>
-            <button onclick="exportDetailBatch('class')">&#127979; 按班级逐个导出 PDF</button>
           </div>
         </div>
       </div>
@@ -819,14 +776,7 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
 const CAMPUS_CONFIG = {
   name: '龙泉校区',
   dataFile: '27届龙泉周测成绩.xlsx',
-  dataCandidates: [
-    '27届龙泉周测成绩.xlsx',
-    '27届龙泉周测成绩.xls',
-    '龙泉周测成绩.xlsx',
-    'data/27届龙泉周测成绩.xlsx',
-    'https://cdn.jsdelivr.net/gh/zhangdn731/lqxqcjfx@main/27届龙泉周测成绩.xlsx',
-    'https://fastly.jsdelivr.net/gh/zhangdn731/lqxqcjfx@main/27届龙泉周测成绩.xlsx'
-  ]
+  dataCandidates: ['27届龙泉周测成绩.xlsx','27届龙泉周测成绩.xls','龙泉周测成绩.xlsx','data/27届龙泉周测成绩.xlsx']
 };
 
 /* 核心分析：保留的 5 个高频功能 */
@@ -837,6 +787,7 @@ const TOP_TABS = [
     label: '核心分析',
     pages: [
       { id: 'f6',  label: '达标率' },
+      { id: 'f7',  label: '四线达标率' },
       { id: 'f5',  label: '数据明细表' },
       { id: 'f4b', label: '分数段分布' },
       { id: 'f3a', label: '全班成绩' },
@@ -875,7 +826,7 @@ const PAGE_NAMES = {
   f2a: '班级整体趋势', f2b: '多班三分对比',
   f3a: '全班成绩', f3b: '单科进步榜',
   f4a: '全班成绩图', f4b: '分数段分布',
-  f5: '数据明细表', f6: '达标率',
+  f5: '数据明细表', f6: '达标率', f7: '四线达标率',
   m2a: '班级综合分析', m2b: '进步与名次', m2c: '学生明细图谱'
 };
 
@@ -898,7 +849,8 @@ let isAutoSelecting = false;
 
 const sortState = {
   classTable:{col:-1,asc:true}, rank:{col:-1,asc:true}, stability:{col:-1,asc:true},
-  progress:{col:-1,asc:true}, seg:{col:-1,asc:true}, rate:{col:-1,asc:true}, detail:{col:-1,asc:true}
+  progress:{col:-1,asc:true}, seg:{col:-1,asc:true}, rate:{col:-1,asc:true}, detail:{col:-1,asc:true},
+  f7line:{col:-1,asc:true}, f7linePlus:{col:-1,asc:true}
 };
 
 const $ = id => document.getElementById(id);
@@ -1430,12 +1382,15 @@ function makeBarChart(canvasId, labels, datasets, opts) {
   if (!canvas) return null;
   opts = opts || {};
   const multi = datasets.length > 1;
-  const isH = !!opts.horizontal;
-  /* 横向条形图：固定每条高度，容器高度随数据量自适应，确保不同数据量的图表条高一致 */
-  if (isH && canvas.parentElement) {
-    const rowH = 26;
-    const minH = Math.max(labels.length * rowH + 40, 120);
-    canvas.parentElement.style.minHeight = minH + 'px';
+  /* 横向条形图：条厚与间距固定，条目多时自动加高画布，
+     保证每根条的高度始终一致，不会被压得粗细不一 */
+  const BAR_PX = 15, GAP_PX = 9, TOP_PX = 14, BOTTOM_PX = 26;
+  if (opts.horizontal) {
+    const n = Math.max(labels ? labels.length : 0, 1);
+    const hCss = TOP_PX + n * (BAR_PX + GAP_PX) + BOTTOM_PX;
+    canvas.style.height = hCss + 'px';
+    const holder = canvas.parentNode;
+    if (holder && holder.classList.contains('chart-box')) holder.style.height = hCss + 'px';
   }
   return new Chart(canvas.getContext('2d'), {
     type:'bar',
@@ -1451,8 +1406,8 @@ function makeBarChart(canvasId, labels, datasets, opts) {
         x:{grid:{display:false},ticks:{font:{size:10},maxRotation:45,autoSkip:false}},
         y:{beginAtZero:true,grace:'5%',ticks:{font:{size:10}}}
       },
-      indexAxis: isH ? 'y' : 'x',
-      ...(isH ? { barThickness: 14, categoryPercentage: 0.7, barPercentage: 0.9 } : {})
+      datasets: opts.horizontal ? { bar: { barThickness: BAR_PX, categoryPercentage: 0.9, barPercentage: 1 } } : {},
+      indexAxis: opts.horizontal ? 'y' : 'x'
     }
   });
 }
@@ -2231,12 +2186,6 @@ function drawF3b() {
   summaryWrap.innerHTML = analysisPanel([{title:'单科进步榜综合统计',items,paras}]);
   if (upList.length) addChart(makeBarChart(upCanvas.id, upList.map(x=>x.name), [{label:'进步分',data:upList.map(x=>x.delta),backgroundColor:'rgba(34,197,94,.75)',borderColor:'#16a34a',borderWidth:1}], {horizontal:true}));
   if (downList.length) addChart(makeBarChart(downCanvas.id, downList.map(x=>x.name), [{label:'退步分',data:downList.map(x=>x.delta),backgroundColor:'rgba(239,68,68,.75)',borderColor:'#dc2626',borderWidth:1}], {horizontal:true}));
-  /* 统一进步榜/退步榜容器高度，取较大值，确保两图条高一致且视觉对齐 */
-  const upBox = upCanvas.closest('.chart-box'), downBox = downCanvas.closest('.chart-box');
-  if (upBox && downBox) {
-    const maxH = Math.max(parseInt(upBox.style.minHeight)||0, parseInt(downBox.style.minHeight)||0);
-    if (maxH > 0) { upBox.style.minHeight = maxH + 'px'; downBox.style.minHeight = maxH + 'px'; }
-  }
   const merged = [];
   const maxLen = Math.max(upList.length, downList.length);
   for (let i = 0; i < maxLen; i++) merged.push({up:upList[i]||null, down:downList[i]||null});
@@ -2694,8 +2643,9 @@ function drawF6() {
   const minPctText = Math.round(minPct*100) + '%';
   const stdPctText = Math.round(stdPct*100) + '%';
   const cols = [
-    {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'},
+    {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
     {label:'科目',width:96,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject">'+esc(r.sub)+'</td>'},
+    {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'},
     {label:'参考人数',width:90,sortable:true,getValue:r=>r.total,render:r=>'<td>'+r.total+'</td>'},
     {label:'本次满分',width:110,sortable:true,getValue:r=>r.fullMark,render:r=>'<td>'+fmLabelHtml(r.fullMark,r.prevFullMark)+'</td>'},
     {label:'最低线('+minPctText+')',width:120,sortable:true,getValue:r=>r.minLine,render:r=>'<td>'+r.minLine+'</td>'},
@@ -2708,6 +2658,165 @@ function drawF6() {
     {label:'标准·对比',width:110,sortable:true,getValue:r=>(r.prevStdRate==null?-99999:r.stdRate-r.prevStdRate),render:r=>'<td>'+deltaHtml(r.stdRate,r.prevStdRate)+'</td>'}
   ];
   renderGridTable(cols, rows, 'rate', wrap, drawF6);
+}
+
+/* ============================================================
+ *  F7 四线达标率：按考试大类汇总总分，对照预制四线
+ *  （控制线 / 民办线 / 公办线 / 预估线）及各线 +50，
+ *  统计每大类的达标人数与达标率。
+ * ============================================================ */
+const F7_LINE_DEFS = [
+  { key: 'control',  label: '控制线' },
+  { key: 'private',  label: '民办线' },
+  { key: 'public',   label: '公办线' },
+  { key: 'estimate', label: '预估线' }
+];
+function renderF7(root) {
+  root.innerHTML =
+    '<div id="f7Summary"></div>' +
+    '<div class="card">' +
+      '<div class="page-title">大类总分 · 四线达标率</div>' +
+      '<div class="filter-row">' +
+        '<div class="filter-group"><label>考试</label><select id="f7Exam">' +
+          state.examList.map((ex,i,a)=>'<option value="'+i+'"'+(i===a.length-1?' selected':'')+'>'+esc(ex)+(i===a.length-1?'（最新）':'')+'</option>').join('') +
+        '</select></div>' +
+        '<span class="info-text">按考试大类汇总总分，对照预制四线（控制线 / 民办线 / 公办线 / 预估线）统计达标率；下方为各线 +50 的达标率。点击表头可排序</span>' +
+      '</div>' +
+      '<div id="f7TableBase"></div>' +
+    '</div>' +
+    '<div class="card" style="margin-top:16px">' +
+      '<div class="page-title">大类总分 · 四线 +50 达标率</div>' +
+      '<div id="f7TablePlus"></div>' +
+    '</div>';
+  $('f7Exam').addEventListener('change', drawF7);
+  drawF7();
+}
+function drawF7() {
+  const summaryWrap = $('f7Summary');
+  const baseWrap = $('f7TableBase');
+  const plusWrap = $('f7TablePlus');
+  if (!baseWrap) return;
+  const examVal = $('f7Exam').value;
+  if (examVal === '' || examVal == null) {
+    baseWrap.innerHTML = '<div class="empty-hint">请先选择考试</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return;
+  }
+  const examIdx = parseInt(examVal, 10);
+  if (Number.isNaN(examIdx)) { baseWrap.innerHTML = '<div class="empty-hint">暂无可选考试</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return; }
+  const curExam = state.examList[examIdx];
+  const totalSub = state.subjectList.find(isTotal);
+  if (!totalSub) { baseWrap.innerHTML = '<div class="empty-hint">未找到总分科目</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return; }
+  const classes = getGlobalClasses();
+  if (!classes.length) { baseWrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return; }
+
+  /* 按大类分组：收集该大类下所有班级的本次总分 */
+  const typeGroups = {};
+  classes.forEach(cls => {
+    const type = getClassType(cls);
+    if (!type) return;
+    if (!typeGroups[type]) typeGroups[type] = { classes: [], scores: [] };
+    typeGroups[type].classes.push(cls);
+    const students = state.classes[cls]?.students || {};
+    for (const name in students) {
+      const v = students[name]?.[curExam]?.[totalSub];
+      if (typeof v === 'number') typeGroups[type].scores.push(v);
+    }
+  });
+  const types = Object.keys(typeGroups).sort((a, b) => {
+    const na = parseInt(a), nb = parseInt(b);
+    if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+    return a.localeCompare(b, 'zh');
+  });
+  if (!types.length) { baseWrap.innerHTML = '<div class="empty-hint">所选班级未匹配到考试大类（CLASS_LINE_MAP 中无对应配置）</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return; }
+
+  /* 构建每行数据：大类 / 班级 / 参考人数 / 四线的线值·达标人数·达标率 / 四线+50 */
+  const rows = types.map(type => {
+    const g = typeGroups[type];
+    const preset = CLASS_LINE_MAP[type] || {};
+    const total = g.scores.length;
+    const row = { type, classes: g.classes.join('、'), total, scores: g.scores };
+    F7_LINE_DEFS.forEach(d => {
+      const lv = preset[d.key];
+      const pass = (lv != null && total) ? g.scores.filter(s => s >= lv).length : null;
+      const pass50 = (lv != null && total) ? g.scores.filter(s => s >= lv + 50).length : null;
+      row[d.key + 'Line'] = lv;
+      row[d.key + 'Pass'] = pass;
+      row[d.key + 'Rate'] = (pass != null && total) ? pass / total : null;
+      row[d.key + 'Pass50'] = pass50;
+      row[d.key + 'Rate50'] = (pass50 != null && total) ? pass50 / total : null;
+    });
+    return row;
+  });
+
+  /* 全大类汇总 */
+  let allTotal = 0;
+  const aggPass = {}, aggPass50 = {};
+  F7_LINE_DEFS.forEach(d => { aggPass[d.key] = 0; aggPass50[d.key] = 0; });
+  rows.forEach(r => {
+    allTotal += r.total;
+    F7_LINE_DEFS.forEach(d => {
+      if (r[d.key + 'Pass'] != null) aggPass[d.key] += r[d.key + 'Pass'];
+      if (r[d.key + 'Pass50'] != null) aggPass50[d.key] += r[d.key + 'Pass50'];
+    });
+  });
+
+  /* 摘要面板 */
+  const items = [
+    { label: '统计考试', value: esc(curExam) },
+    { label: '覆盖大类', value: rows.length + ' 类' },
+    { label: '参考人数', value: String(allTotal) }
+  ];
+  F7_LINE_DEFS.forEach(d => {
+    const rate = allTotal ? aggPass[d.key] / allTotal : 0;
+    items.push({ label: d.label + '达标率', value: pct(rate) });
+  });
+  F7_LINE_DEFS.forEach(d => {
+    const rate = allTotal ? aggPass50[d.key] / allTotal : 0;
+    items.push({ label: d.label + '+50达标率', value: pct(rate) });
+  });
+  const paras = [];
+  const withPublic = rows.filter(r => r.publicRate != null);
+  if (withPublic.length) {
+    const lowest = withPublic.reduce((a, b) => a.publicRate < b.publicRate ? a : b);
+    const highest = withPublic.reduce((a, b) => a.publicRate > b.publicRate ? a : b);
+    paras.push('公办线达标率：最高 <b>' + esc(highest.type) + '</b>（' + pct(highest.publicRate) + '），最低 <b>' + esc(lowest.type) + '</b>（' + pct(lowest.publicRate) + '）。');
+  }
+  const withCtrl = rows.filter(r => r.controlRate != null);
+  if (withCtrl.length) {
+    const belowHalf = withCtrl.filter(r => r.controlRate < 0.5);
+    if (belowHalf.length) paras.push('控制线达标率低于 50% 的大类有 ' + belowHalf.map(r => esc(r.type)).join('、') + '，需重点关注基础达标。');
+  }
+  if (summaryWrap) summaryWrap.innerHTML = analysisPanel([{ title: '四线达标率综合统计', items, paras }]);
+
+  /* 表格列构造 */
+  const rateCls = r => r >= 0.8 ? 'rate-good' : r >= 0.5 ? 'rate-mid' : 'rate-low';
+  const buildLineCols = plus => F7_LINE_DEFS.map(d => {
+    const passKey = d.key + (plus ? 'Pass50' : 'Pass');
+    const rateKey = d.key + (plus ? 'Rate50' : 'Rate');
+    const lineKey = d.key + 'Line';
+    return [
+      { label: d.label + (plus ? '(+50)' : ''), width: 104, sortable: true,
+        getValue: r => r[lineKey] == null ? -99999 : r[lineKey] + (plus ? 50 : 0),
+        render: r => '<td>' + (r[lineKey] != null ? (r[lineKey] + (plus ? 50 : 0)) : '-') + '</td>' },
+      { label: '达标人数', width: 96, sortable: true,
+        getValue: r => r[passKey] == null ? -99999 : r[passKey],
+        render: r => '<td>' + (r[passKey] != null ? r[passKey] : '-') + '</td>' },
+      { label: '达标率', width: 96, sortable: true,
+        getValue: r => r[rateKey] == null ? -99999 : r[rateKey],
+        render: r => { const v = r[rateKey]; return '<td class="rate-cell ' + (v == null ? '' : rateCls(v)) + '">' + (v == null ? '-' : pct(v)) + '</td>'; } }
+    ];
+  }).flat();
+
+  const leadingCols = [
+    { label: '大类', width: 76, sticky: true, sortable: true, getValue: r => r.type,
+      render: r => '<td class="cell-class" style="font-weight:700">' + esc(r.type) + '</td>' },
+    { label: '包含班级', width: 170, sticky: true, sortable: false,
+      render: r => '<td class="cell-subject">' + esc(r.classes) + '</td>' },
+    { label: '参考人数', width: 90, sortable: true, getValue: r => r.total,
+      render: r => '<td>' + r.total + '</td>' }
+  ];
+
+  renderGridTable(leadingCols.concat(buildLineCols(false)), rows, 'f7line', baseWrap, drawF7);
+  if (plusWrap) renderGridTable(leadingCols.concat(buildLineCols(true)), rows, 'f7linePlus', plusWrap, drawF7);
 }
 
 /* ============ 通用工具 ============ */
@@ -2764,6 +2873,7 @@ function dispatchPage(page, root) {
   else if (page === 'f4b') renderF4b(root);
   else if (page === 'f5') renderF5(root);
   else if (page === 'f6') renderF6(root);
+  else if (page === 'f7') renderF7(root);
   else if (MERGED_PAGES[page]) renderMerged(root, page);
   else root.innerHTML = emptyTip('未知功能页');
 }
@@ -2897,20 +3007,6 @@ function renderGlobalSelectors() {
   });
 }
 
-/* 手机/平板竖屏时顶部弹出横屏提示，5秒自动关闭 */
-function showLandscapeHint() {
-  if (window.innerWidth >= 768) return;
-  if (window.innerWidth >= window.innerHeight) return;
-  const hint = document.createElement('div');
-  hint.className = 'landscape-hint';
-  hint.innerHTML = '<span class="lh-icon">📱</span>建议横屏使用，获得更好的数据查看体验';
-  document.body.appendChild(hint);
-  requestAnimationFrame(() => hint.classList.add('show'));
-  setTimeout(() => {
-    hint.classList.remove('show');
-    setTimeout(() => { if (hint.parentNode) hint.remove(); }, 350);
-  }, 5000);
-}
 function initUIAfterLoad() {
   $('statusBar').style.display = 'flex';
   renderGlobalSelectors();
@@ -2920,7 +3016,6 @@ function initUIAfterLoad() {
   state.currentPage = 'f6';
   renderTabs();
   renderCurrentPage();
-  showLandscapeHint();
 }
 
 function downloadTemplate() {
@@ -3030,10 +3125,13 @@ function toggleExportMenu(e) {
 }
 
 /* ============================================================
- *  PDF 导出：A4 横向
- *  · 横向页宽 297mm，比纵向多约 40% 的横向空间，表格与图表更完整
- *  · 导出前临时把内容区放宽到表格真实宽度，横向滚动区不再被裁切
- *  · 顶部插入导出抬头（校区 / 功能 / 时间 / 对齐口径），便于归档辨认
+ *  PDF 导出：A4 横向 + 按内容块安全分页
+ *  · 横向页宽 297mm，比纵向多约 40% 横向空间
+ *  · 以「内容块」（导出抬头 / 分析面板 / 卡片 / 图表卡 / 学生卡 / 表格）
+ *    为最小单位排版：当前页剩余空间放不下时整块移到下一页，
+ *    不再把一张图表或一行表格从中间切断
+ *  · 超过一整页的长表格，再按行边界切成多段，段与段不跨页割裂
+ *  · 每一页顶部自动加标题条（校区 · 功能 · 页码），中文由 canvas 绘制，不乱码
  * ============================================================ */
 function exportHeaderHtml() {
   const now = new Date();
@@ -3045,7 +3143,68 @@ function exportHeaderHtml() {
     ' ｜ ' + (state.alignEnabled ? '分值已对齐最高满分' : '原始分（未对齐）') + '</div>';
 }
 
-async function exportReport(customFileName) {
+const EXPORT_BLOCK_SEL = ['.export-header', '.analysis-panel', '.card', '.chart-card', '.stu-row-card', '.grid-table-scroll'];
+
+/* 收集内容块：只保留最外层，避免卡片与其内部图表卡重复计数 */
+function blockRects(area) {
+  const base = area.getBoundingClientRect();
+  const els = [];
+  EXPORT_BLOCK_SEL.forEach(s => area.querySelectorAll(s).forEach(el => els.push(el)));
+  const outer = els.filter(el => !els.some(o => o !== el && o.contains(el)));
+  return outer.map(el => {
+    const r = el.getBoundingClientRect();
+    return { el: el, top: r.top - base.top, height: r.height };
+  }).filter(r => r.height > 0).sort((a, b) => a.top - b.top);
+}
+
+/* 递归把过高的块按子元素边界摊平成「不超过一页」的小段 */
+function flattenRect(rect, usablePx) {
+  if (rect.height <= usablePx) return [rect];
+  const parentTop = rect.top;
+  const kids = Array.from(rect.el.children)
+    .map(el => {
+      const r = el.getBoundingClientRect();
+      const b = rect.el.getBoundingClientRect();
+      return { el: el, top: (r.top - b.top) + parentTop, height: r.height };
+    })
+    .filter(k => k.height > 0);
+  if (!kids.length) return [rect];          // 原子块（如单个画布），无法再切
+  const flat = [];
+  kids.forEach(k => flattenRect(k, usablePx).forEach(u => flat.push(u)));
+  return flat;
+}
+
+/* 纯函数：把摊平后的小段装箱，每箱不超过一页（用于测试） */
+function binUnits(flat, usablePx) {
+  const bins = [];
+  let cur = null, curH = 0;
+  flat.forEach(u => {
+    if (cur && curH + u.height <= usablePx) { cur.push(u); curH += u.height; }
+    else { cur = [u]; curH = u.height; bins.push(cur); }
+  });
+  return bins.map(b => {
+    const top = Math.min.apply(null, b.map(u => u.top));
+    const bottom = Math.max.apply(null, b.map(u => u.top + u.height));
+    return { el: b[0].el, top: top, height: bottom - top, parts: b.length };
+  });
+}
+
+/* 纯函数：把箱顺序排到页上，页内放不下就开新页（用于测试） */
+function pageUnits(bins, usablePx, gapPx) {
+  gapPx = gapPx == null ? 6 : gapPx;
+  const pages = [];
+  let cur = null, curH = 0;
+  bins.forEach(u => {
+    if (cur && curH + u.height + gapPx > usablePx) { pages.push(cur); cur = null; curH = 0; }
+    if (!cur) cur = [];
+    cur.push(u);
+    curH += u.height + gapPx;
+  });
+  if (cur && cur.length) pages.push(cur);
+  return pages;
+}
+
+async function exportReport() {
   closeExportMenu();
   if (!hasData()) { alert('暂无数据'); return; }
   const btn = $('exportBtn');
@@ -3085,112 +3244,77 @@ async function exportReport(customFileName) {
       await new Promise(r => setTimeout(r, 380));
     }
 
+    /* 排版：先量尺寸分页，再一次性截图裁切 */
+    const areaRect = area.getBoundingClientRect();
+    const imgW = 297 - 16;                       // A4 横向版心
+    const k0 = 2;                                // 与下方 html2canvas scale 保持一致
+    const bandMm = 9;                            // 页首标题条高度
+    const title = CAMPUS_CONFIG.name + ' · ' + getExportPageName();
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-    const pageW = 297, pageH = 210, margin = 8;
-    const imgW = pageW - margin * 2;
-    const usable = pageH - margin * 2;
-    const gap = 2;
 
-    /* 先截导出页眉，每页复用 */
-    const headCanvas = await html2canvas(head, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-    const headH = headCanvas.height * imgW / headCanvas.width;
-    const headData = headCanvas.toDataURL('image/jpeg', 0.92);
+    /* 无布局环境（如部分测试容器）回退为整图等比缩放单页 */
+    if (!(areaRect.width > 0)) {
+      const canvas0 = await html2canvas(area, { scale: k0, backgroundColor: '#ffffff', useCORS: true });
+      const hMm0 = canvas0.height * imgW / canvas0.width;
+      pdf.addImage(canvas0.toDataURL('image/jpeg', 0.92), 'JPEG', 8, 8, imgW, hMm0);
+      pdf.save(buildExportFileName('pdf'));
+      return;
+    }
 
-    /* 收集内容区直接子元素（跳过页眉本身、空提示、隐藏元素） */
-    const blocks = [];
-    area.querySelectorAll(':scope > *').forEach(el => {
-      if (el === head) return;
-      if (el.offsetParent === null) return;
-      if (el.classList.contains('empty-hint')) return;
-      if (el.querySelector('.empty-hint') && el.children.length <= 1) return;
-      blocks.push(el);
+    const mmPerPx = imgW / areaRect.width;
+    const usablePx = (210 - 8 - 8 - bandMm) / mmPerPx;
+
+    let bins = [];
+    blockRects(area).forEach(r => flattenRect(r, usablePx).forEach(u => bins.push(u)));
+    bins.sort((a, b) => a.top - b.top);
+    bins = binUnits(bins, usablePx);
+    const pages = pageUnits(bins, usablePx);
+    if (!pages.length) { alert('当前页面没有可导出的内容。'); return; }
+
+    const canvas = await html2canvas(area, {
+      scale: k0,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      windowWidth: Math.max(needW, document.documentElement.clientWidth)
     });
+    const k = canvas.width / areaRect.width;
+    const bandPx = Math.round(bandMm / mmPerPx * k);
+    const titleFont = Math.round(11 * k);
 
-    let y = margin;
-    let firstBlock = true;
+    pages.forEach((pg, i) => {
+      const topCss = Math.max(0, pg[0].top - 3);
+      const last = pg[pg.length - 1];
+      const bottomCss = Math.min(areaRect.height, last.top + last.height + 3);
+      const hCss = Math.max(1, bottomCss - topCss);
+      const sy = Math.round(topCss * k);
+      const sh = Math.max(1, Math.round(hCss * k));
 
-    /* 将一张截图放入 PDF，自动分页并在新页加页眉 */
-    function placeImage(imgData, blockH) {
-      if (firstBlock) {
-        pdf.addImage(headData, 'JPEG', margin, y, imgW, headH);
-        y += headH + gap;
-        firstBlock = false;
-      } else if (y + blockH > margin + usable) {
-        pdf.addPage();
-        y = margin;
-        pdf.addImage(headData, 'JPEG', margin, y, imgW, headH);
-        y += headH + gap;
-      }
-      pdf.addImage(imgData, 'JPEG', margin, y, imgW, blockH);
-      y += blockH + gap;
-    }
+      /* 页首标题条用 canvas 绘制，中文不会乱码 */
+      const tmp = document.createElement('canvas');
+      tmp.width = canvas.width;
+      tmp.height = sh + bandPx;
+      const tctx = tmp.getContext('2d');
+      tctx.fillStyle = '#ffffff';
+      tctx.fillRect(0, 0, tmp.width, tmp.height);
+      tctx.fillStyle = '#312e81';
+      tctx.font = '700 ' + titleFont + 'px "Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif';
+      tctx.textBaseline = 'middle';
+      tctx.fillText(title + (pages.length > 1 ? '　(' + (i + 1) + '/' + pages.length + ')' : ''),
+        Math.round(6 * k), Math.round(bandPx * 0.52));
+      tctx.strokeStyle = 'rgba(79,70,229,.35)';
+      tctx.lineWidth = Math.max(1, k);
+      tctx.beginPath();
+      tctx.moveTo(0, bandPx - Math.max(1, k));
+      tctx.lineTo(tmp.width, bandPx - Math.max(1, k));
+      tctx.stroke();
+      tctx.drawImage(canvas, 0, sy, canvas.width, sh, 0, bandPx, canvas.width, sh);
 
-    /* 对单个元素截图 */
-    async function shotEl(el) {
-      const canvas = await html2canvas(el, {
-        scale: 1.5, backgroundColor: '#ffffff', useCORS: true,
-        windowWidth: Math.max(needW, document.documentElement.clientWidth)
-      });
-      return { canvas, h: canvas.height * imgW / canvas.width, data: canvas.toDataURL('image/jpeg', 0.85) };
-    }
-
-    for (let i = 0; i < blocks.length; i++) {
-      const el = blocks[i];
-
-      /* 检测是否包含长数据表格，需要按行分页 */
-      const table = el.querySelector('.grid-table-scroll table.data-table');
-      const allRows = table ? table.querySelectorAll('tbody tr') : [];
-      const thead = table ? table.querySelector('thead') : null;
-
-      if (table && allRows.length > 0 && thead) {
-        const PX_PER_MM = 96 / 25.4; /* 3.78 */
-        const rowHmm = (allRows[0].offsetHeight || 24) / PX_PER_MM;
-        const headRowHmm = (thead.offsetHeight || 30) / PX_PER_MM;
-        /* 第一页含分析面板，预留卡片padding；后续页精简只留标题+表头 */
-        const availFirst = usable - headH - 14 - headRowHmm - gap;
-        const availLater = usable - headH - 8 - headRowHmm - gap;
-        const rowsFirstPage = Math.max(1, Math.floor(availFirst / rowHmm));
-        const rowsPerPage = Math.max(1, Math.floor(availLater / rowHmm));
-
-        if (allRows.length > rowsFirstPage) {
-          /* 长表格：克隆元素，每页只保留表头 + 部分行，分别截图 */
-          const elW = el.offsetWidth;
-          let p = 0, start = 0;
-          while (start < allRows.length) {
-            const pageRows = (p === 0) ? rowsFirstPage : rowsPerPage;
-            const end = Math.min(start + pageRows, allRows.length);
-            const clone = el.cloneNode(true);
-            /* 后续页删除分析面板和筛选栏，只保留标题+表格，腾出空间放更多行 */
-            if (p > 0) {
-              clone.querySelectorAll('.analysis-panel, .filter-row').forEach(n => n.remove());
-            }
-            const cloneTbody = clone.querySelector('.grid-table-scroll table.data-table tbody');
-            if (cloneTbody) {
-              const cloneRows = Array.from(cloneTbody.querySelectorAll('tr'));
-              cloneRows.forEach((r, idx) => {
-                if (idx < start || idx >= end) r.remove();
-              });
-            }
-            clone.style.cssText = 'position:absolute;left:-9999px;top:0;width:' + elW + 'px;max-width:none;';
-            document.body.appendChild(clone);
-            await new Promise(r => setTimeout(r, 50));
-            const shot = await shotEl(clone);
-            document.body.removeChild(clone);
-            placeImage(shot.data, shot.h);
-            start = end;
-            p++;
-          }
-          continue;
-        }
-      }
-
-      /* 普通元素（短表格 / 图表 / 分析面板）：直接完整截图 */
-      const shot = await shotEl(el);
-      placeImage(shot.data, shot.h);
-    }
-
-    pdf.save(customFileName || buildExportFileName('pdf'));
+      if (i > 0) pdf.addPage();
+      const hMm = (hCss + bandPx / k) * mmPerPx;
+      pdf.addImage(tmp.toDataURL('image/jpeg', 0.92), 'JPEG', 8, 8, imgW, hMm);
+    });
+    pdf.save(buildExportFileName('pdf'));
   } catch (e) {
     console.error(e);
     alert('PDF 导出失败，可使用浏览器打印另存为 PDF');
@@ -3205,81 +3329,6 @@ async function exportReport(customFileName) {
     btn.textContent = oldText;
   }
 }
-
-/* ============ 批量导出 ============ */
-function setCheckboxSelection(wrapId, values) {
-  const set = new Set(values);
-  document.querySelectorAll('#' + wrapId + ' input[type="checkbox"]').forEach(cb => {
-    cb.checked = set.has(cb.value);
-    cb.closest('.checkbox-item')?.classList.toggle('checked', cb.checked);
-  });
-}
-
-async function exportBatch(pageId, mode, labelPrefix) {
-  closeExportMenu();
-  if (!hasData()) { alert('暂无数据'); return; }
-
-  /* 保存当前状态 */
-  const savedPage = state.currentPage;
-  const savedClasses = getGlobalClasses();
-  const savedSubjects = getGlobalSubjects();
-
-  /* 获取所有可用的班级和科目 */
-  const allClasses = Array.from(document.querySelectorAll('#globalClassWrap input[type="checkbox"]')).map(i => i.value);
-  const allSubjects = Array.from(document.querySelectorAll('#globalSubjectWrap input[type="checkbox"]')).map(i => i.value);
-  const items = (mode === 'class') ? allClasses : allSubjects;
-
-  if (!items.length) { alert('没有可导出的' + (mode === 'class' ? '班级' : '学科')); return; }
-
-  const btn = $('exportBtn');
-  const oldText = btn.textContent;
-  btn.disabled = true;
-
-  try {
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      btn.textContent = '导出中 ' + (i + 1) + '/' + items.length + '：' + item;
-
-      /* 设置筛选：按学科导出时只选该学科、班级全选；按班级导出时只选该班级、科目全选 */
-      if (mode === 'subject') {
-        setCheckboxSelection('globalSubjectWrap', [item]);
-        setCheckboxSelection('globalClassWrap', allClasses);
-      } else {
-        setCheckboxSelection('globalClassWrap', [item]);
-        setCheckboxSelection('globalSubjectWrap', allSubjects);
-      }
-
-      /* 切换到目标页面并渲染 */
-      state.currentPage = pageId;
-      renderTabs();
-      renderCurrentPage();
-      await new Promise(r => setTimeout(r, 250));
-
-      /* 导出 PDF，文件名：功能-学科/班级.pdf */
-      const fileName = sanitizeFileName(labelPrefix + '-' + item) + '.pdf';
-      await exportReport(fileName);
-      await new Promise(r => setTimeout(r, 600)); /* 给浏览器下载留时间 */
-    }
-
-    btn.textContent = '批量导出完成 ✓';
-    setTimeout(() => { btn.textContent = oldText; btn.disabled = false; }, 2500);
-  } catch (e) {
-    console.error(e);
-    alert('批量导出失败：' + e.message);
-    btn.textContent = oldText;
-    btn.disabled = false;
-  } finally {
-    /* 恢复原始状态 */
-    setCheckboxSelection('globalClassWrap', savedClasses);
-    setCheckboxSelection('globalSubjectWrap', savedSubjects);
-    state.currentPage = savedPage;
-    renderTabs();
-    renderCurrentPage();
-  }
-}
-
-function exportRateBatch(mode) { exportBatch('f6', mode, '达标率'); }
-function exportDetailBatch(mode) { exportBatch('f5', mode, '数据明细表'); }
 
 const CLASS_LINE_MAP = {
   '1类':{control:330,public:376,private:330,estimate:380},
@@ -3570,78 +3619,33 @@ function finishLoad(label) {
 function autoLoadData() {
   const cands = (CAMPUS_CONFIG.dataCandidates && CAMPUS_CONFIG.dataCandidates.length)
     ? CAMPUS_CONFIG.dataCandidates : [CAMPUS_CONFIG.dataFile];
-  const MAX_RETRY = 5;
-  const FETCH_TIMEOUT = 30000;
-
-  /* 检测网络状态 */
-  const isOnline = () => (navigator.onLine !== false);
-  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-
-  /* 等待 XLSX 库就绪（CDN 加载慢时兜底） */
-  function waitForXLSX(timeout) {
-    return new Promise((resolve, reject) => {
-      if (window.XLSX) return resolve();
-      const start = Date.now();
-      const timer = setInterval(() => {
-        if (window.XLSX) { clearInterval(timer); resolve(); }
-        else if (Date.now() - start > timeout) { clearInterval(timer); reject(new Error('XLSX 库加载超时')); }
-      }, 200);
-    });
-  }
-
-  async function fetchWithRetry(url, attempt) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
-    try {
-      /* CDN 地址不加时间戳（jsDelivr 有自己的缓存策略），本地文件加时间戳防缓存 */
-      const isCDN = /cdn\.jsdelivr\.net|fastly\.jsdelivr\.net/.test(url);
-      const finalUrl = isCDN ? url : url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
-      const res = await fetch(finalUrl, { cache: isCDN ? 'default' : 'no-store', signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return await res.arrayBuffer();
-    } catch (e) {
-      clearTimeout(timeoutId);
-      if (attempt < MAX_RETRY) {
-        setLoadStatus('加载较慢，第 ' + (attempt + 1) + '/' + MAX_RETRY + ' 次重试…', true);
-        await new Promise(r => setTimeout(r, 600 + attempt * 400));
-        return fetchWithRetry(url, attempt + 1);
-      }
-      throw e;
-    }
-  }
-
   let i = 0;
-  const tryNext = async () => {
+  const tryNext = () => {
     if (i >= cands.length) {
       hideLoading();
-      setLoadStatus('数据加载失败，正在跳转…', false);
+      setLoadStatus('未找到「' + CAMPUS_CONFIG.dataFile + '」，请手动上传', false);
       $('alignStatus').textContent = '';
-      /* 所有数据源均失败，跳转 404 页面 */
-      setTimeout(() => { window.location.href = 'index-404.html'; }, 800);
+      /* 数据未就绪时也先渲染页签骨架，避免顶部出现空白长条 */
+      renderTabs();
+      $('contentArea').innerHTML = emptyTip(
+        '未能在站点目录找到成绩文件 ' + esc(CAMPUS_CONFIG.dataFile) +
+        '。<br>请点击右上角「上传 Excel」手动选择文件，或确认该文件已随仓库一起部署。');
       return;
     }
     const url = cands[i++];
-    const sourceLabel = /cdn\.jsdelivr\.net/.test(url) ? 'CDN 镜像' :
-                       /fastly\.jsdelivr\.net/.test(url) ? 'Fastly CDN' : '本地文件';
-    setLoadStatus('正在从[' + sourceLabel + ']加载 ' + url.split('/').pop() + '…', true);
-    try {
-      await waitForXLSX(15000);
-      const buf = await fetchWithRetry(url, 0);
-      showLoading('正在解析成绩数据…');
-      await new Promise(r => setTimeout(r, 30));
-      const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
-      resetAll();
-      ingestWorkbook(wb);
-      hideLoading();
-      finishLoad(url.split('/').pop());
-    } catch (e) {
-      console.warn('加载失败[' + sourceLabel + ']:', url, e.message);
-      hideLoading();
-      tryNext();
-    }
+    fetch(url, { cache: 'no-store' })
+      .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.arrayBuffer(); })
+      .then(buf => {
+        showLoading('正在自动加载成绩数据...');
+        const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
+        resetAll();
+        ingestWorkbook(wb);
+        hideLoading();
+        finishLoad(url.split('/').pop());
+      })
+      .catch(() => { hideLoading(); tryNext(); });
   };
-  setLoadStatus('正在自动加载成绩…');
+  setLoadStatus('正在尝试自动加载…');
   tryNext();
 }
 
