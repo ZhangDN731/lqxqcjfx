@@ -837,6 +837,7 @@ const TOP_TABS = [
     label: '核心分析',
     pages: [
       { id: 'f6',  label: '达标率' },
+      { id: 'f7',  label: '四线达标率' },
       { id: 'f5',  label: '数据明细表' },
       { id: 'f4b', label: '分数段分布' },
       { id: 'f3a', label: '全班成绩' },
@@ -875,7 +876,7 @@ const PAGE_NAMES = {
   f2a: '班级整体趋势', f2b: '多班三分对比',
   f3a: '全班成绩', f3b: '单科进步榜',
   f4a: '全班成绩图', f4b: '分数段分布',
-  f5: '数据明细表', f6: '达标率',
+  f5: '数据明细表', f6: '达标率', f7: '四线达标率',
   m2a: '班级综合分析', m2b: '进步与名次', m2c: '学生明细图谱'
 };
 
@@ -898,7 +899,8 @@ let isAutoSelecting = false;
 
 const sortState = {
   classTable:{col:-1,asc:true}, rank:{col:-1,asc:true}, stability:{col:-1,asc:true},
-  progress:{col:-1,asc:true}, seg:{col:-1,asc:true}, rate:{col:-1,asc:true}, detail:{col:-1,asc:true}
+  progress:{col:-1,asc:true}, seg:{col:-1,asc:true}, rate:{col:-1,asc:true}, detail:{col:-1,asc:true},
+  f7line:{col:-1,asc:true}, f7linePlus:{col:-1,asc:true}
 };
 
 const $ = id => document.getElementById(id);
@@ -2710,6 +2712,165 @@ function drawF6() {
   renderGridTable(cols, rows, 'rate', wrap, drawF6);
 }
 
+/* ============================================================
+ *  F7 四线达标率：按考试大类汇总总分，对照预制四线
+ *  （控制线 / 民办线 / 公办线 / 预估线）及各线 +50，
+ *  统计每大类的达标人数与达标率。
+ * ============================================================ */
+const F7_LINE_DEFS = [
+  { key: 'control',  label: '控制线' },
+  { key: 'private',  label: '民办线' },
+  { key: 'public',   label: '公办线' },
+  { key: 'estimate', label: '预估线' }
+];
+function renderF7(root) {
+  root.innerHTML =
+    '<div id="f7Summary"></div>' +
+    '<div class="card">' +
+      '<div class="page-title">大类总分 · 四线达标率</div>' +
+      '<div class="filter-row">' +
+        '<div class="filter-group"><label>考试</label><select id="f7Exam">' +
+          state.examList.map((ex,i,a)=>'<option value="'+i+'"'+(i===a.length-1?' selected':'')+'>'+esc(ex)+(i===a.length-1?'（最新）':'')+'</option>').join('') +
+        '</select></div>' +
+        '<span class="info-text">按考试大类汇总总分，对照预制四线（控制线 / 民办线 / 公办线 / 预估线）统计达标率；下方为各线 +50 的达标率。点击表头可排序</span>' +
+      '</div>' +
+      '<div id="f7TableBase"></div>' +
+    '</div>' +
+    '<div class="card" style="margin-top:16px">' +
+      '<div class="page-title">大类总分 · 四线 +50 达标率</div>' +
+      '<div id="f7TablePlus"></div>' +
+    '</div>';
+  $('f7Exam').addEventListener('change', drawF7);
+  drawF7();
+}
+function drawF7() {
+  const summaryWrap = $('f7Summary');
+  const baseWrap = $('f7TableBase');
+  const plusWrap = $('f7TablePlus');
+  if (!baseWrap) return;
+  const examVal = $('f7Exam').value;
+  if (examVal === '' || examVal == null) {
+    baseWrap.innerHTML = '<div class="empty-hint">请先选择考试</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return;
+  }
+  const examIdx = parseInt(examVal, 10);
+  if (Number.isNaN(examIdx)) { baseWrap.innerHTML = '<div class="empty-hint">暂无可选考试</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return; }
+  const curExam = state.examList[examIdx];
+  const totalSub = state.subjectList.find(isTotal);
+  if (!totalSub) { baseWrap.innerHTML = '<div class="empty-hint">未找到总分科目</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return; }
+  const classes = getGlobalClasses();
+  if (!classes.length) { baseWrap.innerHTML = '<div class="empty-hint">请先在顶部勾选班级</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return; }
+
+  /* 按大类分组：收集该大类下所有班级的本次总分 */
+  const typeGroups = {};
+  classes.forEach(cls => {
+    const type = getClassType(cls);
+    if (!type) return;
+    if (!typeGroups[type]) typeGroups[type] = { classes: [], scores: [] };
+    typeGroups[type].classes.push(cls);
+    const students = state.classes[cls]?.students || {};
+    for (const name in students) {
+      const v = students[name]?.[curExam]?.[totalSub];
+      if (typeof v === 'number') typeGroups[type].scores.push(v);
+    }
+  });
+  const types = Object.keys(typeGroups).sort((a, b) => {
+    const na = parseInt(a), nb = parseInt(b);
+    if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+    return a.localeCompare(b, 'zh');
+  });
+  if (!types.length) { baseWrap.innerHTML = '<div class="empty-hint">所选班级未匹配到考试大类（CLASS_LINE_MAP 中无对应配置）</div>'; if (plusWrap) plusWrap.innerHTML = ''; if (summaryWrap) summaryWrap.innerHTML = ''; return; }
+
+  /* 构建每行数据：大类 / 班级 / 参考人数 / 四线的线值·达标人数·达标率 / 四线+50 */
+  const rows = types.map(type => {
+    const g = typeGroups[type];
+    const preset = CLASS_LINE_MAP[type] || {};
+    const total = g.scores.length;
+    const row = { type, classes: g.classes.join('、'), total, scores: g.scores };
+    F7_LINE_DEFS.forEach(d => {
+      const lv = preset[d.key];
+      const pass = (lv != null && total) ? g.scores.filter(s => s >= lv).length : null;
+      const pass50 = (lv != null && total) ? g.scores.filter(s => s >= lv + 50).length : null;
+      row[d.key + 'Line'] = lv;
+      row[d.key + 'Pass'] = pass;
+      row[d.key + 'Rate'] = (pass != null && total) ? pass / total : null;
+      row[d.key + 'Pass50'] = pass50;
+      row[d.key + 'Rate50'] = (pass50 != null && total) ? pass50 / total : null;
+    });
+    return row;
+  });
+
+  /* 全大类汇总 */
+  let allTotal = 0;
+  const aggPass = {}, aggPass50 = {};
+  F7_LINE_DEFS.forEach(d => { aggPass[d.key] = 0; aggPass50[d.key] = 0; });
+  rows.forEach(r => {
+    allTotal += r.total;
+    F7_LINE_DEFS.forEach(d => {
+      if (r[d.key + 'Pass'] != null) aggPass[d.key] += r[d.key + 'Pass'];
+      if (r[d.key + 'Pass50'] != null) aggPass50[d.key] += r[d.key + 'Pass50'];
+    });
+  });
+
+  /* 摘要面板 */
+  const items = [
+    { label: '统计考试', value: esc(curExam) },
+    { label: '覆盖大类', value: rows.length + ' 类' },
+    { label: '参考人数', value: String(allTotal) }
+  ];
+  F7_LINE_DEFS.forEach(d => {
+    const rate = allTotal ? aggPass[d.key] / allTotal : 0;
+    items.push({ label: d.label + '达标率', value: pct(rate) });
+  });
+  F7_LINE_DEFS.forEach(d => {
+    const rate = allTotal ? aggPass50[d.key] / allTotal : 0;
+    items.push({ label: d.label + '+50达标率', value: pct(rate) });
+  });
+  const paras = [];
+  const withPublic = rows.filter(r => r.publicRate != null);
+  if (withPublic.length) {
+    const lowest = withPublic.reduce((a, b) => a.publicRate < b.publicRate ? a : b);
+    const highest = withPublic.reduce((a, b) => a.publicRate > b.publicRate ? a : b);
+    paras.push('公办线达标率：最高 <b>' + esc(highest.type) + '</b>（' + pct(highest.publicRate) + '），最低 <b>' + esc(lowest.type) + '</b>（' + pct(lowest.publicRate) + '）。');
+  }
+  const withCtrl = rows.filter(r => r.controlRate != null);
+  if (withCtrl.length) {
+    const belowHalf = withCtrl.filter(r => r.controlRate < 0.5);
+    if (belowHalf.length) paras.push('控制线达标率低于 50% 的大类有 ' + belowHalf.map(r => esc(r.type)).join('、') + '，需重点关注基础达标。');
+  }
+  if (summaryWrap) summaryWrap.innerHTML = analysisPanel([{ title: '四线达标率综合统计', items, paras }]);
+
+  /* 表格列构造 */
+  const rateCls = r => r >= 0.8 ? 'rate-good' : r >= 0.5 ? 'rate-mid' : 'rate-low';
+  const buildLineCols = plus => F7_LINE_DEFS.map(d => {
+    const passKey = d.key + (plus ? 'Pass50' : 'Pass');
+    const rateKey = d.key + (plus ? 'Rate50' : 'Rate');
+    const lineKey = d.key + 'Line';
+    return [
+      { label: d.label + (plus ? '(+50)' : ''), width: 104, sortable: true,
+        getValue: r => r[lineKey] == null ? -99999 : r[lineKey] + (plus ? 50 : 0),
+        render: r => '<td>' + (r[lineKey] != null ? (r[lineKey] + (plus ? 50 : 0)) : '-') + '</td>' },
+      { label: '达标人数', width: 96, sortable: true,
+        getValue: r => r[passKey] == null ? -99999 : r[passKey],
+        render: r => '<td>' + (r[passKey] != null ? r[passKey] : '-') + '</td>' },
+      { label: '达标率', width: 96, sortable: true,
+        getValue: r => r[rateKey] == null ? -99999 : r[rateKey],
+        render: r => { const v = r[rateKey]; return '<td class="rate-cell ' + (v == null ? '' : rateCls(v)) + '">' + (v == null ? '-' : pct(v)) + '</td>'; } }
+    ];
+  }).flat();
+
+  const leadingCols = [
+    { label: '大类', width: 76, sticky: true, sortable: true, getValue: r => r.type,
+      render: r => '<td class="cell-class" style="font-weight:700">' + esc(r.type) + '</td>' },
+    { label: '包含班级', width: 170, sticky: true, sortable: false,
+      render: r => '<td class="cell-subject">' + esc(r.classes) + '</td>' },
+    { label: '参考人数', width: 90, sortable: true, getValue: r => r.total,
+      render: r => '<td>' + r.total + '</td>' }
+  ];
+
+  renderGridTable(leadingCols.concat(buildLineCols(false)), rows, 'f7line', baseWrap, drawF7);
+  if (plusWrap) renderGridTable(leadingCols.concat(buildLineCols(true)), rows, 'f7linePlus', plusWrap, drawF7);
+}
+
 /* ============ 通用工具 ============ */
 function bindAllCheckboxes(wrapId, onchange) {
   const wrap = $(wrapId);
@@ -2764,6 +2925,7 @@ function dispatchPage(page, root) {
   else if (page === 'f4b') renderF4b(root);
   else if (page === 'f5') renderF5(root);
   else if (page === 'f6') renderF6(root);
+  else if (page === 'f7') renderF7(root);
   else if (MERGED_PAGES[page]) renderMerged(root, page);
   else root.innerHTML = emptyTip('未知功能页');
 }
