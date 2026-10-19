@@ -2427,7 +2427,7 @@ function drawF4b() {
   const isRatio = mode === 'ratio';
   const cols = [
     {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
-    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectPhaseLabel(r.sub, r.cls))+'">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
+    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectLabel(r.sub))+'">'+esc(subjectLabel(r.sub))+'</td>'},
     {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'},
     {label:'满分',width:80,sortable:true,getValue:r=>r.fullMark,render:r=>'<td>'+r.fullMark+'</td>'},
     {label:'参考人数',width:100,sortable:true,getValue:r=>r.total,render:r=>'<td><span class="count-cell" data-tip-title="参考学生名单" data-tip-items=\''+JSON.stringify(SEG_LEVELS.flatMap(lv=>r.listByLevel[lv.key])).replace(/'/g,"&#39;")+'\'>'+r.total+'</span></td>'}
@@ -2514,7 +2514,7 @@ function drawF5() {
   const rankValsByCol = exams.map((_, i) => rows.map(rr => rr.scores[i]).filter(v => v != null).sort((a,b)=>b-a));
   const cols = [
     {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
-    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectPhaseLabel(r.sub, r.cls))+'">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
+    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectLabel(r.sub))+'">'+esc(subjectLabel(r.sub))+'</td>'},
     {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'}
   ];
   exams.forEach((ex,i) => {
@@ -2656,7 +2656,7 @@ function drawF6() {
   const stdPctText = Math.round(stdPct*100) + '%';
   const cols = [
     {label:'序号',width:56,sticky:true,sortable:false,render:(r,i)=>'<td style="font-weight:700">'+(i+1)+'</td>'},
-    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectPhaseLabel(r.sub, r.cls))+'">'+esc(subjectPhaseLabel(r.sub, r.cls))+'</td>'},
+    {label:'科目',width:170,sticky:true,sortable:true,getValue:r=>r.sub,render:r=>'<td class="cell-subject" title="'+esc(subjectLabel(r.sub))+'">'+esc(subjectLabel(r.sub))+'</td>'},
     {label:'班级',width:86,sticky:true,sortable:true,getValue:r=>r.cls,render:r=>'<td class="cell-class">'+esc(r.cls)+'</td>'},
     {label:'参考人数',width:90,sortable:true,getValue:r=>r.total,render:r=>'<td>'+r.total+'</td>'},
     {label:'本次满分',width:110,sortable:true,getValue:r=>r.fullMark,render:r=>'<td>'+fmLabelHtml(r.fullMark,r.prevFullMark)+'</td>'},
@@ -3077,7 +3077,6 @@ function renderGlobalSelectors() {
 
 function initUIAfterLoad() {
   $('statusBar').style.display = 'flex';
-  computeClassPhases();
   renderGlobalSelectors();
   autoSetScoreLines();
   $('exportBtn').disabled = false;
@@ -3460,51 +3459,8 @@ function autoSetScoreLines() {
   }
 }
 
-/* ============ 龙泉专属：班级一期/二期标注 ============
- * 规则：同类下按班级后缀数字分组，前一半为一期班，后一半为二期班。
- *   N 个班 → 分界 = ceil(N/2)，序号 ≤ 分界 → 一期班，否则二期班。
- *   无数字后缀的班级（如"1类"）直接二期班。
- *   例：3类1/3类2/3类3（N=3，分界=2）→ 3类1、3类2 一期班；3类3 二期班。
- * 仅龙泉校区生效，其他校区 classPhaseMap 为空，classLabel 原样返回。
- */
-const classPhaseMap = new Map();
-function computeClassPhases() {
-  classPhaseMap.clear();
-  if (CAMPUS_CONFIG.name !== '龙泉校区') return;
-  /* 按大类收集班级，并提取后缀数字 */
-  const byType = {};
-  state.classList.forEach(cls => {
-    const type = getClassType(cls);
-    if (!type) return;
-    if (!byType[type]) byType[type] = [];
-    const m = cls.match(/(\d+)\s*$/);
-    const num = m ? parseInt(m[1], 10) : null;
-    byType[type].push({ cls, num });
-  });
-  Object.keys(byType).forEach(type => {
-    const list = byType[type];
-    const numbered = list.filter(x => x.num != null).sort((a, b) => a.num - b.num);
-    const n = numbered.length;
-    const threshold = n > 0 ? Math.ceil(n / 2) : 0;
-    list.forEach(x => {
-      if (x.num == null) classPhaseMap.set(x.cls, '二期班');
-      else classPhaseMap.set(x.cls, x.num <= threshold ? '一期班' : '二期班');
-    });
-  });
-}
 function classLabel(cls) {
-  /* 一期/二期不再显示在班级名之后，改由 subjectPhaseLabel 在「数学」科目列上体现 */
   return cls;
-}
-/* 数学科目按班级期数标注：一期班显示 数学（一期班），二期班显示 数学（二期班）
-   仅龙泉校区生效（classPhaseMap 有值）；其他校区或非数学科目原样返回。 */
-function subjectPhaseLabel(sub, cls) {
-  if (!cls) return subjectLabel(sub);
-  const phase = classPhaseMap.get(cls);
-  if (!phase) return subjectLabel(sub);
-  if (normalizeSubjectKey(sub) !== '数学') return subjectLabel(sub);
-  /* 数学科目列按班级期数直接标注为 数学（一期班）/ 数学（二期班） */
-  return normalizeSubjectKey(sub) + '（' + phase + '）';
 }
 
 function bindEvents() {
