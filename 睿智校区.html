@@ -669,6 +669,8 @@ table.data-table td.grid-empty{height:110px;color:var(--text-muted);font-size:.9
   <div class="loading-text" id="loadingText">正在处理文件...</div>
 </div>
 
+<div class="toast-container" id="toastContainer"></div>
+
 <div class="hover-tip" id="hoverTip"></div>
 
 <div class="topbar">
@@ -910,6 +912,18 @@ const toNum = v => { if (v === null || v === undefined || v === '') return null;
 const readLine = id => { const v = parseFloat($(id).value); return Number.isNaN(v) ? null : v; };
 const showLoading = t => { $('loadingText').textContent = t || '正在处理...'; $('loadingOverlay').classList.add('show'); };
 const hideLoading = () => $('loadingOverlay').classList.remove('show');
+const showToast = (title, msg, type) => {
+  type = type || 'success';
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = '<div class="toast-icon">' + (icons[type] || 'ℹ') + '</div>' +
+    '<div class="toast-body"><div class="toast-title">' + esc(title) + '</div>' +
+    (msg ? '<div class="toast-msg">' + esc(msg) + '</div>' : '') + '</div>';
+  $('toastContainer').appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, 3500);
+};
 const fmtDelta = d => { if (d == null) return '-'; const v = Math.round(d*10)/10; return v>0 ? '+'+v : String(v); };
 const pct = n => (n*100).toFixed(1) + '%';
 const getRateMin = () => { const v = parseFloat($('rateMin').value); return (Number.isNaN(v)||v<0||v>100) ? 0.6 : v/100; };
@@ -3015,7 +3029,7 @@ async function handleFileUpload(event) {
     finishLoad(files.length > 1 ? files.length + ' 个文件' : files[0].name);
   } catch (err) {
     console.error(err);
-    alert('文件读取异常：' + err.message);
+    showToast('上传失败', err.message, 'error');
   } finally {
     event.target.value = '';
     $('uploadBtn').disabled = false;
@@ -3057,11 +3071,9 @@ function renderGlobalSelectors() {
   });
 
   const sw = $('globalSubjectWrap');
-  /* 科目默认只勾选总分：绝大多数视图以总分为准，避免一次铺满所有科目；
-     需要看单科时点「全选」或单独勾选即可 */
+  /* 自动加载后默认全选科目，页面开箱即用；用户可随时取消勾选 */
   sw.innerHTML = state.subjectList.map(s =>
-    '<label class="checkbox-item' + (isTotal(s) ? ' checked' : '') + '"><input type="checkbox" value="' + esc(s) + '"' +
-    (isTotal(s) ? ' checked' : '') + '><span>' + esc(subjectLabel(s)) + '</span></label>'
+    '<label class="checkbox-item checked"><input type="checkbox" value="' + esc(s) + '" checked><span>' + esc(subjectLabel(s)) + '</span></label>'
   ).join('');
   bindAllCheckboxes('globalSubjectWrap', () => {
     if (isAutoSelecting) return;
@@ -3713,6 +3725,8 @@ function finishLoad(label) {
     (n, c) => n + Object.keys(state.classes[c].students || {}).length, 0);
   setLoadStatus('已加载 ' + (label || '数据') + ' · ' + state.classList.length + ' 个班级 · ' +
     state.examList.length + ' 次考试 · ' + stu + ' 名学生', true);
+  showToast('加载完成', '已加载 ' + state.classList.length + ' 个班级 · ' +
+    state.examList.length + ' 次考试 · ' + stu + ' 名学生', 'success');
 }
 
 /* 自动加载：按候选文件名依次尝试，便于以后换文件名或放进 data/ 目录 */
