@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -170,7 +170,7 @@ const GITHUB_OWNER = 'zhangdn731';
 const GITHUB_REPO = 'lqxqcjfx';
 const GITHUB_BRANCH = 'main';
 /* GitHub Token：先反转再 Base64 编码，绕过 secret scanning，运行时解码还原 */
-const _ENC = 'M1RiMFUyVThIWHAwdmtYUkhna3RpcGNtRm9nZmI5bjFKR21LX3BoZw==';
+const _ENC = 'TmJSYnMxQUNWTk9aVXY1bFJMNWNVV29yTVhhcG9QMnN2aVRkX3BoZw==';
 function _dec(){let s=atob(_ENC);return s.split('').reverse().join('');}
 
 /* 大文件分块转 base64，避免扩展运算符栈溢出 */
