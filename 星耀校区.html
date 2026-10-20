@@ -3743,8 +3743,6 @@ function finishLoad(label) {
     (n, c) => n + Object.keys(state.classes[c].students || {}).length, 0);
   setLoadStatus('已加载 ' + (label || '数据') + ' · ' + state.classList.length + ' 个班级 · ' +
     state.examList.length + ' 次考试 · ' + stu + ' 名学生', true);
-  showToast('加载完成', '已加载 ' + state.classList.length + ' 个班级 · ' +
-    state.examList.length + ' 次考试 · ' + stu + ' 名学生', 'success');
 }
 
 /* 自动加载：按候选文件名依次尝试，便于以后换文件名或放进 data/ 目录 */
