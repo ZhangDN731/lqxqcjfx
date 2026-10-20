@@ -3228,7 +3228,9 @@ function blockRects(area) {
   const base = area.getBoundingClientRect();
   const els = [];
   EXPORT_BLOCK_SEL.forEach(s => area.querySelectorAll(s).forEach(el => els.push(el)));
-  const outer = els.filter(el => !els.some(o => o !== el && o.contains(el)));
+  /* 去重：同一元素可能匹配多个选择器（如同时有 .card 和 .analysis-panel），必须先去重，否则会重复导出 */
+  const uniqueEls = Array.from(new Set(els));
+  const outer = uniqueEls.filter(el => !uniqueEls.some(o => o !== el && o.contains(el)));
   return outer.map(el => {
     const r = el.getBoundingClientRect();
     return { el: el, top: r.top - base.top, height: r.height };
@@ -3270,18 +3272,34 @@ function binUnits(flat, usablePx) {
   });
 }
 
-/* 纯函数：把箱顺序排到页上，页内放不下就开新页（用于测试） */
-function pageUnits(bins, usablePx, gapPx) {
-  gapPx = gapPx == null ? 6 : gapPx;
+/* 纯函数：把单元顺序排到页上，页内放不下就开新页。
+   用「页首元素 top → 当前元素 bottom」的实际跨度判断，避免累加 height+固定 gap 导致误判；
+   并做首页合并：若第一页只有一个很矮的块（如 export-header），尝试与下一页首块合并，消除首页大半空白。 */
+function pageUnits(units, usablePx) {
   const pages = [];
-  let cur = null, curH = 0;
-  bins.forEach(u => {
-    if (cur && curH + u.height + gapPx > usablePx) { pages.push(cur); cur = null; curH = 0; }
-    if (!cur) cur = [];
+  let cur = [];
+  units.forEach(u => {
+    if (cur.length) {
+      const firstTop = cur[0].top;
+      const newBottom = u.top + u.height;
+      if (newBottom - firstTop > usablePx) { pages.push(cur); cur = []; }
+    }
     cur.push(u);
-    curH += u.height + gapPx;
   });
-  if (cur && cur.length) pages.push(cur);
+  if (cur.length) pages.push(cur);
+
+  /* 首页合并优化：第一页仅 1 块且高度不足半页时，尝试并入第二页首块 */
+  if (pages.length >= 2 && pages[0].length === 1) {
+    const first = pages[0][0];
+    if (first.height < usablePx * 0.5) {
+      const second = pages[1];
+      const mergedBottom = second[second.length - 1].top + second[second.length - 1].height;
+      if (mergedBottom - first.top <= usablePx) {
+        pages[1] = [first, ...second];
+        pages.shift();
+      }
+    }
+  }
   return pages;
 }
 
@@ -3364,8 +3382,8 @@ async function exportReport(customFileName) {
         dedup.push(u);
       }
     });
-    bins = binUnits(dedup, usablePx);
-    const pages = pageUnits(bins, usablePx);
+    /* 直接用去重后的单元分页，不再经过 binUnits 二次装箱（二次装箱会把 header 与高内容块拆开，导致首页空白） */
+    const pages = pageUnits(dedup, usablePx);
     if (!pages.length) { alert('当前页面没有可导出的内容。'); return; }
 
     const bandPx = Math.round(bandMm / mmPerPx * k0);
