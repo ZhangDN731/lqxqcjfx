@@ -3748,32 +3748,67 @@ function finishLoad(label) {
 /* 自动加载：按候选文件名依次尝试，便于以后换文件名或放进 data/ 目录 */
 function autoLoadData() {
   const cands = (CAMPUS_CONFIG.dataCandidates && CAMPUS_CONFIG.dataCandidates.length)
-    ? CAMPUS_CONFIG.dataCandidates : [CAMPUS_CONFIG.dataFile];
+    ? CAMPUS_CONFIG.dataCandidates : [CAMPUS_CONFIG.dataFile].filter(Boolean);
+  if (!cands.length) {
+    renderTabs();
+    $('contentArea').innerHTML = emptyTip('请点击右上角「上传 Excel」选择成绩文件。');
+    return;
+  }
+
   let i = 0;
+  let retryCount = 0;
+  const MAX_RETRY = 2;        /* 每个 URL 最多重试 2 次（共 3 次尝试） */
+  const TIMEOUT_MS = 15000;   /* 单次请求 15 秒超时 */
+  const RETRY_DELAY = 800;    /* 重试间隔 800ms */
+
   const tryNext = () => {
     if (i >= cands.length) {
       hideLoading();
       setLoadStatus('未找到「' + CAMPUS_CONFIG.dataFile + '」，请手动上传', false);
       $('alignStatus').textContent = '';
-      /* 数据未就绪时也先渲染页签骨架，避免顶部出现空白长条 */
       renderTabs();
       $('contentArea').innerHTML = emptyTip(
-        '未能在站点目录找到成绩文件 ' + esc(CAMPUS_CONFIG.dataFile) +
-        '。<br>请点击右上角「上传 Excel」手动选择文件，或确认该文件已随仓库一起部署。');
+        '未能加载成绩文件 ' + esc(CAMPUS_CONFIG.dataFile) +
+        '。<br>可能原因：文件尚未部署、网络波动或 CDN 缓存未刷新。' +
+        '<br><br><button onclick="autoLoadData()" style="padding:8px 20px;background:#4f46e5;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">重新尝试加载</button>' +
+        '　或点击右上角「上传 Excel」手动选择文件。');
       return;
     }
-    const url = cands[i++];
-    fetch(url, { cache: 'no-store' })
-      .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.arrayBuffer(); })
+    const url = cands[i];
+    /* 加时间戳绕过 GitHub Pages CDN 缓存，确保刚上传的文件能立即取到 */
+    const urlWithTs = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+    setLoadStatus('正在加载（' + (i + 1) + '/' + cands.length + '）' + (retryCount ? '· 第' + (retryCount + 1) + '次重试' : '') + '…');
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    fetch(urlWithTs, { cache: 'no-store', signal: controller.signal })
+      .then(res => {
+        clearTimeout(timer);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.arrayBuffer();
+      })
       .then(buf => {
-        showLoading('正在自动加载成绩数据...');
+        showLoading('正在解析成绩数据...');
         const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
         resetAll();
         ingestWorkbook(wb);
         hideLoading();
         finishLoad(url.split('/').pop());
       })
-      .catch(() => { hideLoading(); tryNext(); });
+      .catch(err => {
+        clearTimeout(timer);
+        const isNetError = err.name === 'AbortError' || !err.message || !err.message.startsWith('HTTP');
+        if (isNetError && retryCount < MAX_RETRY) {
+          /* 超时或网络错误才重试；HTTP 404 说明文件不存在，不重试 */
+          retryCount++;
+          setTimeout(tryNext, RETRY_DELAY);
+        } else {
+          retryCount = 0;
+          i++;
+          tryNext();
+        }
+      });
   };
   setLoadStatus('正在尝试自动加载…');
   tryNext();
