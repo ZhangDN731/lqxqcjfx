@@ -1211,9 +1211,17 @@ function setScore(cls, name, exam, scores) {
   if (!students[name][exam]) students[name][exam] = {};
   Object.assign(students[name][exam], scores);
 }
+/* 科目强制排序：按指定顺序排列，未在列表中的科目放最后（按拼音） */
+const SUBJECT_FIXED_ORDER = ['总分','语文','数学','英语','物理','化学','生物','历史','地理','政治','信息技术','美术','职测总分'];
 function sortSubjects() {
-  const idx = state.subjectList.findIndex(isTotal);
-  if (idx > 0) { const [t] = state.subjectList.splice(idx, 1); state.subjectList.unshift(t); }
+  const orderMap = new Map(SUBJECT_FIXED_ORDER.map((s, i) => [s, i]));
+  const fallback = SUBJECT_FIXED_ORDER.length;
+  state.subjectList.sort((a, b) => {
+    const ia = orderMap.has(a) ? orderMap.get(a) : fallback;
+    const ib = orderMap.has(b) ? orderMap.get(b) : fallback;
+    if (ia !== ib) return ia - ib;
+    return a.localeCompare(b, 'zh-CN');
+  });
 }
 function getClassSubjects(cls) {
   if (!cls || !state.classes[cls]) return [];
